@@ -1,0 +1,20 @@
+@use "_variables" as v;
+@use "sass:map";
+
+@mixin mq($mq: max, $bp1: md, $bp2: lg) {
+  $start: map.get(v.$breakpoints, $bp1) or $bp1;
+  $end: map.get(v.$breakpoints, $bp1) or $bp2;
+  @if ($mq == max) {
+    @media (max-width: #{$start - .02}px) {
+      @content;
+    }
+  } @else if ($mq == min) {
+    @media (min-width: #{$start}px) {
+      @content;
+    }
+  } @else if ($mq == between) {
+    @media (min-width: #{$start}px) and (max-width: #{$end - .02}px) {
+      @content;
+    }
+  }
+}
