@@ -2,12 +2,13 @@ import { PostType } from "@/types";
 import styles from "@/scss/blog-layout.module.scss";
 import Link from "next/link";
 
-type BlogCardProps = {
-  isDetailPage?: boolean;
-  posts: PostType[];
-};
+// type BlogCardProps = {
+//   isDetailPage?: boolean;
+//   posts: PostType[];
+// };
 
-const BlogCard = async ({ isDetailPage, posts }: BlogCardProps) => {
+const BlogCard = async ({ isDetailPage, posts }: any) => {
+  const safePosts = Array.isArray(posts) ? posts : [];
   console.log(posts);
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
@@ -18,7 +19,7 @@ const BlogCard = async ({ isDetailPage, posts }: BlogCardProps) => {
 
   return (
     <div className={!isDetailPage ? styles.blog : styles.blog__detail}>
-      {posts.map((post: PostType) => {
+      {safePosts.map((post: PostType) => {
         const date = new Date(post.date);
         const year = date.getFullYear();
         const month = date.getMonth() + 1;

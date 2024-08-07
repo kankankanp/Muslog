@@ -4,21 +4,21 @@ import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import "../../node_modules/destyle.css";
 
-export const lato = Lato({
+const lato = Lato({
   subsets: ["latin"],
   weight: "100",
   variable: "--font-lato",
   display: "swap",
 });
 
-export const notoJp = Noto_Sans_JP({
+const notoJp = Noto_Sans_JP({
   subsets: ["latin"],
   weight: "100",
   variable: "--font-notojp",
   display: "swap",
 });
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "MyBlog",
   description: "My first blog using Next.js,TypeScript,Sass",
 };
