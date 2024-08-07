@@ -2,19 +2,13 @@ import { PostType } from "@/types";
 import styles from "@/scss/blog-layout.module.scss";
 import Link from "next/link";
 
-const fetchAllBlogs = async () => {
-  const res = await fetch("http://localhost:3000/api/blog", {
-    cache: "no-store",
-  });
-
-  const data = await res.json();
-
-  return data.posts;
+type BlogCardProps = {
+  isDetailPage?: boolean;
+  posts: PostType[];
 };
 
-const BlogCard = async ({ isDetailPage = false }) => {
-  const posts = await fetchAllBlogs();
-
+const BlogCard = async ({ isDetailPage, posts }: BlogCardProps) => {
+  console.log(posts);
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
       return text;
@@ -41,7 +35,7 @@ const BlogCard = async ({ isDetailPage = false }) => {
             <p className={styles.blog__text}>
               {isDetailPage
                 ? post.description
-                : truncateText(post.description, 80)}
+                : truncateText(post.description, 40)}
             </p>
             {!isDetailPage && (
               <Link href={`/blog/${post.id}`} className={styles.blog__btn}>

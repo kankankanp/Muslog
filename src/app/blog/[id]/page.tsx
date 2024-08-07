@@ -1,6 +1,7 @@
 import Header from "@/app/components/layouts/header/page";
 import Footer from "@/app/components/layouts/footer/page";
 import BlogCard from "@/app/components/elements/blog-card/page";
+import { Anybody } from "next/font/google";
 
 const showBlogDetails = async (id: number) => {
   const res = await fetch(`http://localhost:3000/api/blog/${id}`);
@@ -10,13 +11,13 @@ const showBlogDetails = async (id: number) => {
 
 const ShowBlogDetails = async ({ params }: { params: { id: number } }) => {
   const post = await showBlogDetails(params.id);
-  console.log(post);
+  const postarray: any = [post];
 
   return (
     <>
       <Header />
       <main>
-        <BlogCard isDetailPage={true} />
+        <BlogCard isDetailPage={true} posts={postarray} />
       </main>
       <Footer />
     </>
