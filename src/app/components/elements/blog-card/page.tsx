@@ -1,5 +1,5 @@
 import { PostType } from "@/types";
-import styles from "@/scss/blog-layout.module.scss";
+import styles from "@/scss/blog.module.scss";
 import Link from "next/link";
 
 // type BlogCardProps = {
