@@ -2,10 +2,9 @@
 
 import PostBlog from "@/app/blog/add/page";
 import styles from "@/scss/blog.module.scss";
-
+import Modal from "react-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Modal from "react-modal";
 
 const AddBlogModal = () => {
   const router = useRouter();

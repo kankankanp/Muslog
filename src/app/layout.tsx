@@ -3,6 +3,9 @@ import { Lato } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import "../../node_modules/destyle.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
 
 const lato = Lato({
   subsets: ["latin"],
