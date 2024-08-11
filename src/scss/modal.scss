@@ -1,0 +1,54 @@
+@use "./index" as *;
+
+.form {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  row-gap: 20px;
+
+  width: 50%;
+  height: 90%;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  padding: 3%;
+  border: 2px solid black;
+  box-shadow: 4px 4px;
+  border-radius: 10px;
+  @include mq(max, md) {
+    padding: 25px 50px;
+  }
+
+  label {
+    font-size: 20px;
+  }
+  &__title {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 15px;
+    grid-row: 1/2;
+    input {
+      border: 2px solid black;
+      border-radius: 10px;
+    }
+  }
+
+  &__description {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 15px;
+    grid-row: 2/4;
+    textarea {
+      border: 2px solid black;
+      border-radius: 10px;
+    }
+  }
+
+  &__btn {
+    grid-row: 4/5;
+    border-radius: 10px;
+    @include button-design;
+    align-self: center;
+    justify-self: center;
+    padding: 10px 40px;
+  }
+}
