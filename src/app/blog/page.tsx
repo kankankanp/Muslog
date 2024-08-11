@@ -3,7 +3,7 @@ import Footer from "../components/layouts/footer/page";
 import BlogCard from "../components/elements/blog-card/page";
 import AddBlogModal from "../components/elements/add-blog-modal/page";
 import Pagination from "../components/elements/pagination/page";
-import { countData } from "../api/blog/route";
+import { countAllBlogs } from "./page/[page]/page";
 
 export const fetchAllBlogs = async () => {
   const res = await fetch("http://localhost:3000/api/blog", {
@@ -17,7 +17,7 @@ export const fetchAllBlogs = async () => {
 
 const Blog = async () => {
   const posts = await fetchAllBlogs();
-  const [count] = await Promise.all([countData]);
+  const count = await countAllBlogs();
   const PER_PAGE = 4;
   const postPerPage = posts.slice(0, PER_PAGE);
 

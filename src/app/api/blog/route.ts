@@ -11,7 +11,7 @@ async function main() {
   }
 }
 
-export const countData = prisma.post.count();
+
 
 //ブログ全記事取得API
 export const GET = async (req: Request, res: NextResponse) => {
