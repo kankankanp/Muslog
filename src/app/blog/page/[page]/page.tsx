@@ -1,16 +1,10 @@
 import Pagination from "@/app/components/elements/pagination/page";
-import { fetchAllBlogs } from "../../page";
+import { fetchAllBlogs } from "../../utils";
+import { countAllBlogs } from "../../utils";
 import Header from "@/app/components/layouts/header/page";
 import AddBlogModal from "@/app/components/elements/add-blog-modal/page";
 import BlogCard from "@/app/components/elements/blog-card/page";
 import Footer from "@/app/components/layouts/footer/page";
-import { PrismaClient } from "@prisma/client";
-
-export const countAllBlogs = async () => {
-  const prisma = new PrismaClient();
-  const countData = await prisma.post.count();
-  return countData;
-};
 
 export const generateStaticParams = async () => {
   const count = await countAllBlogs();
