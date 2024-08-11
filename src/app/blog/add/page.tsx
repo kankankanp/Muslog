@@ -29,16 +29,16 @@ const PostBlog = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    toast.loading("Posting...");
-
     await postBlog(titleRef.current?.value, descriptionRef.current?.value);
-
-    router.push("/blog");
-    router.refresh();
 
     toast.success("Posted!", {
       duration: 2000,
     });
+
+    setTimeout(() => {
+      router.push("/blog");
+      router.refresh();
+    }, 2000);
   };
 
   return (
