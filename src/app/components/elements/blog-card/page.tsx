@@ -9,7 +9,6 @@ import Link from "next/link";
 
 const BlogCard = async ({ isDetailPage, posts }: any) => {
   const safePosts = Array.isArray(posts) ? posts : [];
-  // console.log(posts);
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
       return text;

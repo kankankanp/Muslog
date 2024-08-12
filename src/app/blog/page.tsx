@@ -9,6 +9,7 @@ import { fetchAllBlogs } from "./utils";
 const Blog = async () => {
   const posts = await fetchAllBlogs();
   const count = await countAllBlogs();
+  // console.log(count);
   const PER_PAGE = 4;
   const postPerPage = posts.slice(0, PER_PAGE);
 

@@ -8,28 +8,24 @@ import Footer from "@/app/components/layouts/footer/page";
 
 export const generateStaticParams = async () => {
   const count = await countAllBlogs();
-  // console.log(count);
   const range = (start: number, end: number) =>
     [...Array(end - start + 1)].map((_, i) => start + i);
 
   const paths = range(2, Math.ceil(count / 2)).map((num) => ({
     page: `${num}`,
   }));
-  // console.log(paths);
   return paths;
 };
 
 export default async function Index({ params }: { params: { page: number } }) {
   const count = await countAllBlogs();
   const posts = await fetchAllBlogs();
-  // console.log(posts);
   const PER_PAGE = 4;
   const pageIndex = params.page;
   const postPerPage = posts.slice(
     PER_PAGE * pageIndex - PER_PAGE,
     PER_PAGE * pageIndex
   );
-  console.log(postPerPage);
 
   return (
     <>
