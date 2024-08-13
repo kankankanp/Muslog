@@ -1,6 +1,8 @@
 import { PostType } from "@/types";
 import "@/scss/blog-card.scss";
 import Link from "next/link";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // type BlogCardProps = {
 //   isDetailPage?: boolean;
@@ -37,11 +39,19 @@ const BlogCard = async ({ isDetailPage, posts }: any) => {
                 ? post.description
                 : truncateText(post.description, 40)}
             </p>
-            {!isDetailPage && (
-              <Link href={`/blog/${post.id}`} className="blog__btn">
-                <span></span>show more
-              </Link>
-            )}
+            <div className="blog__btn-area">
+              {!isDetailPage && (
+                <Link href={`/blog/edit/${post.id}`} className="blog__edit-btn">
+                  <span></span>
+                  <FontAwesomeIcon icon={faPen} />
+                </Link>
+              )}
+              {!isDetailPage && (
+                <Link href={`/blog/${post.id}`} className="blog__detail-btn">
+                  <span></span>show more
+                </Link>
+              )}
+            </div>
           </div>
         );
       })}

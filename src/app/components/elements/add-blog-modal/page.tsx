@@ -24,7 +24,7 @@ const AddBlogModal = () => {
   };
 
   const closeModal = () => {
-    router.push("/blog");
+    router.push("/blog/page/1");
   };
 
   return (
