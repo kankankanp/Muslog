@@ -1,9 +1,9 @@
 import Image from "next/image";
-import style from "@/scss/layout.module.scss";
+import "@/scss/layout.scss";
 
 const Footer = () => {
   return (
-    <footer className={style.footer}>
+    <footer className="footer">
       <p>Provided by</p>
       <Image
         src="/vercel.svg"

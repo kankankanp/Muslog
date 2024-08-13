@@ -1,7 +1,7 @@
 "use client";
 
 import PostBlog from "@/app/blog/add/page";
-import styles from "@/scss/blog.module.scss";
+import "@/scss/blog-card.scss";
 import Modal from "react-modal";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ const AddBlogModal = () => {
 
   return (
     <div>
-      <button onClick={openModal} className={styles.blog__add}></button>
+      <button onClick={openModal} className="blog__add"></button>
 
       <Modal
         isOpen={isModalOpen}
