@@ -1,5 +1,8 @@
 import Link from "next/link";
 import "@/scss/layout.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   return (
@@ -10,10 +13,14 @@ const Header = () => {
       <nav className="header__nav">
         <ul className="header__items">
           <li className="header__item">
-            <Link href="/about">About</Link>
+            <Link href="/">
+              <FontAwesomeIcon icon={faHouse} />
+            </Link>
           </li>
           <li className="header__item">
-            <Link href="/blog/page/1">Blog</Link>
+            <Link href="/blog/page/1">
+              <FontAwesomeIcon icon={faBookOpen} />
+            </Link>
           </li>
         </ul>
       </nav>

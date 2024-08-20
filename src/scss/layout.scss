@@ -4,7 +4,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgb(212, 212, 212);
+  background-color: rgb(156, 156, 156);
   padding: 15px 5%;
   @include mq(max, md) {
     flex-direction: column;
@@ -12,7 +12,7 @@
 
   &__title {
     font-size: 45px;
-    color: $primary-color;
+    color: white;
     font-weight: 900;
   }
 
@@ -27,9 +27,11 @@
   }
 
   &__item {
-    padding: 0 15px;
+    padding: 0 25px;
+    color: white;
+    font-size: 28px;
     &:hover {
-      color: white;
+      color: black;
       transition: all 0.3s;
     }
     @include mq(max, md) {
@@ -40,6 +42,45 @@
 
 .main {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:before {
+    content: "";
+    background-image: url(../../public/home_mv.jpg);
+    background-size: cover;
+    background-position: 20%;
+    position: absolute;
+    top: 78.75px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.7;
+  }
+
+  .home {
+    background-color: white;
+    width: 40%;
+    padding: 7% 5%;
+    border: 2px solid black;
+    box-shadow: 4px 4px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    &__title {
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    &__text {
+      font-size: 26px;
+      text-align: center;
+    }
+  }
 }
 
 .footer {
