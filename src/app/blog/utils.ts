@@ -1,9 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 
 export const fetchAllBlogs = async () => {
-  const res = await fetch("http://localhost:3000/api/blog", {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    "https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog",
+    {
+      cache: "no-store",
+    }
+  );
 
   const data = await res.json();
 

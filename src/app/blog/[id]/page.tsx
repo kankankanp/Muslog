@@ -4,7 +4,9 @@ import BlogCard from "@/app/components/elements/blog-card/page";
 import { Anybody } from "next/font/google";
 
 const showBlogDetails = async (id: number) => {
-  const res = await fetch(`http://localhost:3000/api/blog/${id}`);
+  const res = await fetch(
+    `https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog/${id}`
+  );
   const data = await res.json();
   return data.post;
 };
