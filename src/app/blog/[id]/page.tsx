@@ -5,7 +5,7 @@ import { Anybody } from "next/font/google";
 
 const showBlogDetails = async (id: number) => {
   const res = await fetch(
-    `https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog/${id}`
+    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`
   );
   const data = await res.json();
   return data.post;

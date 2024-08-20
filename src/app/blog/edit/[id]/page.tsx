@@ -11,7 +11,7 @@ const editBlog = async (
   id: number
 ) => {
   const res = await fetch(
-    `https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog/${id}`,
+    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`,
     {
       method: "PUT",
       body: JSON.stringify({ title, description, id }),
@@ -26,7 +26,7 @@ const editBlog = async (
 
 const deleteBlog = async (id: number) => {
   const res = await fetch(
-    `https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog/${id}`,
+    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`,
     {
       method: "DELETE",
       headers: {
@@ -40,7 +40,7 @@ const deleteBlog = async (id: number) => {
 
 const getBlogById = async (id: number) => {
   const res = await fetch(
-    `https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog/${id}`
+    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`
   );
   const data = await res.json();
   return data.post;

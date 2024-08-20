@@ -9,16 +9,13 @@ const postBlog = async (
   title: string | undefined,
   description: string | undefined
 ) => {
-  const res = await fetch(
-    "https://my-next-blog-m1sli2z91-southvillages-projects.vercel.app/api/blog",
-    {
-      method: "POST",
-      body: JSON.stringify({ title, description }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const res = await fetch("https://my-next-blog-iota-six.vercel.app/api/blog", {
+    method: "POST",
+    body: JSON.stringify({ title, description }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   return res.json();
 };
