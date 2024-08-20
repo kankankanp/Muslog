@@ -10,9 +10,6 @@ const Header = () => {
       <nav className="header__nav">
         <ul className="header__items">
           <li className="header__item">
-            <Link href="/">Home</Link>
-          </li>
-          <li className="header__item">
             <Link href="/about">About</Link>
           </li>
           <li className="header__item">
