@@ -1,6 +1,8 @@
 import { PostType } from "@/types";
-import styles from "@/scss/blog.module.scss";
+import "@/scss/blog-card.scss";
 import Link from "next/link";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // type BlogCardProps = {
 //   isDetailPage?: boolean;
@@ -17,7 +19,7 @@ const BlogCard = async ({ isDetailPage, posts }: any) => {
   };
 
   return (
-    <div className={!isDetailPage ? styles.blog : styles.blog__detail}>
+    <div className={!isDetailPage ? "blog" : "blog__detail"}>
       {safePosts.map((post: PostType) => {
         const date = new Date(post.date);
         const year = date.getFullYear();
@@ -27,21 +29,29 @@ const BlogCard = async ({ isDetailPage, posts }: any) => {
         const dayOfWeek = daysOfWeek[date.getDay()];
 
         return (
-          <div key={post.id} className={styles.blog__item}>
-            <h3 className={styles.blog__date}>
+          <div key={post.id} className="blog__item">
+            <h3 className="blog__date">
               {`${year}/${month}/${day}(${dayOfWeek})`}
             </h3>
-            <h3 className={styles.blog__title}>{post.title}</h3>
-            <p className={styles.blog__text}>
+            <h3 className="blog__title">{post.title}</h3>
+            <p className="blog__text">
               {isDetailPage
                 ? post.description
                 : truncateText(post.description, 40)}
             </p>
-            {!isDetailPage && (
-              <Link href={`/blog/${post.id}`} className={styles.blog__btn}>
-                <span></span>show more
-              </Link>
-            )}
+            <div className="blog__btn-area">
+              {!isDetailPage && (
+                <Link href={`/blog/edit/${post.id}`} className="blog__edit-btn">
+                  <span></span>
+                  <FontAwesomeIcon icon={faPen} />
+                </Link>
+              )}
+              {!isDetailPage && (
+                <Link href={`/blog/${post.id}`} className="blog__detail-btn">
+                  <span></span>show more
+                </Link>
+              )}
+            </div>
           </div>
         );
       })}

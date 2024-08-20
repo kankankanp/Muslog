@@ -43,6 +43,12 @@
     }
   }
 
+  &__btn-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
   &__btn {
     grid-row: 4/5;
     border-radius: 10px;
@@ -50,5 +56,19 @@
     align-self: center;
     justify-self: center;
     padding: 10px 40px;
+    &--update {
+      border: 2px solid #4bbeee;
+
+      span {
+        background-color: #4bbeee;
+      }
+    }
+    &--delete {
+      border: 2px solid red;
+
+      span {
+        background-color: red;
+      }
+    }
   }
 }

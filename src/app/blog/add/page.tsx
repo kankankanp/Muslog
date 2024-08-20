@@ -39,9 +39,9 @@ const PostBlog = () => {
     });
 
     setTimeout(() => {
-      router.push("/blog");
+      router.push("/blog/page/1");
       router.refresh();
-    }, 2000);
+    }, 1500);
   };
 
   return (

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import "@/scss/modal.scss";
 
 const editBlog = async (
   title: string | undefined,

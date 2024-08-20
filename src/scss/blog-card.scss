@@ -36,59 +36,6 @@
   &__title {
     font-size: 28px;
   }
-  // &__btn {
-  //   overflow: hidden;
-  //   color: #fff;
-  //   background-color: #000;
-
-  //   &:before {
-  //     position: absolute;
-  //     top: 0;
-  //     left: 0;
-  //     width: 100%;
-  //     content: "";
-  //     transition: all 0.5s ease-in-out;
-  //     transform: translateX(-20%);
-  //     background-color: orange;
-  //   }
-  //   &:hover {
-  //     transform: translateX(0%);
-  //   }
-  //   span {
-  //     position: relative;
-  //     text-align: center;
-  //   }
-  // }
-  &__btn {
-    position: relative;
-    padding: 10px 20px;
-    color: black; // Default text color
-    transition: color 0.3s ease;
-    z-index: 0;
-    align-self: end;
-    justify-self: end;
-    border-radius: 5px;
-    border: 2px solid orange;
-
-    span {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 2px; // Height of the underline
-      background-color: orange; // Color of the underline
-      transition: width 0.3s ease;
-      z-index: -1;
-    }
-
-    &:hover {
-      color: #fff; // Text color on hover
-
-      span {
-        width: 100%; // Full height on hover to cover the entire button
-      }
-    }
-  }
 
   &__text {
     font-size: 24px;
@@ -126,6 +73,25 @@
       background-color: #fff;
       inset: 0;
       margin: auto;
+    }
+  }
+
+  &__btn-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__detail-btn {
+    @include button-design;
+  }
+
+  &__edit-btn {
+    color: black;
+    font-size: 20px;
+    transition: transform 0.3s;
+    &:hover {
+      transform: scale(1.3);
     }
   }
 }
