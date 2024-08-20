@@ -1,7 +1,6 @@
 import Header from "@/app/components/layouts/header/page";
 import Footer from "@/app/components/layouts/footer/page";
 import BlogCard from "@/app/components/elements/blog-card/page";
-import { Anybody } from "next/font/google";
 
 const showBlogDetails = async (id: number) => {
   const res = await fetch(
