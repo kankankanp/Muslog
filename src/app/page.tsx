@@ -11,6 +11,7 @@ export default function Home() {
           <h3 className="home__title">Welcome!</h3>
           <p className="home__text">
             This blog was created with Next.js, Typescrpt, and SCSS! test test2
+            test 3
           </p>
         </div>
       </main>
