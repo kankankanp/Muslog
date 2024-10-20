@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../route";
 
 async function main() {
   try {
@@ -45,6 +43,7 @@ export const PUT = async (req: Request, res: NextResponse) => {
   }
 };
 
+//ブログの記事削除API
 export const DELETE = async (req: Request, res: NextResponse) => {
   try {
     const id: number = parseInt(req.url.split("/blog/")[1]);

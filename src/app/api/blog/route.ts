@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 async function main() {
   try {
@@ -10,8 +10,6 @@ async function main() {
     return Error("DB接続に失敗しました");
   }
 }
-
-
 
 //ブログ全記事取得API
 export const GET = async (req: Request, res: NextResponse) => {

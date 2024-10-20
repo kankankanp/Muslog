@@ -1,50 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
-
-const editBlog = async (
-  title: string | undefined,
-  description: string | undefined,
-  id: number
-) => {
-  const res = await fetch(
-    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`,
-    {
-      method: "PUT",
-      body: JSON.stringify({ title, description, id }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  return res.json();
-};
-
-const deleteBlog = async (id: number) => {
-  const res = await fetch(
-    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  return res.json();
-};
-
-const getBlogById = async (id: number) => {
-  const res = await fetch(
-    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`
-  );
-  const data = await res.json();
-  return data.post;
-};
+import { editBlog, deleteBlog, getBlogById } from "../../utils";
 
 const EditPost = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
@@ -72,27 +32,16 @@ const EditPost = ({ params }: { params: { id: number } }) => {
 
   const handleDelete = async (e: React.FormEvent) => {
     await deleteBlog(params.id);
-
-    // toast.error("Deleted!", {
-    //   duration: 2000,
-    // });
-
-    // setTimeout(() => {
-    //   router.push("/blog/page/1");
-    //   router.refresh();
-    // }, 1500);
   };
 
-  useEffect(() => {
-    getBlogById(params.id)
-      .then((data) => {
-        titleRef.current!.value = data.title;
-        descriptionRef.current!.value = data.description;
-      })
-      .catch((error) => {
-        toast.error("Error");
-      });
-  }, []);
+  getBlogById(params.id)
+    .then((data) => {
+      titleRef.current!.value = data.title;
+      descriptionRef.current!.value = data.description;
+    })
+    .catch((error) => {
+      toast.error("Error", error);
+    });
 
   return (
     <>
