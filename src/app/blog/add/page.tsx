@@ -5,11 +5,13 @@ import { useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
 
+const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
+
 const postBlog = async (
   title: string | undefined,
   description: string | undefined
 ) => {
-  const res = await fetch("https://my-next-blog-iota-six.vercel.app/api/blog", {
+  const res = await fetch(`${ENDPOINT}/api/blog`, {
     method: "POST",
     body: JSON.stringify({ title, description }),
     headers: {

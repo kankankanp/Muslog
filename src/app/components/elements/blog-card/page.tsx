@@ -1,4 +1,4 @@
-import { PostType } from "@/types";
+import { PostType } from "@/app/type/PostType";
 import "@/scss/blog-card.scss";
 import Link from "next/link";
 import { faPen } from "@fortawesome/free-solid-svg-icons";

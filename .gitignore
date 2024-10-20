@@ -26,8 +26,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
 .env
+.env.local
+.env.production
 
 # vercel
 .vercel
@@ -36,4 +37,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# PostgreSQL
+pgdata/
+postgres-data/
+pg_log/
+*.log
+*.sql
+*.dump
+*.pid
+*.sock
 
