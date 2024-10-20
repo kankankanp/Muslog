@@ -1,4 +1,4 @@
-import { prisma } from "../api/blog/route";
+import prisma from "@/app/lib/prisma";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 

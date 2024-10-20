@@ -3,7 +3,7 @@ import Header from "@/app/components/layouts/header/page";
 import AddBlogModal from "@/app/components/elements/add-blog-modal/page";
 import BlogCard from "@/app/components/elements/blog-card/page";
 import Footer from "@/app/components/layouts/footer/page";
-import { fetchBlogsByPage } from "../../utils";
+import { fetchBlogsByPage } from "../../../lib/utils";
 
 export default async function Index({ params }: { params: { page: number } }) {
   const pageIndex = params.page;

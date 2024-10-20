@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
-import { editBlog, deleteBlog, getBlogById } from "../../utils";
+import { editBlog, deleteBlog, getBlogById } from "../../../lib/utils";
 
 const EditPost = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
