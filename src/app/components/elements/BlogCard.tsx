@@ -4,12 +4,14 @@ import Link from "next/link";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// type BlogCardProps = {
-//   isDetailPage?: boolean;
-//   posts: PostType[];
-// };
+type BlogCardProps = {
+  isDetailPage?: boolean;
+  posts: PostType[];
+};
 
-const BlogCard = async ({ isDetailPage, posts }: any) => {
+/* メモ：非同期コンポーネントでないかつchildrenを使用したい場合は
+        BlogCard: FC<BlogCardProps>を使用すべき */
+const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {

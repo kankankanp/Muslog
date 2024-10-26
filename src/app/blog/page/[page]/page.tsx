@@ -1,8 +1,8 @@
-import Pagination from "@/app/components/elements/pagination/page";
-import Header from "@/app/components/layouts/header/page";
-import AddBlogModal from "@/app/components/elements/add-blog-modal/page";
-import BlogCard from "@/app/components/elements/blog-card/page";
-import Footer from "@/app/components/layouts/footer/page";
+import Pagination from "@/app/components/elements/Pagination";
+import Header from "@/app/components/layouts/Header";
+import AddBlogModal from "@/app/components/elements/AddBlogModal";
+import BlogCard from "@/app/components/elements/BlogCard";
+import Footer from "@/app/components/layouts/Footer";
 import { fetchBlogsByPage } from "../../../lib/utils";
 
 export default async function Index({ params }: { params: { page: number } }) {
