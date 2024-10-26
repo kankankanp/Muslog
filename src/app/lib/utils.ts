@@ -3,28 +3,47 @@ import prisma from "@/app/lib/prisma";
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
 export const fetchAllBlogs = async () => {
-  const res = await fetch(`${ENDPOINT}/api/blog`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog`);
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`Error fetching blogs: ${res.statusText}`);
+    }
 
-  return data.posts;
+    const data = await res.json();
+    return data.posts;
+  } catch (error) {
+    console.error("Error in fetchAllBlogs:", error);
+    return null;
+  }
 };
 
 export const fetchBlogsByPage = async (page: number) => {
-  const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`, {
+      cache: "no-store",
+    });
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`Error fetching blogs by page: ${res.statusText}`);
+    }
 
-  return { posts: data.posts, totalCount: data.totalCount };
+    const data = await res.json();
+    return { posts: data.posts, totalCount: data.totalCount };
+  } catch (error) {
+    console.error("Error in fetchBlogsByPage:", error);
+    return { posts: [], totalCount: 0 };
+  }
 };
 
 export const countAllBlogs = async () => {
-  const countData = await prisma.post.count();
-  return countData;
+  try {
+    const countData = await prisma.post.count();
+    return countData;
+  } catch (error) {
+    console.error("Error in countAllBlogs:", error);
+    return 0;
+  }
 };
 
 export const editBlog = async (
@@ -32,30 +51,58 @@ export const editBlog = async (
   description: string | undefined,
   id: number
 ) => {
-  const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
-    method: "PUT",
-    body: JSON.stringify({ title, description, id }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ title, description, id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  return res.json();
+    if (!res.ok) {
+      throw new Error(`Error editing blog: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error in editBlog:", error);
+    return null;
+  }
 };
 
 export const deleteBlog = async (id: number) => {
-  const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  return res.json();
+    if (!res.ok) {
+      throw new Error(`Error deleting blog: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error in deleteBlog:", error);
+    return null;
+  }
 };
 
 export const getBlogById = async (id: number) => {
-  const res = await fetch(`${ENDPOINT}/api/blog/${id}`);
-  const data = await res.json();
-  return data.post;
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`Error fetching blog by ID: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data.post;
+  } catch (error) {
+    console.error("Error in getBlogById:", error);
+    return null;
+  }
 };
