@@ -20,9 +20,7 @@ export const fetchAllBlogs = async () => {
 
 export const fetchBlogsByPage = async (page: number) => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`);
 
     if (!res.ok) {
       throw new Error(`Error fetching blogs by page: ${res.statusText}`);
@@ -104,5 +102,21 @@ export const getBlogById = async (id: number) => {
   } catch (error) {
     console.error("Error in getBlogById:", error);
     return null;
+  }
+};
+
+export const getAllBlogIds = async () => {
+  try {
+    const res = await fetch(`${ENDPOINT}/api/blog`);
+
+    if (!res.ok) {
+      throw new Error(`Error fetching all blog IDs: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data.posts.map((post: { id: number }) => post.id);
+  } catch (error) {
+    console.error("Error in getAllBlogIds:", error);
+    return [];
   }
 };

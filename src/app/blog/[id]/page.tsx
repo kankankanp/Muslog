@@ -1,17 +1,22 @@
-import Header from "@/app/components/layouts/header/page";
-import Footer from "@/app/components/layouts/footer/page";
-import BlogCard from "@/app/components/elements/blog-card/page";
+import Header from "@/app/components/layouts/Header";
+import Footer from "@/app/components/layouts/Footer";
+import BlogCard from "@/app/components/elements/BlogCard";
+import { getAllBlogIds, getBlogById } from "@/app/lib/utils";
 
-const showBlogDetails = async (id: number) => {
-  const res = await fetch(
-    `https://my-next-blog-iota-six.vercel.app/api/blog/${id}`
-  );
-  const data = await res.json();
-  return data.post;
-};
+export async function generateStaticParams() {
+  const ids = await getAllBlogIds();
+
+  return ids.map((id: number) => ({
+  //メモ：動的ルーティングではURLパラメータを文字列として扱う必要あり
+    id: id.toString(),
+  }));
+}
 
 const ShowBlogDetails = async ({ params }: { params: { id: number } }) => {
-  const post = await showBlogDetails(params.id);
+  const { id } = params;
+
+
+  const post = await getBlogById(Number(id));
   const postarray: any = [post];
 
   return (
