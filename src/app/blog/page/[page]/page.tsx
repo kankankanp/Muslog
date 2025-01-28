@@ -1,9 +1,9 @@
-import Pagination from "@/app/components/elements/Pagination";
-import Header from "@/app/components/layouts/Header";
-import AddBlogModal from "@/app/components/elements/AddBlogModal";
 import BlogCard from "@/app/components/elements/BlogCard";
+import Pagination from "@/app/components/elements/Pagination";
 import Footer from "@/app/components/layouts/Footer";
+import Header from "@/app/components/layouts/Header";
 import { fetchBlogsByPage } from "../../../lib/utils";
+import AddButton from "@/app/components/elements/AddButton";
 
 export default async function Index({ params }: { params: { page: number } }) {
   const pageIndex = params.page;
@@ -13,7 +13,7 @@ export default async function Index({ params }: { params: { page: number } }) {
     <>
       <Header />
       <main>
-        <AddBlogModal />
+        <AddButton />
         <BlogCard isDetailPage={false} posts={posts} />
       </main>
       <Pagination totalCount={totalCount} />

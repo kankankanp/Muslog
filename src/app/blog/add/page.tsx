@@ -34,13 +34,11 @@ const PostBlog = () => {
     await postBlog(titleRef.current?.value, descriptionRef.current?.value);
 
     toast.success("Posted!", {
-      duration: 2000,
+      duration: 1500,
     });
 
-    setTimeout(() => {
-      router.push("/blog/page/1");
-      router.refresh();
-    }, 1500);
+    router.push("/blog");
+    router.refresh();
   };
 
   return (
