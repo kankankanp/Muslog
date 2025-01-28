@@ -1,7 +1,7 @@
-import Header from "../components/layouts/Header";
-import Footer from "../components/layouts/Footer";
+import AddButton from "../components/elements/AddButton";
 import BlogCard from "../components/elements/BlogCard";
-import AddBlogModal from "../components/elements/AddBlogModal";
+import Footer from "../components/layouts/Footer";
+import Header from "../components/layouts/Header";
 import { fetchAllBlogs } from "../lib/utils";
 
 const Blog = async () => {
@@ -11,7 +11,7 @@ const Blog = async () => {
     <>
       <Header />
       <main>
-        <AddBlogModal />
+        <AddButton />
         <BlogCard isDetailPage={false} posts={posts} />
       </main>
       <Footer />

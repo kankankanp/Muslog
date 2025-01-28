@@ -21,13 +21,11 @@ const EditPost = ({ params }: { params: { id: number } }) => {
     );
 
     toast.success("Updated!", {
-      duration: 2000,
+      duration: 1500,
     });
 
-    setTimeout(() => {
-      router.push("/blog/page/1");
-      router.refresh();
-    }, 1500);
+    router.push("/blog/page/1");
+    router.refresh();
   };
 
   const handleDelete = async (e: React.FormEvent) => {
