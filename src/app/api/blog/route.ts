@@ -2,7 +2,7 @@ import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
 //ブログ全記事取得API
-export const GET = async (req: Request, res: NextResponse) => {
+export const GET = async (req: Request) => {
   try {
     const posts = await prisma.post.findMany();
     return NextResponse.json({ message: "Success", posts }, { status: 200 });
@@ -12,7 +12,7 @@ export const GET = async (req: Request, res: NextResponse) => {
 };
 
 //ブログ投稿用API
-export const POST = async (req: Request, res: NextResponse) => {
+export const POST = async (req: Request) => {
   try {
     const { title, description } = await req.json();
     const post = await prisma.post.create({ data: { title, description } });

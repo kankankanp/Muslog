@@ -5,7 +5,8 @@ import Header from "@/app/components/layouts/Header";
 import { fetchBlogsByPage } from "../../../lib/utils";
 import AddButton from "@/app/components/elements/AddButton";
 
-export default async function Index({ params }: { params: { page: number } }) {
+export default async function Index(props: { params: Promise<{ page: number }> }) {
+  const params = await props.params;
   const pageIndex = params.page;
   const { posts, totalCount } = await fetchBlogsByPage(pageIndex);
 
