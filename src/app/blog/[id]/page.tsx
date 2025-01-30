@@ -7,14 +7,14 @@ export async function generateStaticParams() {
   const ids = await getAllBlogIds();
 
   return ids.map((id: number) => ({
-  //メモ：動的ルーティングではURLパラメータを文字列として扱う必要あり
+    //メモ：動的ルーティングではURLパラメータを文字列として扱う必要あり
     id: id.toString(),
   }));
 }
 
-const ShowBlogDetails = async ({ params }: { params: { id: number } }) => {
+const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
+  const params = await props.params;
   const { id } = params;
-
 
   const post = await getBlogById(Number(id));
   const postarray: any = [post];

@@ -2,10 +2,8 @@ import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
 // ページごとのブログ記事取得API
-export const GET = async (
-  req: Request,
-  { params }: { params: { page: number } }
-) => {
+export const GET = async (req: Request, props: { params: Promise<{ page: number }> }) => {
+  const params = await props.params;
   try {
     const PER_PAGE = 4;
     const page = params.page;

@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, use } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
 import { editBlog, deleteBlog, getBlogById } from "../../../lib/utils";
 
-const EditPost = ({ params }: { params: { id: number } }) => {
+const EditPost = (props: { params: Promise<{ id: number }> }) => {
+  const params = use(props.params);
   const router = useRouter();
   const titleRef = useRef<HTMLInputElement | null>(null);
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
