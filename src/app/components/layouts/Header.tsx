@@ -8,7 +8,7 @@ const Header = () => {
   return (
     <header className="header">
       <h1 className="header__title">
-        <a href="#">MyBlog</a>
+        <a href="/">MyBlog</a>
       </h1>
       <nav className="header__nav">
         <ul className="header__items">
