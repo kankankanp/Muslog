@@ -1,16 +1,9 @@
-import { signOut } from "@/auth";
+import Header from "../components/layouts/Header";
 
 export default function Dashboard() {
   return (
     <div>
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <button>ログアウト</button>
-      </form>
+      <Header />
       dashboard
     </div>
   );

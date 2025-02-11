@@ -1,6 +1,6 @@
-import Header from "@/app/components/layouts/Header";
-import Footer from "@/app/components/layouts/Footer";
 import BlogCard from "@/app/components/elements/BlogCard";
+import Footer from "@/app/components/layouts/Footer";
+import Header from "@/app/components/layouts/Header";
 import { getAllBlogIds, getBlogById } from "@/app/lib/utils";
 
 export async function generateStaticParams() {
