@@ -7,7 +7,7 @@ export const authConfig: NextAuthConfig = {
       async authorize(credentials) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
 
-        const email = "user@nextemail.com";
+        const email = "user1@example.com";
         return credentials.email === email && credentials.password === "123456"
           ? { id: "userId", email }
           : null;
