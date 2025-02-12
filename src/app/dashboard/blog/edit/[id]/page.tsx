@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
-import { editBlog, deleteBlog, getBlogById } from "../../../lib/utils";
+import { editBlog, deleteBlog, getBlogById } from "@/app/lib/utils";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),

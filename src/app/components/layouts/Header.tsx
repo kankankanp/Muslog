@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { signOut } from "@/auth";
 import "@/scss/layout.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
@@ -21,6 +22,18 @@ const Header = () => {
             <Link href="/blog/page/1">
               <FontAwesomeIcon icon={faBookOpen} />
             </Link>
+          </li>
+          <li className="header__item">
+            <form
+              action={async () => {
+                "use server";
+                await signOut();
+              }}
+            >
+              <button>
+                <FontAwesomeIcon icon={faShareFromSquare} />
+              </button>
+            </form>
           </li>
         </ul>
       </nav>

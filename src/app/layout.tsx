@@ -22,7 +22,7 @@ const notoJp = Noto_Sans_JP({
 });
 
 const metadata: Metadata = {
-  title: "MyBlog",
+  title: "Simple-blog",
   description: "My first blog using Next.js,TypeScript,Sass",
 };
 
