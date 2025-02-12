@@ -28,7 +28,7 @@ const Pagination = ({ totalCount }: any) => {
           >
             <Link
               className="pagination__item-link"
-              href={`/blog/page/${number}`}
+              href={`/dashboard/blog/page/${number}`}
               aria-current={currentPage === number ? "page" : undefined}
             >
               {number}

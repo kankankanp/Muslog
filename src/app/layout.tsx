@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
-import "./globals.css";
+import "@/scss/global.scss"
 import "../../node_modules/destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body className={`${lato.variable} ${notoJp.variable}`}>{children}</body>
     </html>
   );

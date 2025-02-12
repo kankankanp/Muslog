@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
 import { editBlog, deleteBlog, getBlogById } from "@/app/lib/utils";
+import Loading from "@/app/loading";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -16,7 +17,6 @@ const schema = z.object({
 
 const EditPost = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const {
     register,
     handleSubmit,
@@ -24,17 +24,16 @@ const EditPost = ({ params }: { params: { id: number } }) => {
     reset,
   } = useForm<{ title: string; description: string }>({
     resolver: zodResolver(schema),
+    defaultValues: { title: "", description: "" },
   });
 
   useEffect(() => {
     getBlogById(params.id)
       .then((data) => {
         reset(data);
-        setLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error("Error fetching data");
-        setLoading(false);
       });
   }, [params.id, reset]);
 
@@ -43,7 +42,7 @@ const EditPost = ({ params }: { params: { id: number } }) => {
       await editBlog(data.title, data.description, params.id);
       toast.success("Updated!", { duration: 1500 });
       setTimeout(() => {
-        router.push("/blog/page/1");
+        router.push("/dashboard/blog/page/1");
         router.refresh();
       }, 2000);
     } catch (error) {
@@ -56,7 +55,7 @@ const EditPost = ({ params }: { params: { id: number } }) => {
       await deleteBlog(params.id);
       toast.success("Deleted!");
       setTimeout(() => {
-        router.push("/blog/page/1");
+        router.push("/dashboard/blog/page/1");
         router.refresh();
       }, 2000);
     } catch (error) {
@@ -64,11 +63,10 @@ const EditPost = ({ params }: { params: { id: number } }) => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-
   return (
     <>
       <Toaster />
+      <Loading />
       <form onSubmit={handleSubmit(onSubmit)} className="form">
         <div className="form__title">
           <label htmlFor="title">タイトル</label>
