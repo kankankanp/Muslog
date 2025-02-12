@@ -9,6 +9,7 @@ export default async function Index(props: { params: Promise<{ page: number }> }
   const params = await props.params;
   const pageIndex = params.page;
   const { posts, totalCount } = await fetchBlogsByPage(pageIndex);
+  console.log(posts)
 
   return (
     <>

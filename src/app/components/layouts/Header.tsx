@@ -18,7 +18,7 @@ const Header = () => {
             </Link>
           </li>
           <li className="header__item">
-            <Link href="/blog">
+            <Link href="/blog/page/1">
               <FontAwesomeIcon icon={faBookOpen} />
             </Link>
           </li>

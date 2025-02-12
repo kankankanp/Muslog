@@ -2,25 +2,11 @@ import prisma from "@/app/lib/prisma";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
-export const fetchAllBlogs = async () => {
-  try {
-    const res = await fetch(`${ENDPOINT}/api/blog`);
-
-    if (!res.ok) {
-      throw new Error(`Error fetching blogs: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return data.posts;
-  } catch (error) {
-    console.error("Error in fetchAllBlogs:", error);
-    return null;
-  }
-};
-
 export const fetchBlogsByPage = async (page: number) => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`);
+    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`, {
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Error fetching blogs by page: ${res.statusText}`);
