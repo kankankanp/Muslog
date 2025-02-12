@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
+import Loading from "@/app/loading";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,7 +45,7 @@ const PostBlog = () => {
       toast.success("Posted!", { duration: 1500 });
       setTimeout(() => {
         reset();
-        router.push("/blog/page/1");
+        router.push("/dashboard/blog/page/1");
         router.refresh();
       }, 2000);
     } catch {
@@ -55,6 +56,7 @@ const PostBlog = () => {
   return (
     <>
       <Toaster />
+      <Loading />
       <form onSubmit={handleSubmit(onSubmit)} className="form">
         <div className="form__title">
           <label htmlFor="title">タイトル</label>

@@ -5,6 +5,7 @@ import { useFormState, useFormStatus } from "react-dom";
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(authenticate, true);
+  const { pending } = useFormStatus();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -38,20 +39,14 @@ export default function LoginForm() {
             メールアドレスかパスワードが違います。
           </div>
         )}
-        <SubmitButton />
+        <button
+          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 disabled:opacity-50"
+          disabled={pending}
+          aria-disabled={pending}
+        >
+          {pending ? "ログイン中..." : "ログインする"}
+        </button>
       </form>
     </div>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 disabled:opacity-50"
-      aria-disabled={pending}
-    >
-      {pending ? "ログイン中..." : "ログインする"}
-    </button>
   );
 }
