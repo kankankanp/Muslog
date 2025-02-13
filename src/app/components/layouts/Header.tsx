@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { signOut } from "@/auth";
 import "@/scss/layout.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faRightToBracket, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
+import { auth, signOut } from "@/app/lib/auth";
 
-const Header = () => {
+const Header = async () => {
+  const session = await auth(); // ユーザー情報を取得
+
+
   return (
     <header className="header">
       <h1 className="header__title">
@@ -24,16 +27,22 @@ const Header = () => {
             </Link>
           </li>
           <li className="header__item">
-            <form
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-            >
-              <button>
-                <FontAwesomeIcon icon={faShareFromSquare} />
-              </button>
-            </form>
+            {session?.user ? (
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
+              >
+                <button>
+                  <FontAwesomeIcon icon={faShareFromSquare} />
+                </button>
+              </form>
+            ) : (
+              <Link href="/login">
+                <FontAwesomeIcon icon={faRightToBracket} />
+              </Link>
+            )}
           </li>
         </ul>
       </nav>
