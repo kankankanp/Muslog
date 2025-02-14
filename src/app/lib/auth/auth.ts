@@ -14,6 +14,8 @@ export async function fetchUserFromDatabase(email: string, password: string) {
     where: { email },
   });
 
+  console.log(user)
+
   if (!user) return null;
 
   // パスワードを検証
@@ -93,4 +95,4 @@ export const authConfig: NextAuthConfig = {
 };
 
 // `auth()` をエクスポート
-export const { auth, signIn, signOut } = NextAuth(authConfig);
+export const { auth, handlers, signIn, signOut } = NextAuth(authConfig);
