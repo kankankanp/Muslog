@@ -2,6 +2,7 @@ import Link from "next/link";
 import "@/scss/layout.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faFileAlt,
   faHouse,
   faRightToBracket,
   faShareFromSquare,
@@ -23,6 +24,11 @@ const Header = async () => {
           <li className="header__item">
             <Link href="/">
               <FontAwesomeIcon icon={faHouse} />
+            </Link>
+          </li>
+          <li className="header__item">
+            <Link href="/dashboard">
+              <FontAwesomeIcon icon={faFileAlt} />
             </Link>
           </li>
           <li className="header__item">
