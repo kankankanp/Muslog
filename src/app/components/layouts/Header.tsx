@@ -1,13 +1,17 @@
 import Link from "next/link";
 import "@/scss/layout.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faRightToBracket, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHouse,
+  faRightToBracket,
+  faShareFromSquare,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
-import { auth, signOut } from "@/app/lib/auth";
+import { auth, signOut } from "@/app/lib/auth/auth";
 
 const Header = async () => {
   const session = await auth(); // ユーザー情報を取得
-
 
   return (
     <header className="header">
@@ -39,9 +43,14 @@ const Header = async () => {
                 </button>
               </form>
             ) : (
-              <Link href="/login">
-                <FontAwesomeIcon icon={faRightToBracket} />
-              </Link>
+              <div className="flex gap-[40px]">
+                <Link href="/registration/login">
+                  <FontAwesomeIcon icon={faRightToBracket} />
+                </Link>
+                <Link href="/registration/signin">
+                  <FontAwesomeIcon icon={faUserPlus} />
+                </Link>
+              </div>
             )}
           </li>
         </ul>
