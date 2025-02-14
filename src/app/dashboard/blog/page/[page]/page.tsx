@@ -3,7 +3,7 @@ import Pagination from "@/app/components/elements/Pagination";
 import Footer from "@/app/components/layouts/Footer";
 import Header from "@/app/components/layouts/Header";
 import AddButton from "@/app/components/elements/AddButton";
-import { fetchBlogsByPage } from "@/app/lib/utils";
+import { fetchBlogsByPage } from "@/app/lib/utils/blog";
 
 export default async function Index(props: {
   params: Promise<{ page: number }>;

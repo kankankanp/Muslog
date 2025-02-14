@@ -44,11 +44,20 @@ const Header = async () => {
               </form>
             ) : (
               <div className="flex gap-[40px]">
-                <Link href="/registration/login">
-                  <FontAwesomeIcon icon={faRightToBracket} />
+                <Link
+                  href="/registration/login"
+                  className="text-white hover:text-black transition duration-500"
+                >
+                  <FontAwesomeIcon
+                    icon={faRightToBracket}
+                    className="w-6 h-6"
+                  />
                 </Link>
-                <Link href="/registration/signin">
-                  <FontAwesomeIcon icon={faUserPlus} />
+                <Link
+                  href="/registration/signin"
+                  className="text-white hover:text-black transition duration-500"
+                >
+                  <FontAwesomeIcon icon={faUserPlus} className="w-6 h-6" />
                 </Link>
               </div>
             )}

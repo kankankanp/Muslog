@@ -43,13 +43,13 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
             </p>
             <div className="blog__btn-area">
               {!isDetailPage && (
-                <Link href={`/blog/edit/${post.id}`} className="blog__edit-btn">
+                <Link href={`/dashboard/blog/edit/${post.id}`} className="blog__edit-btn">
                   <span></span>
                   <FontAwesomeIcon icon={faPen} />
                 </Link>
               )}
               {!isDetailPage && (
-                <Link href={`/blog/${post.id}`} className="blog__detail-btn">
+                <Link href={`/dashboard/blog/${post.id}`} className="blog__detail-btn">
                   <span></span>show more
                 </Link>
               )}

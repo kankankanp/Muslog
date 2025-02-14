@@ -7,8 +7,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import "@/scss/modal.scss";
-import { editBlog, deleteBlog, getBlogById } from "@/app/lib/utils";
 import Loading from "@/app/loading";
+import { getBlogById, editBlog, deleteBlog } from "@/app/lib/utils/blog";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -66,7 +66,6 @@ const EditPost = ({ params }: { params: { id: number } }) => {
   return (
     <>
       <Toaster />
-      <Loading />
       <form onSubmit={handleSubmit(onSubmit)} className="form">
         <div className="form__title">
           <label htmlFor="title">タイトル</label>

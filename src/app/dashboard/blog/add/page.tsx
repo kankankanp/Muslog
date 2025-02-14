@@ -56,7 +56,6 @@ const PostBlog = () => {
   return (
     <>
       <Toaster />
-      <Loading />
       <form onSubmit={handleSubmit(onSubmit)} className="form">
         <div className="form__title">
           <label htmlFor="title">タイトル</label>
