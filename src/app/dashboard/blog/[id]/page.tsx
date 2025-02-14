@@ -1,7 +1,7 @@
 import BlogCard from "@/app/components/elements/BlogCard";
 import Footer from "@/app/components/layouts/Footer";
 import Header from "@/app/components/layouts/Header";
-import { getAllBlogIds, getBlogById } from "@/app/lib/utils";
+import { getAllBlogIds, getBlogById } from "@/app/lib/utils/blog";
 
 export async function generateStaticParams() {
   const ids = await getAllBlogIds();

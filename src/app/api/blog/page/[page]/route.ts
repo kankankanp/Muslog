@@ -1,4 +1,4 @@
-import prisma from "@/app/lib/prisma";
+import prisma from "@/app/lib/db/prisma";
 import { NextResponse } from "next/server";
 
 // ページごとのブログ記事取得API
