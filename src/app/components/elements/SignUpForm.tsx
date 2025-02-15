@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import prisma from "@/app/lib/db/prisma";
 import { z } from "zod";
+import { signIn } from "@/app/lib/auth/auth";
 
 const signupSchema = z.object({
   name: z.string().min(2, "名前は2文字以上で入力してください"),
@@ -43,6 +44,13 @@ export default function SignupForm() {
           emailVerified: false,
         },
       });
+
+      await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
     } catch (error) {
       throw new Error("ユーザー登録に失敗しました。");
     }
