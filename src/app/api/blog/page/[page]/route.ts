@@ -9,12 +9,10 @@ export const GET = async (req: Request, props: { params: Promise<{ page: number 
     const page = params.page;
     const skip = (page - 1) * PER_PAGE;
 
-    // ページごとのブログデータを取得
     const posts = await prisma.post.findMany({
       skip,
       take: PER_PAGE,
     });
-    // 全体のブログ数を取得して、ページネーションに使えるように返す
     const totalCount = await prisma.post.count();
 
     return NextResponse.json(

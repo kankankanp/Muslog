@@ -12,7 +12,8 @@ import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
 import { auth, signOut } from "@/app/lib/auth/auth";
 
 const Header = async () => {
-  const session = await auth(); // ユーザー情報を取得
+  const session = await auth(); 
+  console.log(session);
 
   return (
     <header className="header">
@@ -60,7 +61,7 @@ const Header = async () => {
                   />
                 </Link>
                 <Link
-                  href="/registration/signin"
+                  href="/registration/signup"
                   className="text-white hover:text-black transition duration-500"
                 >
                   <FontAwesomeIcon icon={faUserPlus} className="w-6 h-6" />

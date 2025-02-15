@@ -9,20 +9,15 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 export async function fetchUserFromDatabase(email: string, password: string) {
-  // データベースからユーザーを取得
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
-  console.log(user)
-
   if (!user) return null;
 
-  // パスワードを検証
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) return null;
 
-  // ユーザー情報を返す
   return {
     id: user.id,
     name: user.name,
@@ -30,7 +25,6 @@ export async function fetchUserFromDatabase(email: string, password: string) {
   };
 }
 
-// 認証設定
 export const authConfig: NextAuthConfig = {
   providers: [
     CredentialsProvider({
@@ -51,7 +45,6 @@ export const authConfig: NextAuthConfig = {
         const email = credentials.email as string;
         const password = credentials.password as string;
 
-        // ここでデータベースやAPIを使ってユーザー認証を行う
         const user = await fetchUserFromDatabase(email, password);
 
         if (user) {
@@ -94,5 +87,4 @@ export const authConfig: NextAuthConfig = {
   },
 };
 
-// `auth()` をエクスポート
 export const { auth, handlers, signIn, signOut } = NextAuth(authConfig);

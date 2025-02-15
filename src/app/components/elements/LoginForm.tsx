@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginAction } from "@/app/lib/auth/signIn";
+import { signinAction } from "@/app/lib/auth/signin";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function LoginForm() {
 
     try {
       // Server Action を実行
-      const result = await loginAction(email, password);
+      const result = await signinAction(email, password);
 
       console.log("Login Result:", result);
 
