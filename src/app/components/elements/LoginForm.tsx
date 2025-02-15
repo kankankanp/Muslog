@@ -1,52 +1,47 @@
-"use client";
+import { redirect } from "next/navigation";
+import { signIn } from "@/app/lib/auth/auth";
+import { z } from "zod";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signinAction } from "@/app/lib/auth/signin";
+const loginSchema = z.object({
+  email: z.string().email("有効なメールアドレスを入力してください"),
+  password: z.string().min(6, "パスワードは6文字以上で入力してください"),
+});
 
 export default function LoginForm() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  async function handleSubmit(formData: FormData): Promise<void> {
+    "use server";
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    setLoading(true);
+    const data = {
+      email: formData.get("email")?.toString().trim() ?? "",
+      password: formData.get("password")?.toString().trim() ?? "",
+    };
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email")?.toString().trim();
-    const password = formData.get("password")?.toString().trim();
-
-    if (!email || !password) {
-      setError("メールアドレスとパスワードを入力してください。");
-      setLoading(false);
-      return;
+    const validation = loginSchema.safeParse(data);
+    if (!validation.success) {
+      throw new Error(validation.error.errors[0].message);
     }
 
     try {
-      // Server Action を実行
-      const result = await signinAction(email, password);
-
-      console.log("Login Result:", result);
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
 
       if (result?.error) {
-        setError(result.error);
-      } else {
-        router.push("/dashboard"); // ログイン成功時にリダイレクト
+        throw new Error("メールアドレスまたはパスワードが間違っています。");
       }
     } catch (error) {
-      console.error("ログインエラー:", error);
-      setError("ログインに失敗しました。");
-    } finally {
-      setLoading(false);
+      throw new Error("ログインに失敗しました。");
     }
+
+    redirect("/dashboard");
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
-        onSubmit={handleSubmit}
+        action={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4"
       >
         <h2 className="text-2xl font-bold text-center text-gray-700">
@@ -70,15 +65,8 @@ export default function LoginForm() {
             required
           />
         </div>
-        {error && (
-          <div className="text-red-500 text-sm text-center">{error}</div>
-        )}
-        <button
-          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300 disabled:opacity-50"
-          disabled={loading}
-          aria-disabled={loading}
-        >
-          {loading ? "ログイン中..." : "ログインする"}
+        <button className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300">
+          ログインする
         </button>
       </form>
     </div>
