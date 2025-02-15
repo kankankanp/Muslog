@@ -7,6 +7,7 @@ const loginSchema = z.object({
   password: z.string().min(6, "パスワードは6文字以上で入力してください"),
 });
 
+// MEMO: ServerActionで実装
 export default function LoginForm() {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";
