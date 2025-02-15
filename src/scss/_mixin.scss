@@ -47,3 +47,18 @@
     }
   }
 }
+
+@mixin card-design {
+  width: 90%;
+  padding: 5%;
+  margin: 20px auto;
+  border: 2px solid black;
+  box-shadow: 4px 4px;
+  border-radius: 10px;
+  display: grid;
+  row-gap: 40px;
+  column-gap: 35px;
+  @include mq(max, md) {
+    padding: 25px 50px;
+  }
+}
