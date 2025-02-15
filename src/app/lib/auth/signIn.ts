@@ -3,7 +3,7 @@
 import { signIn } from "./auth";
 
 
-export async function loginAction(email: string, password: string) {
+export async function signinAction(email: string, password: string) {
   try {
     const result = await signIn("credentials", {
       email,
@@ -19,7 +19,6 @@ export async function loginAction(email: string, password: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("ログインエラー:", error);
     return { error: "ログインに失敗しました。" };
   }
 }
