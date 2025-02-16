@@ -10,7 +10,9 @@ const signupSchema = z.object({
   password: z.string().min(6, "パスワードは6文字以上で入力してください"),
 });
 
+
 // MEMO: ServerActionで実装
+// TODO: RCCにしてバリデーションメッセージを実装実装する
 export default function SignupForm() {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";
