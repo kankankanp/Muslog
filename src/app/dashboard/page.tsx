@@ -2,13 +2,15 @@ import ProfileCard from "../components/elements/ProfileCard";
 import Header from "../components/layouts/Header";
 import { auth } from "../lib/auth/auth";
 import prisma from "../lib/db/prisma";
+import { redirect } from "next/navigation";
+
 
 export default async function Dashboard() {
   "use server";
 
   const session = await auth();
   if (!session?.user?.email) {
-    throw new Error("ログインが必要です");
+    redirect("/registration/login");
   }
 
   const user = await prisma.user.findUnique({
