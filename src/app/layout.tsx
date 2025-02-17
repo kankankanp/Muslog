@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
-import "@/scss/global.scss"
+import "@/scss/global.scss";
 import "../../node_modules/destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Providers } from "./lib/store/Providers";
 config.autoAddCss = false;
 
 const lato = Lato({
@@ -33,7 +34,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${lato.variable} ${notoJp.variable}`}>{children}</body>
+      <body className={`${lato.variable} ${notoJp.variable}`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
