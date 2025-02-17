@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
 import { auth, signOut } from "@/app/lib/auth/auth";
+import ThemeToggleButton from "../elements/ThemeToggleButton";
 
 const Header = async () => {
   const session = await auth(); 
@@ -20,6 +21,7 @@ const Header = async () => {
       <h1 className="header__title">
         <a href="/">MyBlog</a>
       </h1>
+      <ThemeToggleButton />
       <nav className="header__nav">
         <ul className="header__items">
           <li className="header__item">

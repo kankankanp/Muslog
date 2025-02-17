@@ -7,12 +7,8 @@ export default function Home() {
     <>
       <Header />
       <main className="main">
-        <div className="home">
-          <h3 className="home__title">Welcome!</h3>
-          <p className="home__text">
-            This blog was created with Next.js, Typescrpt, and scss! test test2
-            test 3
-          </p>
+        <div className="home dark:bg-gray-400">
+          <h3 className="home__title dark:text-white">Welcome!</h3>
         </div>
       </main>
       <Footer />

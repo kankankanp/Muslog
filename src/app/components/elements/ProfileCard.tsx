@@ -10,16 +10,27 @@ type ProfileCardProps = {
 const ProfileCard: React.FC<ProfileCardProps> = ({ name, email }) => {
   return (
     <div className="proflie mt-4">
-      <div className="max-w-lg mx-auto bg-beige p-6 rounded-2xl shadow-lg flex flex-col items-center">
+      <div className="max-w-lg mx-auto bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg flex flex-col items-center">
+        {/* プロフィール画像 */}
         <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
           <img src="" alt="" className="w-full h-full object-cover" />
         </div>
-        <h2 className="text-xl font-bold mt-4 text-gray-800">PROFILE</h2>
-        <div className="bg-white rounded-lg p-4 mt-4 w-full shadow-md">
-          <p className="text-gray-600 text-sm">Name</p>
-          <p className="text-gray-900 font-semibold text-lg">{name}</p>
-          <p className="text-gray-600 text-sm mt-2">Email</p>
-          <p className="text-gray-900 font-semibold text-lg">{email}</p>
+
+        {/* PROFILE タイトル */}
+        <h2 className="text-xl font-bold mt-4 text-gray-800 dark:text-white">
+          PROFILE
+        </h2>
+
+        {/* ユーザー情報カード */}
+        <div className="bg-gray-100 dark:bg-gray-600 rounded-lg p-4 mt-4 w-full shadow-md">
+          <p className="text-gray-600 dark:text-gray-200 text-sm">Name</p>
+          <p className="text-gray-900 dark:text-gray-100 font-semibold text-lg">
+            {name}
+          </p>
+          <p className="text-gray-600 dark:text-gray-200 text-sm mt-2">Email</p>
+          <p className="text-gray-900 dark:text-gray-100 font-semibold text-lg">
+            {email}
+          </p>
         </div>
       </div>
     </div>
