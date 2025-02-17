@@ -15,12 +15,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ name, email }) => {
         <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
           <img src="" alt="" className="w-full h-full object-cover" />
         </div>
-
         {/* PROFILE タイトル */}
         <h2 className="text-xl font-bold mt-4 text-gray-800 dark:text-white">
           PROFILE
         </h2>
-
         {/* ユーザー情報カード */}
         <div className="bg-gray-100 dark:bg-gray-600 rounded-lg p-4 mt-4 w-full shadow-md">
           <p className="text-gray-600 dark:text-gray-200 text-sm">Name</p>
