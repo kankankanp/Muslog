@@ -17,6 +17,8 @@ const initialState: ThemeState = {
   theme: getInitialTheme(),
 };
 
+console.log(getInitialTheme());
+
 const themeSlice = createSlice({
   name: 'theme',
   initialState,
