@@ -66,7 +66,7 @@ const Header = async () => {
               </button>
             </form>
           ) : (
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
               <Link
                 href="/registration/login"
                 className="group relative text-blue-600 text-lg font-medium hover:text-blue-700 transition flex flex-col items-center"
@@ -84,7 +84,7 @@ const Header = async () => {
               </Link>
               <Link
                 href="/registration/signup"
-                className="px-4 bg-red-500 text-white font-medium rounded-md hover:bg-black-600 transition h-12 max-w-[120px] flex items-center justify-center"
+                className="px-4 bg-red-500 text-white font-medium rounded-full hover:bg-black-600 transition h-12 w-[150px] flex items-center justify-center"
               >
                 <span>新規登録</span>
               </Link>
