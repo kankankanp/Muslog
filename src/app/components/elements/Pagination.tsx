@@ -23,7 +23,7 @@ const Pagination = ({ totalCount }: any) => {
           <li
             className={`pagination__item ${
               currentPage === number ? "is-active" : ""
-            }`}
+            } dark:bg-gray-800 dark:text-white`}
             key={index}
           >
             <Link
