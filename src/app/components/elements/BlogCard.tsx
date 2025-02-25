@@ -19,9 +19,9 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
 
   return (
     <div
-      className={`max-w-md grid ${
+      className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
         !isDetailPage
-          ? "grid-cols-2 gap-4 justify-center md:grid-cols-1"
+          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           : "grid-cols-1"
       }`}
     >
@@ -36,13 +36,13 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
         return (
           <div
             key={post.id}
-            className="p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
+            className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
           >
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{`${year}/${month}/${day}(${dayOfWeek})`}</h3>
-            <h3 className="text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{`${year}/${month}/${day}(${dayOfWeek})`}</h3>
+            <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
               {post.title}
             </h3>
-            <p className="text-lg mt-2 text-gray-700 dark:text-gray-300">
+            <p className="text-base sm:text-lg mt-2 text-gray-700 dark:text-gray-300">
               {isDetailPage
                 ? post.description
                 : truncateText(post.description, 40)}
@@ -51,7 +51,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
               {!isDetailPage && (
                 <Link
                   href={`/dashboard/blog/edit/${post.id}`}
-                  className="text-black dark:text-gray-300 text-lg transition-transform transform hover:scale-125"
+                  className="text-black dark:text-gray-300 text-base sm:text-lg transition-transform transform hover:scale-125"
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </Link>
@@ -59,7 +59,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
               {!isDetailPage && (
                 <Link
                   href={`/dashboard/blog/${post.id}`}
-                  className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 transition"
+                  className="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 transition"
                 >
                   Show more
                 </Link>

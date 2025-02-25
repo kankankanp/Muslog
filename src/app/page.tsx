@@ -6,9 +6,11 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="main">
-        <div className="home dark:bg-gray-400">
-          <h3 className="home__title dark:text-white">Welcome!</h3>
+      <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
+        <div className="bg-white p-10 rounded-lg shadow-lg text-center dark:bg-gray-800">
+          <h3 className="text-2xl font-bold dark:text-white text-gray-900">
+            Welcome!
+          </h3>
         </div>
       </main>
       <Footer />
