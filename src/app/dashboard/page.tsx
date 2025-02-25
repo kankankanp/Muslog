@@ -25,7 +25,7 @@ export default async function Dashboard() {
   }
 
   return (
-    <div>
+    <div className="dark:bg-gray-900 bg-gray-100">
       <Header />
       <ProfileCard name={user.name} email={user.email} />
     </div>

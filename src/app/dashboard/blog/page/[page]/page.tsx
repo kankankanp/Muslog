@@ -11,16 +11,16 @@ export default async function Index(props: {
   const params = await props.params;
   const pageIndex = params.page;
   const { posts, totalCount } = await fetchBlogsByPage(pageIndex);
-  console.log(posts)
+  console.log(posts);
 
   return (
     <>
       <Header />
-      <main>
+      <main className="dark:bg-gray-900 bg-gray-100">
         <AddButton />
         <BlogCard isDetailPage={false} posts={posts} />
+        <Pagination totalCount={totalCount} />
       </main>
-      <Pagination totalCount={totalCount} />
       <Footer />
     </>
   );
