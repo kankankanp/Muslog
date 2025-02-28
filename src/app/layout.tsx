@@ -15,8 +15,8 @@ const notoJp = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Simple-blog",
-  description: "My first blog using Next.js, TypeScript, Sass",
+  title: "Muslog",
+  description: "Music for your everyday blog.",
 };
 
 export default function RootLayout({
