@@ -22,7 +22,7 @@
 @mixin button-design {
   position: relative;
   padding: 10px 20px;
-  color: black; // Default text color
+  color: black;
   transition: color 0.3s ease;
   z-index: 0;
   border-radius: 5px;

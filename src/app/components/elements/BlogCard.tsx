@@ -1,7 +1,14 @@
-import { PostType } from "@/app/type/PostType";
 import Link from "next/link";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CommonButton } from "./CommonButton";
+
+type PostType = {
+  id: number;
+  title: string;
+  description: string;
+  date: Date;
+};
 
 type BlogCardProps = {
   isDetailPage?: boolean;
@@ -57,12 +64,12 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                 </Link>
               )}
               {!isDetailPage && (
-                <Link
+                <CommonButton 
                   href={`/dashboard/blog/${post.id}`}
-                  className="px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-blue-500 dark:bg-blue-600 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 transition"
+                  className="p-2"
                 >
                   Show more
-                </Link>
+                </CommonButton>
               )}
             </div>
           </div>
