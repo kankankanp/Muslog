@@ -19,8 +19,6 @@ export default async function Dashboard() {
     select: { name: true, email: true },
   });
 
-  console.log(user);
-
   if (!user) {
     throw new Error("ユーザーが見つかりません");
   }

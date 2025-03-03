@@ -18,7 +18,6 @@ export default function ThemeToggleButton() {
     setNextTheme(theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
     setIsDark(theme === "dark"); 
-    console.log(theme)
   }, [setNextTheme, theme]);
   
 

@@ -26,10 +26,10 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
 
   return (
     <div
-      className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
+      className={`py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
         !isDetailPage
-          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          : "grid-cols-1"
+          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full"
+          : "grid-cols-1 w-3/5"
       }`}
     >
       {safePosts.map((post: PostType) => {
@@ -63,7 +63,11 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                   <FontAwesomeIcon icon={faPen} />
                 </Link>
               )}
-              {!isDetailPage && (
+              {isDetailPage ? (
+                <CommonButton href={`/dashboard/blog/page/1`}>
+                  Back
+                </CommonButton>
+              ) : (
                 <CommonButton href={`/dashboard/blog/${post.id}`}>
                   Show more
                 </CommonButton>

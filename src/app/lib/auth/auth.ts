@@ -68,7 +68,6 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log(user)
       if (user) {
         token.id = user.id; 
       } else if (!token.id && token.sub) {

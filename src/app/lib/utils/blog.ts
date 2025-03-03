@@ -5,7 +5,6 @@ const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
 export const fetchBlogsByPage = async (page: number) => {
   const session = await auth();
-  console.log(session?.user?.id)
 
   if (!session?.user?.id) {
     return { posts: [], totalCount: 0 };

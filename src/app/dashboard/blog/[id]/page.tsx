@@ -20,13 +20,13 @@ const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
   const postarray: any = [post];
 
   return (
-    <>
+    <div className="dark:bg-gray-900 bg-gray-100">
       <Header />
       <main>
         <BlogCard isDetailPage={true} posts={postarray} />
       </main>
       <Footer />
-    </>
+    </div>
   );
 };
 
