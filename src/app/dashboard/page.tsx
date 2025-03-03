@@ -1,4 +1,5 @@
 import ProfileCard from "../components/elements/ProfileCard";
+import Footer from "../components/layouts/Footer";
 import Header from "../components/layouts/Header";
 import { auth } from "../lib/auth/auth";
 import prisma from "../lib/db/prisma";
@@ -27,7 +28,10 @@ export default async function Dashboard() {
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <Header />
+      <div className="py-8">
       <ProfileCard name={user.name} email={user.email} />
+      </div>
+      <Footer /> 
     </div>
   );
 }

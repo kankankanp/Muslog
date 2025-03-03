@@ -1,0 +1,5 @@
+@use "./index" as *;
+
+.button {
+  @include button-design;
+}
