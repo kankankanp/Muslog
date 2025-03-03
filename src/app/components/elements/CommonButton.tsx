@@ -17,7 +17,8 @@ export const CommonButton = ({
 }: CommonButtonProps) => {
   return (
     <Link href={href} className={`button ${className}`}>
-      <span>{children}</span>
+      <span></span>
+      {children}
     </Link>
   );
 };

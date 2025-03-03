@@ -64,10 +64,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                 </Link>
               )}
               {!isDetailPage && (
-                <CommonButton 
-                  href={`/dashboard/blog/${post.id}`}
-                  className="p-2"
-                >
+                <CommonButton href={`/dashboard/blog/${post.id}`}>
                   Show more
                 </CommonButton>
               )}
