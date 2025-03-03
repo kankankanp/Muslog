@@ -101,16 +101,13 @@ export const getBlogById = async (id: number) => {
 
 export const getAllBlogIds = async () => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog`);
-
-    if (!res.ok) {
-      throw new Error(`Error fetching all blog IDs: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return data.posts.map((post: { id: number }) => post.id);
+    const posts = await prisma.post.findMany({
+      select: { id: true },
+    });
+    return posts.map((post) => post.id);
   } catch (error) {
     console.error("Error in getAllBlogIds:", error);
     return [];
   }
 };
+
