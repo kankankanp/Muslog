@@ -15,7 +15,6 @@ const PER_PAGE = 4;
 const Pagination = ({ totalCount }: any) => {
   const params = useParams();
   const currentPage = params?.page ? Number(params.page) : 1;
-  console.log(Number(totalCount));
   return (
     <ul className="pagination">
       {range(1, Math.ceil(Number(totalCount) / PER_PAGE)).map(
