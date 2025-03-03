@@ -8,7 +8,7 @@ export default function Home() {
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
         <div className="bg-white p-10 rounded-lg shadow-lg text-center dark:bg-gray-800">
           <h3 className="text-2xl font-bold dark:text-white text-gray-900">
-            Welcome to My App!aa
+            Welcome to My App!
           </h3>
         </div>
       </main>
