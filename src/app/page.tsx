@@ -1,6 +1,5 @@
 import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
-import "@/scss/layout.scss";
 
 export default function Home() {
   return (
