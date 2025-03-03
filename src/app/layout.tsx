@@ -17,6 +17,9 @@ const notoJp = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "Muslog",
   description: "Music for your everyday blog.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
