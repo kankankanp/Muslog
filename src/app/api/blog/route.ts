@@ -1,3 +1,4 @@
+import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 import { NextResponse } from "next/server";
 
@@ -14,8 +15,17 @@ export const GET = async (req: Request) => {
 //ブログ投稿用API
 export const POST = async (req: Request) => {
   try {
+    const session = await auth();
+    console.log(session)
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const { title, description } = await req.json();
-    const post = await prisma.post.create({ data: { title, description } });
+    const post = await prisma.post.create({
+      data: { title, description, userId: sessionStorage.user.id },
+    });
     return NextResponse.json({ message: "Success", post }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: "Error", error }, { status: 500 });

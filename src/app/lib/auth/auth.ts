@@ -52,7 +52,7 @@ export const authConfig: NextAuthConfig = {
             id: user.id,
             name: user.name,
             email: user.email,
-          };
+          } as { id: string; name: string; email: string };
         }
         return null;
       },
@@ -67,18 +67,21 @@ export const authConfig: NextAuthConfig = {
     // }),
   ],
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, user }) {
+      console.log(user)
       if (user) {
-        session.user = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          emailVerified: user.emailVerified,
-        };
+        token.id = user.id; 
+      } else if (!token.id && token.sub) {
+        token.id = token.sub;
       }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id as string;
       return session;
     },
   },
+
   pages: {
     signIn: "/login",
   },

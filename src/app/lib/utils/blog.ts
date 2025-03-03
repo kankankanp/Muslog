@@ -1,23 +1,31 @@
+import { auth } from "../auth/auth";
 import prisma from "../db/prisma";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
 export const fetchBlogsByPage = async (page: number) => {
-  try {
-    const res = await fetch(`${ENDPOINT}/api/blog/page/${page}`, {
-      cache: "no-store",
-    });
+  const session = await auth();
 
-    if (!res.ok) {
-      throw new Error(`Error fetching blogs by page: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return { posts: data.posts, totalCount: data.totalCount };
-  } catch (error) {
-    console.error("Error in fetchBlogsByPage:", error);
+  if (!session?.user?.id) {
     return { posts: [], totalCount: 0 };
   }
+
+  const PER_PAGE = 4;
+  const skip = (page - 1) * PER_PAGE;
+
+  const [posts, totalCount] = await Promise.all([
+    prisma.post.findMany({
+      where: { userId: session.user.id },
+      skip,
+      take: PER_PAGE,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.post.count({
+      where: { userId: session.user.id },
+    }),
+  ]);
+
+  return { posts, totalCount };
 };
 
 export const countAllBlogs = async () => {
