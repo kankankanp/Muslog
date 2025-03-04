@@ -3,7 +3,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CommonButton } from "./CommonButton";
 
-type PostType = {
+export type PostType = {
   id: number;
   title: string;
   description: string;

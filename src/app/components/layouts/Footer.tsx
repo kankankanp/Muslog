@@ -25,7 +25,6 @@ const Footer = () => {
             { href: "/", label: "ホーム" },
             { href: "/dashboard", label: "管理" },
             { href: "/dashboard/blog/page/1", label: "記事" },
-            { href: "/contact", label: "お問い合わせ" },
           ].map((item) => (
             <Link
               key={item.href}
