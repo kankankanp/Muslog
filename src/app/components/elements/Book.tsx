@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, ForwardedRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { PostType } from "./BlogCard";
 
@@ -14,28 +14,36 @@ const PageCover = React.forwardRef<
   HTMLDivElement,
   { children: React.ReactNode }
 >(({ children }, ref) => (
-  <div className="page page-cover" ref={ref} data-density="hard">
-    <div className="page-content">
-      <h2>{children}</h2>
-    </div>
+  <div
+    ref={ref}
+    data-density="hard"
+    className="flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900"
+  >
+    <h2 className="text-3xl font-bold text-white">{children}</h2>
   </div>
 ));
 
 // eslint-disable-next-line react/display-name
 const Page = React.forwardRef<HTMLDivElement, PageProps>(
-  ({ number, children }, ref) => (
-    <div className="page" ref={ref}>
-      <div className="page-content">
-        <h2 className="page-header">Page header - {number}</h2>
-        <div className="page-image"></div>
-        <div className="page-text">{children}</div>
-        <div className="page-footer">{(number ?? 0) + 1}</div>
+  ({ number, children }, ref) => {
+    return (
+      <div ref={ref}>
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="relative z-10 p-6 flex flex-col justify-between h-full">
+          <h2 className="text-xl font-bold text-white">Page {number}</h2>
+          <div className="flex-grow flex items-center justify-center">
+            {children}
+          </div>
+          <div className="text-sm text-white text-right">
+            {number ? number + 1 : ""}
+          </div>
+        </div>
       </div>
-    </div>
-  )
+    );
+  }
 );
 
-export default function DemoBook({ posts }: { posts: PostType[] }) {
+export default function Book({ posts }: { posts: PostType[] }) {
   const flipBook = useRef<any>(null);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -52,15 +60,15 @@ export default function DemoBook({ posts }: { posts: PostType[] }) {
     setPage(e.data);
   };
 
-  useEffect(() => {
+  const onInit = () => {
     if (flipBook.current) {
       const pageCount = flipBook.current.pageFlip()?.getPageCount();
       if (pageCount) setTotalPage(pageCount);
     }
-  }, []);
+  };
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-6 py-8">
       <HTMLFlipBook
         width={550}
         height={733}
@@ -73,7 +81,8 @@ export default function DemoBook({ posts }: { posts: PostType[] }) {
         showCover={true}
         mobileScrollSupport={true}
         onFlip={onPage}
-        className="demo-book"
+        onInit={onInit}
+        className="shadow-2xl"
         ref={flipBook}
         startPage={0}
         drawShadow={false}
@@ -88,37 +97,43 @@ export default function DemoBook({ posts }: { posts: PostType[] }) {
         disableFlipByClick={false}
         style={{}}
       >
-        {/* 表紙 */}
         <PageCover>BOOK TITLE</PageCover>
 
-        {/* 投稿ごとにページを作成 */}
         {posts.map((post, index) => (
           <Page number={index + 1} key={post.id}>
-            img
-            <div className="p-4">
-              {/* BlogCard から1投稿だけ表示 */}
-              <div className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg">
-                <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
-                  {post.title}
-                </h3>
-                <p className="text-base sm:text-lg mt-2 text-gray-700 dark:text-gray-300">
-                  {post.description}
-                </p>
-              </div>
+            <div className="bg-white/80 dark:bg-gray-800/80 p-6 rounded-lg shadow-lg max-w-full">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {post.title}
+              </h3>
+              <p className="mt-4 text-base text-gray-700 dark:text-gray-300">
+                {post.description}
+              </p>
             </div>
           </Page>
         ))}
 
-        {/* 裏表紙 */}
         <PageCover>THE END</PageCover>
       </HTMLFlipBook>
 
-      <div className="container mt-4 flex justify-center gap-4">
-        <button type="button" onClick={prevButtonClick}>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={prevButtonClick}
+          className={`px-4 py-2 bg-gray-800 text-white rounded ${
+            page === 0 ? "opacity-15" : "opacity-100"
+          }`}
+        >
           Previous page
         </button>
-        [<span>{page}</span> of <span>{totalPage}</span>]
-        <button type="button" onClick={nextButtonClick}>
+        <span className="text-lg">
+          [{page} / {totalPage}]
+        </span>
+        <button
+          type="button"
+          onClick={nextButtonClick}
+          className={`px-4 py-2 bg-gray-800 text-white rounded ${
+            page ===  totalPage - 2 ? "opacity-15" : "opacity-100"
+          }`}        >
           Next page
         </button>
       </div>
