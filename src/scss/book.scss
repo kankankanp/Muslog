@@ -1,0 +1,133 @@
+.book {
+  position: relative;
+  width: 80%;
+  padding-bottom: 72%;
+
+  input {
+    display: none;
+  }
+
+  input ~ span {
+    transition: 1.5s;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: absolute;
+    width: 40%;
+    height: 60%;
+    background-color: #e2e1dc;
+    border-left: 3px solid #249690;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  input + span {
+    left: 50%;
+    transform-origin: left;
+    transform: perspective(1500px) rotateY(0deg);
+  }
+
+  input + span + span {
+    right: 50%;
+    transform-origin: right;
+    transform: perspective(1500px) rotateY(180deg);
+  }
+
+  input:checked + span {
+    transform: perspective(1500px) rotateY(-180deg);
+  }
+
+  input:checked + span + span {
+    transform: perspective(1500px) rotateY(-6deg);
+  }
+}
+
+.book-inner__page {
+  background-color: #249690;
+  color: #333;
+  text-align: center;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  &::after {
+    position: absolute;
+    bottom: -14px;
+    left: 0;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 15px;
+    content: "";
+    background-color: #afada3;
+    border-block: 2px solid #124f4b;
+  }
+}
+
+.book-inner__dummy {
+  background-color: #e2e1dc;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  &::after {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 2px;
+    content: "";
+    background-color: #124f4b;
+  }
+}
+
+.front-cover {
+  background-color: #249690 !important;
+  color: white;
+}
+
+.back-cover {
+  background-color: #249690 !important;
+  color: white;
+}

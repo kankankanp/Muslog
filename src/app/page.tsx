@@ -1,9 +1,7 @@
 import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
-import DemoBook from "./components/elements/Book";
 import { fetchAllBlogs } from "./lib/utils/blog";
-import Book from "./components/elements/Book";
-import { OtherBook } from "./components/elements/OtherBook";
+import { Book } from "./components/elements/Book";
 
 export default async function Home() {
   const posts = await fetchAllBlogs();
@@ -13,7 +11,7 @@ export default async function Home() {
       <Header />
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
         {/* <Book posts={posts} /> */}
-        <OtherBook />
+        <Book posts={posts} />
       </main>
       <Footer />
     </>
