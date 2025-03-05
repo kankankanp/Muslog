@@ -9,6 +9,12 @@ type PageProps = {
   children: React.ReactNode;
 };
 
+const BASE_WIDTH = 500;
+const BASE_HEIGHT = 733;
+const ASPECT_RATIO = BASE_HEIGHT / BASE_WIDTH;
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_WIDTH = 340;
+
 // eslint-disable-next-line react/display-name
 const PageCover = React.forwardRef<
   HTMLDivElement,
@@ -28,9 +34,9 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>(
   ({ number, children }, ref) => {
     return (
       <div ref={ref}>
-        <div className="absolute inset-0 bg-black/30" />
+        <div />
         <div className="relative z-10 p-6 flex flex-col justify-between h-full">
-          <h2 className="text-xl font-bold text-white">Page {number}</h2>
+          <h2 className="text-xl font-bold">Page {number}</h2>
           <div className="flex-grow flex items-center justify-center">
             {children}
           </div>
@@ -47,6 +53,21 @@ export default function Book({ posts }: { posts: PostType[] }) {
   const flipBook = useRef<any>(null);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const [bookWidth, setBookWidth] = useState(BASE_WIDTH);
+  const [bookHeight, setBookHeight] = useState(BASE_HEIGHT);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+      const newWidth = isMobile ? MOBILE_WIDTH : BASE_WIDTH;
+      setBookWidth(newWidth);
+      setBookHeight(Math.round(newWidth * ASPECT_RATIO));
+    };
+
+    handleResize(); // 初回チェック
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const nextButtonClick = () => {
     flipBook.current?.pageFlip()?.flipNext();
@@ -62,20 +83,23 @@ export default function Book({ posts }: { posts: PostType[] }) {
 
   const onInit = () => {
     if (flipBook.current) {
-      const pageCount = flipBook.current.pageFlip()?.getPageCount();
+      const pageCount = flipBook.current.pageFlip()?.getPageCount() - 1;
       if (pageCount) setTotalPage(pageCount);
     }
   };
 
+  console.log(bookWidth)
+  console.log(bookHeight)
+
   return (
     <div className="flex flex-col items-center gap-6 py-8">
       <HTMLFlipBook
-        width={550}
-        height={733}
+        width={bookWidth}
+        height={bookHeight}
         size="stretch"
-        minWidth={315}
+        minWidth={bookWidth}
         maxWidth={1000}
-        minHeight={400}
+        minHeight={bookHeight}
         maxHeight={1533}
         maxShadowOpacity={0.5}
         showCover={true}
@@ -85,15 +109,15 @@ export default function Book({ posts }: { posts: PostType[] }) {
         className="shadow-2xl"
         ref={flipBook}
         startPage={0}
-        drawShadow={false}
-        flippingTime={100}
-        usePortrait={false}
+        drawShadow={true}
+        flippingTime={500}
+        usePortrait={true}
         startZIndex={0}
-        autoSize={false}
+        autoSize={true}
         clickEventForward={false}
         useMouseEvents={false}
         swipeDistance={0}
-        showPageCorners={false}
+        showPageCorners={true}
         disableFlipByClick={false}
         style={{}}
       >
@@ -101,7 +125,7 @@ export default function Book({ posts }: { posts: PostType[] }) {
 
         {posts.map((post, index) => (
           <Page number={index + 1} key={post.id}>
-            <div className="bg-white/80 dark:bg-gray-800/80 p-6 rounded-lg shadow-lg max-w-full">
+            <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {post.title}
               </h3>
@@ -132,8 +156,9 @@ export default function Book({ posts }: { posts: PostType[] }) {
           type="button"
           onClick={nextButtonClick}
           className={`px-4 py-2 bg-gray-800 text-white rounded ${
-            page ===  totalPage - 2 ? "opacity-15" : "opacity-100"
-          }`}        >
+            page === totalPage ? "opacity-15" : "opacity-100"
+          }`}
+        >
           Next page
         </button>
       </div>
