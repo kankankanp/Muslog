@@ -39,6 +39,9 @@ export const fetchBlogsByPage = async (page: number) => {
       skip,
       take: PER_PAGE,
       orderBy: { createdAt: "desc" },
+      include: {
+        tracks: true,
+      },
     }),
     prisma.post.count({
       where: { userId: session.user.id },

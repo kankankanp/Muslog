@@ -1,8 +1,8 @@
 "use client";
 
+import { PostType } from "@/app/components/elements/BlogCard";
 import React, { useRef, useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
-import { PostType } from "../components/elements/BlogCard";
 
 type PageProps = {
   number?: number;
@@ -87,9 +87,6 @@ export default function Book({ posts }: { posts: PostType[] }) {
       if (pageCount) setTotalPage(pageCount);
     }
   };
-
-  console.log(bookWidth)
-  console.log(bookHeight)
 
   return (
     <div className="flex flex-col items-center gap-6 py-8">

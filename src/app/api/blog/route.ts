@@ -17,22 +17,36 @@ export const POST = async (req: Request) => {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return NextResponse.json(
-      { message: "Unauthorized" },
-      { status: 401 }
-    );
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { title, description } = await req.json();
+    const { title, description, tracks } = await req.json();
 
     const post = await prisma.post.create({
       data: {
         title,
         description,
         userId: session.user.id,
+        ...(tracks?.length
+          ? {
+              tracks: {
+                create: tracks.map((track: any) => ({
+                  spotifyId: track.spotifyId,
+                  name: track.name,
+                  artistName: track.artistName,
+                  albumImageUrl: track.albumImageUrl,
+                })),
+              },
+            }
+          : {}),
+      },
+      include: {
+        tracks: true,
       },
     });
+
+    console.log(post);
 
     return NextResponse.json({ message: "Success", post }, { status: 201 });
   } catch (error) {

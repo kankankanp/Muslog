@@ -2,12 +2,21 @@ import Link from "next/link";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CommonButton } from "./CommonButton";
+import Image from "next/image";
+
+export type Track = {
+  spotifyId: string;
+  name: string;
+  artistName: string;
+  albumImageUrl: string;
+};
 
 export type PostType = {
   id: number;
   title: string;
   description: string;
   date: Date;
+  tracks: Track[];
 };
 
 type BlogCardProps = {
@@ -54,6 +63,39 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                 ? post.description
                 : truncateText(post.description, 40)}
             </p>
+
+            {post.tracks?.length > 0 && (
+              <div className="mt-4 space-y-3">
+                <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200">
+                  🎵 関連曲
+                </h4>
+                <ul className="space-y-2">
+                  {post.tracks?.map((track) => (
+                    <li
+                      key={track.spotifyId}
+                      className="flex items-center gap-4 p-2 border rounded-md bg-gray-50 dark:bg-gray-700"
+                    >
+                      <Image
+                        src={track.albumImageUrl}
+                        alt={track.name}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {track.name}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          {track.artistName}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mt-4">
               {!isDetailPage && (
                 <Link
