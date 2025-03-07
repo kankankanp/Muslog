@@ -14,6 +14,9 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["bcrypt"],
   },
+  images: {
+    domains: ["i.scdn.co"],
+  },
 };
 
 export default nextConfig;

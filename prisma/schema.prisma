@@ -16,6 +16,17 @@ model Post {
   userId      String
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
+  tracks      Track[]
+}
+
+model Track {
+  id            Int      @id @default(autoincrement())
+  spotifyId     String
+  name          String   
+  artistName    String   
+  albumImageUrl String 
+  postId        Int
+  post          Post     @relation(fields: [postId], references: [id])
 }
 
 model User {

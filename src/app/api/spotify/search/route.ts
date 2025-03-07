@@ -23,8 +23,6 @@ export async function GET(req: NextRequest) {
       }
     );
 
-    console.log(res);
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error("Spotify検索エラー:", errorText);
