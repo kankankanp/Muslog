@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Track } from "@/app/components/elements/SelectMusciArea";
+import Image from "next/image";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
@@ -109,16 +110,16 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
 
       {selectedTrack ? (
         <div className="flex items-center gap-4 p-4 mt-6 border rounded-md bg-gray-50">
-          <img
-            src={selectedTrack.album.images[0]?.url}
+          <Image
+            width={50}
+            height={50}
+            src={selectedTrack.albumImageUrl}
             alt={selectedTrack.name}
             className="w-16 h-16 object-cover rounded"
           />
           <div>
             <p className="text-lg font-semibold">{selectedTrack.name}</p>
-            <p className="text-sm text-gray-500">
-              {selectedTrack.artists[0].name}
-            </p>
+            <p className="text-sm text-gray-500">{selectedTrack.artistName}</p>
           </div>
         </div>
       ) : (

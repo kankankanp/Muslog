@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export type Track = {
-  id: string;
+  id: number;
+  spotifyId: string;
   name: string;
-  artists: { name: string }[];
-  album: { images: { url: string }[] };
+  artistName: string;
+  albumImageUrl: string;
 };
 
 type SelectMusicAreaProps = {
@@ -18,6 +20,8 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
   const [query, setQuery] = useState("");
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
+
+  console.log(tracks);
 
   const handleSearch = async () => {
     if (!query) return toast.error("検索ワードを入力してください");
@@ -67,8 +71,8 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
             onClick={() => onSelect(track)}
             className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-gray-100"
           >
-            <img
-              src={track.album.images[0]?.url}
+            <Image
+              src={track.albumImageUrl}
               width={50}
               height={50}
               alt={track.name}
@@ -76,7 +80,7 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
             />
             <div>
               <p className="font-medium">{track.name}</p>
-              <p className="text-sm text-gray-500">{track.artists[0].name}</p>
+              <p className="text-sm text-gray-500">{track.artistName}</p>
             </div>
           </li>
         ))}
