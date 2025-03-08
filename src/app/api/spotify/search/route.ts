@@ -1,4 +1,3 @@
-// app/api/spotify/search/route.ts
 import { getAccessToken } from "@/app/lib/utils/spotify";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -30,9 +29,20 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data.tracks.items);
+
+    const formattedTracks = data.tracks.items.map((track: any) => ({
+      spotifyId: track.id,
+      name: track.name,
+      artistName: track.artists.map((artist: any) => artist.name).join(", "),
+      albumImageUrl:
+        track.album.images.length > 0
+          ? track.album.images[0].url
+          : "/default-image.jpg",
+    }));
+
+    return NextResponse.json(formattedTracks);
   } catch (err) {
-    console.error(err);
+    console.error("サーバーエラー:", err);
     return NextResponse.json({ error: "サーバーエラー" }, { status: 500 });
   }
 }
