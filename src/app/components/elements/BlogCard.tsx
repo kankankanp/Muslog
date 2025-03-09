@@ -25,7 +25,6 @@ type BlogCardProps = {
 
 const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
-  console.log(posts);
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
       return text;
