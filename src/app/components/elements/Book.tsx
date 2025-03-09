@@ -1,3 +1,5 @@
+"use client";
+
 import { PostType } from "./BlogCard";
 import "@/scss/book.scss";
 
@@ -6,8 +8,13 @@ type BookProps = {
 };
 
 export const Book = ({ posts }: BookProps) => {
-  const pageCount = 6;
+  const pageCount = 20;
   const pages = Array.from({ length: pageCount }, (_, i) => 99 - i);
+
+  const playAudio = () => {
+    const audio = new Audio("/flip_sound.mp3");
+    audio.play();
+  };
 
   return (
     <div className="book">
@@ -17,7 +24,11 @@ export const Book = ({ posts }: BookProps) => {
 
         return (
           <label className="book-inner" key={idx}>
-            <input className="book-inner__flip" type="checkbox" />
+            <input
+              className="book-inner__flip"
+              type="checkbox"
+              onChange={playAudio}
+            />
             <span
               className={`book-inner__page z-[${zIndex}] ${
                 isCover ? "front-cover" : ""
