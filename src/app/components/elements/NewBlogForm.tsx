@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +21,7 @@ const postBlog = async (
     body: JSON.stringify({
       title,
       description,
-      track,
+      tracks: track ? [track] : [], // `track` を配列にして送信
     }),
     headers: {
       "Content-Type": "application/json",
@@ -33,27 +34,48 @@ const postBlog = async (
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
   description: z.string().min(1, "内容を入力してください"),
+  track: z
+    .object({
+      spotifyId: z.string(),
+      name: z.string(),
+      artistName: z.string(),
+      albumImageUrl: z.string(),
+    })
+    .nullable(),
 });
+
+type FormData = {
+  title: string;
+  description: string;
+  track: Track | null;
+};
 
 type NewBlogFormProps = {
   selectedTrack: Track | null;
 };
 
 const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
-  console.log(selectedTrack);
   const router = useRouter();
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<{ title: string; description: string }>({
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      track: null,
+    },
   });
 
-  const onSubmit = async (data: { title: string; description: string }) => {
+  useEffect(() => {
+    setValue("track", selectedTrack);
+  }, [selectedTrack, setValue]);
+
+  const onSubmit = async (data: FormData) => {
     try {
-      await postBlog(data.title, data.description, selectedTrack);
+      await postBlog(data.title, data.description, data.track);
 
       toast.success("Posted!", { duration: 1500 });
       setTimeout(() => {

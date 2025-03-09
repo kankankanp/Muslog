@@ -28,25 +28,24 @@ export const POST = async (req: Request) => {
         title,
         description,
         userId: session.user.id,
-        ...(tracks?.length
-          ? {
-              tracks: {
+        tracks:
+          tracks && tracks.length > 0
+            ? {
                 create: tracks.map((track: any) => ({
                   spotifyId: track.spotifyId,
                   name: track.name,
                   artistName: track.artistName,
                   albumImageUrl: track.albumImageUrl,
                 })),
-              },
-            }
-          : {}),
+              }
+            : undefined,
       },
       include: {
         tracks: true,
       },
     });
 
-    console.log(post);
+    console.log("Created post:", post);
 
     return NextResponse.json({ message: "Success", post }, { status: 201 });
   } catch (error) {

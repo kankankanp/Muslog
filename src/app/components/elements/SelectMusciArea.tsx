@@ -21,8 +21,6 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
 
-  console.log(tracks);
-
   const handleSearch = async () => {
     if (!query) return toast.error("検索ワードを入力してください");
 
@@ -82,6 +80,11 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
               <p className="font-medium">{track.name}</p>
               <p className="text-sm text-gray-500">{track.artistName}</p>
             </div>
+            {/* TODO 曲を再生できるようにする */}
+            {/* <div>
+              <Image src="/play_circle.png" alt="再生する" />
+              <Image src="/stop_circle.png" alt="停止する" />
+            </div> */}
           </li>
         ))}
       </ul>
