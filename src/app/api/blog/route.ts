@@ -45,8 +45,6 @@ export const POST = async (req: Request) => {
       },
     });
 
-    console.log("Created post:", post);
-
     return NextResponse.json({ message: "Success", post }, { status: 201 });
   } catch (error) {
     console.error("Error creating blog:", error);
