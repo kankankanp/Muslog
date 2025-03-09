@@ -3,25 +3,28 @@ import prisma from "../db/prisma";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
-export const fetchAllBlogs = async () => {
-  try {
-    const session = await auth();
+// export const fetchAllBlogs = async () => {
+//   try {
+//     const session = await auth();
 
-    if (!session?.user?.id) {
-      return [];
-    }
+//     if (!session?.user?.id) {
+//       return [];
+//     }
 
-    const posts = await prisma.post.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    });
+//     const posts = await prisma.post.findMany({
+//       where: { userId: session.user.id },
+//       orderBy: { createdAt: "desc" },
+//       include: {
+//         tracks: true,
+//       },
+//     });
 
-    return posts;
-  } catch (error) {
-    console.error("Error in fetchAllBlogs:", error);
-    return [];
-  }
-};
+//     return posts;
+//   } catch (error) {
+//     console.error("Error in fetchAllBlogs:", error);
+//     return [];
+//   }
+// };
 
 export const fetchBlogsByPage = async (page: number) => {
   const session = await auth();

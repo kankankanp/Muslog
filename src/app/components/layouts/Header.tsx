@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { auth, signOut } from "@/app/lib/auth/auth";
+import { auth } from "@/app/lib/auth/auth";
 import ThemeToggleButton from "../elements/ThemeToggleButton";
 import Image from "next/image";
+import { handleSignOut } from "@/app/lib/auth/signOut";
 
 const Header = async () => {
   const session = await auth();
@@ -10,7 +11,14 @@ const Header = async () => {
     <header className="flex flex-col md:flex-row md:justify-around items-center bg-white px-4 md:px-8 border-b border-gray-300 py-4 md:py-0">
       <div className="flex items-center mb-4 md:mb-0">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="BLOG" width={80} height={80} className="md:w-[100px] md:h-[100px]" priority />
+          <Image
+            src="/logo.png"
+            alt="BLOG"
+            width={80}
+            height={80}
+            className="md:w-[100px] md:h-[100px]"
+            priority
+          />
         </Link>
       </div>
       <div className="flex flex-col md:flex-row gap-4 md:gap-[30px] w-full md:w-auto">
@@ -44,12 +52,7 @@ const Header = async () => {
         </nav>
         <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
           {session?.user ? (
-            <form
-              action={async () => {
-                "use server";
-                await signOut();
-              }}
-            >
+            <form action={handleSignOut}>
               <button className="group relative text-gray-700 text-base md:text-lg font-medium hover:text-blue-600 transition flex flex-col items-center">
                 <Image
                   src="/logout.png"

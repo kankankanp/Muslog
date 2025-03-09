@@ -3,14 +3,29 @@ import prisma from "@/app/lib/db/prisma";
 import { NextResponse } from "next/server";
 
 //ブログ全記事取得API
-// export const GET = async (req: Request) => {
-//   try {
-//     const posts = await prisma.post.findMany();
-//     return NextResponse.json({ message: "Success", posts }, { status: 200 });
-//   } catch (error) {
-//     return NextResponse.json({ message: "Error", error }, { status: 500 });
-//   }
-// };
+export async function GET() {
+  try {
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return NextResponse.json([], { status: 200 });
+    }
+
+    const posts = await prisma.post.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        tracks: true,
+      },
+    });
+
+    return NextResponse.json(posts, { status: 200 });
+  } catch (error) {
+    console.error("Error in fetchAllBlogs API:", error);
+    return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
+  }
+}
+
 
 //ブログ投稿用API
 export const POST = async (req: Request) => {
