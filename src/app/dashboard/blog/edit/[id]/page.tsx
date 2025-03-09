@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
-import "@/scss/modal.scss";
 import { getBlogById, editBlog, deleteBlog } from "@/app/lib/utils/blog";
 
 const schema = z.object({

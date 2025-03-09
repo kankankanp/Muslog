@@ -15,7 +15,6 @@ export type PostType = {
   id: number;
   title: string;
   description: string;
-  date: Date;
   tracks: Track[];
 };
 
@@ -26,6 +25,7 @@ type BlogCardProps = {
 
 const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
+  console.log(posts);
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
       return text;
@@ -42,19 +42,19 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
       }`}
     >
       {safePosts.map((post: PostType) => {
-        const date = new Date(post.date);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const dayOfWeek = daysOfWeek[date.getDay()];
+        // const date = new Date(post.date);
+        // const year = date.getFullYear();
+        // const month = date.getMonth() + 1;
+        // const day = date.getDate();
+        // const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        // const dayOfWeek = daysOfWeek[date.getDay()];
 
         return (
           <div
             key={post.id}
             className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
           >
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{`${year}/${month}/${day}(${dayOfWeek})`}</h3>
+            {/* <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{`${year}/${month}/${day}(${dayOfWeek})`}</h3> */}
             <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
               {post.title}
             </h3>
@@ -66,9 +66,6 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
 
             {post.tracks?.length > 0 && (
               <div className="mt-4 space-y-3">
-                <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200">
-                  🎵 関連曲
-                </h4>
                 <ul className="space-y-2">
                   {post.tracks?.map((track) => (
                     <li

@@ -13,7 +13,6 @@ const Header = async () => {
           <Image src="/logo.png" alt="BLOG" width={80} height={80} className="md:w-[100px] md:h-[100px]" priority />
         </Link>
       </div>
-
       <div className="flex flex-col md:flex-row gap-4 md:gap-[30px] w-full md:w-auto">
         <nav className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-8">
           {[
