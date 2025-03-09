@@ -1,3 +1,6 @@
+$pages: 20;
+$n: 15 / $pages;
+
 .book {
   position: relative;
   width: 80%;
@@ -41,7 +44,7 @@
   }
 
   input:checked + span + span {
-    transform: perspective(1500px) rotateY(-6deg);
+    transform: perspective(1500px) rotateY(0deg);
   }
 }
 
@@ -70,17 +73,49 @@
 
   &::after {
     position: absolute;
-    bottom: -14px;
     left: 0;
     display: block;
     box-sizing: border-box;
     width: 100%;
-    height: 15px;
     content: "";
     background-color: #afada3;
     border-block: 2px solid #124f4b;
   }
 }
+
+@for $i from 1 through $pages {
+  @if $i == $pages {
+    .book-inner:nth-of-type(#{$i}) .book-inner__page::after {
+      bottom: -3px;
+      height: 3px;
+    }
+    .book-inner:nth-of-type(#{$i}) .book-inner__dummy::after {
+      bottom: calc(-17px + #{$n * 1}px);
+      height: calc(18px - #{$n * 1}px);
+    }
+  } @else {
+    .book-inner:nth-of-type(#{$i}) .book-inner__page::after {
+      bottom: calc(-17px + #{$n * $i}px);
+      height: calc(18px - #{$n * $i}px);
+    }
+    .book-inner:nth-of-type(#{$i}) .book-inner__dummy::after {
+      bottom: calc(0px - #{$n * $i}px);
+      height: calc(2px + #{$n * $i}px);
+    }
+  }
+}
+
+// @for $i from 1 through $pages {
+//   .book-inner:nth-of-type(#{$i}) {
+//     @if $i == $pages {
+//       // 最後のページ（裏表紙）だけ perspective を 0 にする
+//       input + span,
+//       input + span + span {
+//         transform: perspective(0px);
+//       }
+//     }
+//   }
+// }
 
 .book-inner__dummy {
   background-color: #e2e1dc;
@@ -111,14 +146,15 @@
 
   &::after {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     left: 0;
     display: block;
     box-sizing: border-box;
     width: 100%;
     height: 2px;
     content: "";
-    background-color: #124f4b;
+    background-color: #afada3;
+    border-block: 2px solid #124f4b;
   }
 }
 
