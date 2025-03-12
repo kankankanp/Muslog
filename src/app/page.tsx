@@ -10,7 +10,6 @@ export default async function Home() {
     <>
       <Header />
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
-        {/* <Book posts={posts} /> */}
         <Book posts={posts} />
       </main>
       <Footer />
