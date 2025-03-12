@@ -15,6 +15,9 @@ export type PostType = {
   id: number;
   title: string;
   description: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
   tracks: Track[];
 };
 

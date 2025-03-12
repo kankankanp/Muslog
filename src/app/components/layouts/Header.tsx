@@ -1,16 +1,38 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { auth, signOut } from "@/app/lib/auth/auth";
+import { signOut } from "@/app/lib/auth/auth";
+import { fetchSession } from "@/app/lib/auth/session"; // session.ts からインポート
 import ThemeToggleButton from "../elements/ThemeToggleButton";
 import Image from "next/image";
 
-const Header = async () => {
-  const session = await auth();
+const Header = () => {
+  const [session, setSession] = useState<{ user?: { id: string } } | null>(
+    null
+  );
+
+  useEffect(() => {
+    const getSession = async () => {
+      const sessionData = await fetchSession();
+      setSession(sessionData);
+    };
+
+    getSession();
+  }, []);
 
   return (
     <header className="flex flex-col md:flex-row md:justify-around items-center bg-white px-4 md:px-8 border-b border-gray-300 py-4 md:py-0">
       <div className="flex items-center mb-4 md:mb-0">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="BLOG" width={80} height={80} className="md:w-[100px] md:h-[100px]" priority />
+          <Image
+            src="/logo.png"
+            alt="BLOG"
+            width={80}
+            height={80}
+            className="md:w-[100px] md:h-[100px]"
+            priority
+          />
         </Link>
       </div>
       <div className="flex flex-col md:flex-row gap-4 md:gap-[30px] w-full md:w-auto">
@@ -46,7 +68,6 @@ const Header = async () => {
           {session?.user ? (
             <form
               action={async () => {
-                "use server";
                 await signOut();
               }}
             >
