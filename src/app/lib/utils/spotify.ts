@@ -1,8 +1,5 @@
-// lib/spotify.ts
-"use server";
-
-const client_id = process.env.SPOTIFY_CLIENT_ID!;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!;
 
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
@@ -14,7 +11,9 @@ export const getAccessToken = async () => {
     return cachedToken;
   }
 
-  const auth = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
+  const auth = Buffer.from(
+    `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+  ).toString("base64");
 
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
