@@ -17,6 +17,7 @@ const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
   const { id } = params;
 
   const post = await getBlogById(Number(id));
+  // console.log(post);
 
   if (!post) {
     return (
