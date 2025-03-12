@@ -1,11 +1,22 @@
-import Header from "./components/layouts/Header";
+'use client';
+
+// import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
 import { fetchAllBlogs } from "./lib/utils/blog";
 import { Book } from "./components/elements/Book";
+import { useState, useEffect } from "react";
+import Header from "./components/layouts/Header";
 
-export default async function Home() {
-  const posts = await fetchAllBlogs();
+export default function Home() {
+  const [posts, setPosts] = useState([]);
 
+  useEffect(() => {
+    const getBlogs = async () => {
+      const blogs = await fetchAllBlogs();
+      setPosts(blogs);
+    };
+    getBlogs();
+  }, []);
   return (
     <>
       <Header />

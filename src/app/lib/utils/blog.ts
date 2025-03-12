@@ -5,18 +5,14 @@ const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
 export const fetchAllBlogs = async () => {
   try {
-    const session = await auth();
+    const res = await fetch("/api/blog", { cache: "no-store" });
 
-    if (!session?.user?.id) {
-      return [];
+    if (!res.ok) {
+      throw new Error(`Error fetching blogs: ${res.statusText}`);
     }
 
-    const posts = await prisma.post.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return posts;
+    const data = await res.json();
+    return data.posts;
   } catch (error) {
     console.error("Error in fetchAllBlogs:", error);
     return [];
