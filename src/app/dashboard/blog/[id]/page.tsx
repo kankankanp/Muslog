@@ -17,13 +17,22 @@ const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
   const { id } = params;
 
   const post = await getBlogById(Number(id));
-  const postarray: any = [post];
+
+  if (!post) {
+    return (
+      <div className="dark:bg-gray-900 bg-gray-100 h-screen flex items-center justify-center">
+        <h1 className="text-2xl font-bold text-red-500">
+          記事が見つかりません
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <Header />
       <main>
-        <BlogCard isDetailPage={true} posts={postarray} />
+        <BlogCard isDetailPage={true} posts={[post]} />
       </main>
       <Footer />
     </div>
