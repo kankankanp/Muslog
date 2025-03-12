@@ -9,7 +9,7 @@ const loginSchema = z.object({
 
 // MEMO: ServerActionで実装
 // TODO: RCCにしてバリデーションメッセージを実装実装する
-export default function LoginForm() {
+export default function SignInForm() {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";
 

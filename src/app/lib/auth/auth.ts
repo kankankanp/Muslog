@@ -1,12 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
 import { NextAuthConfig } from "next-auth";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import prisma from "../db/prisma";
 
-const prisma = new PrismaClient();
 
 export async function fetchUserFromDatabase(email: string, password: string) {
   const user = await prisma.user.findUnique({
@@ -57,14 +54,6 @@ export const authConfig: NextAuthConfig = {
         return null;
       },
     }),
-    // GitHubProvider({
-    //   clientId: process.env.GITHUB_CLIENT_ID!,
-    //   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    // }),
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // }),
   ],
   callbacks: {
     async jwt({ token, user }) {

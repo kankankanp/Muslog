@@ -1,5 +1,5 @@
-import Fff from "@/app/components/elements/Fff";
+import SignUpForm from "@/app/components/elements/SignUpForm";
 
-export default function Signup() {
-  return <Fff />
+export default function SignUp() {
+  return <SignUpForm />
 }

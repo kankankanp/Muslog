@@ -13,7 +13,7 @@ const signupSchema = z.object({
 
 // MEMO: ServerActionで実装
 // TODO: RCCにしてバリデーションメッセージを実装する
-export default function Fff() {
+export default function SignUpForm() {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";
 
