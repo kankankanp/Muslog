@@ -102,6 +102,7 @@ export const deleteBlog = async (id: number) => {
   }
 };
 
+// TODO: Unauthorizedエラーの解決
 export const getBlogById = async (id: number) => {
   try {
     const res = await fetch(`${ENDPOINT}/api/blog/${id}`);
@@ -111,6 +112,8 @@ export const getBlogById = async (id: number) => {
     }
 
     const data = await res.json();
+
+    console.log(data.post);
     return data.post;
   } catch (error) {
     console.error("Error in getBlogById:", error);

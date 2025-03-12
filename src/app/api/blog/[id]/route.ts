@@ -5,22 +5,16 @@ import { NextResponse } from "next/server";
 //ブログ詳細記事取得API
 export const GET = async (req: Request) => {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const id = parseInt(req.url.split("/blog/")[1]);
 
-    const post = await prisma.post.findFirst({
-      where: {
-        id,
-        userId: session.user.id,
-      },
+    const post = await prisma.post.findUnique({
+      where: { id },
       include: {
         tracks: true,
       },
     });
+
+    // console.log(post);
 
     if (!post) {
       return NextResponse.json({ message: "Not Found" }, { status: 404 });
