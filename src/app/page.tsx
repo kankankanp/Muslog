@@ -1,6 +1,5 @@
 'use client';
 
-// import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
 import { fetchAllBlogs } from "./lib/utils/blog";
 import { Book } from "./components/elements/Book";
@@ -8,20 +7,20 @@ import { useState, useEffect } from "react";
 import Header from "./components/layouts/Header";
 
 export default function Home() {
-  const [posts, setPosts] = useState([]);
+  // const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    const getBlogs = async () => {
-      const blogs = await fetchAllBlogs();
-      setPosts(blogs);
-    };
-    getBlogs();
-  }, []);
+  // useEffect(() => {
+  //   const getBlogs = async () => {
+  //     const blogs = await fetchAllBlogs();
+  //     setPosts(blogs);
+  //   };
+  //   getBlogs();
+  // }, []);
   return (
     <>
       <Header />
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
-        <Book posts={posts} />
+        <Book posts={[]} />
       </main>
       <Footer />
     </>

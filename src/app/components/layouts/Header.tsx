@@ -1,26 +1,9 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { signOut } from "@/app/lib/auth/auth";
-import { fetchSession } from "@/app/lib/auth/session"; // session.ts からインポート
+import { auth, signOut } from "@/app/lib/auth/auth";
 import ThemeToggleButton from "../elements/ThemeToggleButton";
 import Image from "next/image";
 
-const Header = () => {
-  const [session, setSession] = useState<{ user?: { id: string } } | null>(
-    null
-  );
-
-  useEffect(() => {
-    const getSession = async () => {
-      const sessionData = await fetchSession();
-      setSession(sessionData);
-    };
-
-    getSession();
-  }, []);
-
+const Header = async () => {
   return (
     <header className="flex flex-col md:flex-row md:justify-around items-center bg-white px-4 md:px-8 border-b border-gray-300 py-4 md:py-0">
       <div className="flex items-center mb-4 md:mb-0">
@@ -64,7 +47,7 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
+        {/* <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
           {session?.user ? (
             <form
               action={async () => {
@@ -110,7 +93,7 @@ const Header = () => {
             </div>
           )}
           <ThemeToggleButton />
-        </div>
+        </div> */}
       </div>
     </header>
   );
