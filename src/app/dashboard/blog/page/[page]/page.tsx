@@ -21,7 +21,6 @@ export default async function Index(props: {
 
   return (
     <>
-      <Header />
       <main className="dark:bg-gray-900 bg-gray-100 pt-8">
         <AddButton />
         <BlogCard isDetailPage={false} posts={posts} />

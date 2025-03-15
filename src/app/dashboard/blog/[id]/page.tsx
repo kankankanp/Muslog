@@ -31,7 +31,6 @@ const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
 
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
-      <Header />
       <main>
         <BlogCard isDetailPage={true} posts={[post]} />
       </main>
