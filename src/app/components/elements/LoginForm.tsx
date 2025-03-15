@@ -37,7 +37,7 @@ export default function LoginForm() {
       throw new Error("ログインに失敗しました。");
     }
 
-    redirect("/dashboard");
+    redirect("/");
   }
 
   return (

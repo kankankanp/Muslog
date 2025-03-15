@@ -5,6 +5,7 @@ import "../../node_modules/destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Providers } from "./lib/store/Providers";
+import { NextAuthProvider } from "./lib/auth/NextAuthProvider";
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={notoJp.variable}>
-        <Providers>{children}</Providers>
+        <NextAuthProvider>
+          <Providers>{children}</Providers>
+        </NextAuthProvider>
       </body>
     </html>
   );
