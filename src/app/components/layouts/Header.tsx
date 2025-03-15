@@ -1,24 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { signOut } from "@/app/lib/auth/auth";
-import { fetchSession } from "@/app/lib/auth/session"; // session.ts からインポート
+import { useSession, signOut } from "next-auth/react";
 import ThemeToggleButton from "../elements/ThemeToggleButton";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const Header = () => {
-  const [session, setSession] = useState<{ user?: { id: string } } | null>(
-    null
-  );
+  const { data: session, status, update } = useSession();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-      const sessionData = await fetchSession();
-      setSession(sessionData);
-    };
+    if (status === "loading") return;
+    setLoading(false);
+  }, [status]);
 
-    getSession();
+  useEffect(() => {
+    update();
   }, []);
 
   return (
@@ -65,25 +63,24 @@ const Header = () => {
           ))}
         </nav>
         <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
-          {session?.user ? (
-            <form
-              action={async () => {
-                await signOut();
-              }}
+          {loading ? (
+            <p>Loading...</p>
+          ) : session ? (
+            <button
+              onClick={() => signOut()}
+              className="group relative text-gray-700 text-base md:text-lg font-medium hover:text-blue-600 transition flex flex-col items-center"
             >
-              <button className="group relative text-gray-700 text-base md:text-lg font-medium hover:text-blue-600 transition flex flex-col items-center">
-                <Image
-                  src="/logout.png"
-                  alt=""
-                  width={30}
-                  height={30}
-                  priority
-                  className="md:w-[40px] md:h-[40px] group-hover:-translate-y-1 transition-transform duration-200 text-center"
-                />
-                <span>ログアウト</span>
-                <span className="absolute left-0 bottom-[-4px] w-full h-[2px] bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform"></span>
-              </button>
-            </form>
+              <Image
+                src="/logout.png"
+                alt=""
+                width={30}
+                height={30}
+                priority
+                className="md:w-[40px] md:h-[40px] group-hover:-translate-y-1 transition-transform duration-200 text-center"
+              />
+              <span>ログアウト</span>
+              <span className="absolute left-0 bottom-[-4px] w-full h-[2px] bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+            </button>
           ) : (
             <div className="flex flex-wrap md:flex-nowrap gap-4 items-center">
               <Link
