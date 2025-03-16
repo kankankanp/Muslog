@@ -14,8 +14,6 @@ export const GET = async (req: Request) => {
       },
     });
 
-    // console.log(post);
-
     if (!post) {
       return NextResponse.json({ message: "Not Found" }, { status: 404 });
     }
@@ -40,6 +38,9 @@ export const PUT = async (req: Request) => {
     const post = await prisma.post.update({
       data: { title, description },
       where: { id },
+      include: {
+        tracks: true,
+      },
     });
     return NextResponse.json({ message: "Success", post }, { status: 200 });
   } catch (error) {
@@ -50,13 +51,29 @@ export const PUT = async (req: Request) => {
 //ブログの記事削除API
 export const DELETE = async (req: Request) => {
   try {
-    const id: number = parseInt(req.url.split("/blog/")[1]);
+    const id = parseInt(req.url.split("/blog/")[1]);
+
+    if (isNaN(id)) {
+      console.error("Invalid ID:", req.url);
+      return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+    }
 
     const post = await prisma.post.delete({
       where: { id },
+      include: { tracks: true },
     });
+
     return NextResponse.json({ message: "Success", post }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ message: "Error", error }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error deleting post:", error);
+
+    if (error.code === "P2025") {
+      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Error", error: error.message },
+      { status: 500 }
+    );
   }
 };

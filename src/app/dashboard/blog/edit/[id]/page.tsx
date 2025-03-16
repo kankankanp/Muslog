@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast, { Toaster } from "react-hot-toast";
 import { getBlogById, editBlog, deleteBlog } from "@/app/lib/utils/blog";
+import { CommonButton } from "@/app/components/elements/CommonButton";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -33,7 +34,7 @@ const EditPost = ({ params }: { params: { id: number } }) => {
       toast.error("データの取得に失敗しました");
     }
   }, [params.id, reset]);
-  
+
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
@@ -123,6 +124,7 @@ const EditPost = ({ params }: { params: { id: number } }) => {
           >
             削除
           </button>
+          <CommonButton href={`/dashboard/blog/page/1`}>Back</CommonButton>
         </div>
       </form>
     </div>
