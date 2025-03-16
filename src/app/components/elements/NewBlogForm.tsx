@@ -22,7 +22,7 @@ const postBlog = async (
     body: JSON.stringify({
       title,
       description,
-      tracks: track ? [track] : [], // `track` を配列にして送信
+      tracks: track ? [track] : [],
     }),
     headers: {
       "Content-Type": "application/json",
