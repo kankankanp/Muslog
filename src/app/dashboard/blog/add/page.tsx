@@ -15,12 +15,10 @@ const PostBlog = () => {
   return (
     <>
       <Toaster />
-      {/* <Header /> */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <SelectMusicArea onSelect={setSelectedTrack} />
         <NewBlogForm selectedTrack={selectedTrack} />
       </div>
-      {/* <Footer /> */}
     </>
   );
 };

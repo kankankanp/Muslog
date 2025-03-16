@@ -19,11 +19,9 @@ export default function Home() {
   }, []);
   return (
     <>
-      <Header />
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
         <Book posts={posts} />
       </main>
-      <Footer />
     </>
   );
 }

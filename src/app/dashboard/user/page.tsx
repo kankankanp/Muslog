@@ -21,7 +21,6 @@ export default async function User() {
   }
   return (
     <div>
-      <Header />
       <ProfileCard name={user.name} email={user.email} />
     </div>
   );
