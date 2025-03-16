@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Track } from "@/app/components/elements/SelectMusciArea";
 import Image from "next/image";
+import { CommonButton } from "./CommonButton";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
@@ -148,13 +149,16 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
         <p className="mt-4 text-sm text-gray-500">※ 曲が選択されていません。</p>
       )}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="mt-6 w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50"
-      >
-        Post
-      </button>
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50"
+        >
+          Post
+        </button>
+        <CommonButton href={`/dashboard/blog/page/1`}>Back</CommonButton>
+      </div>
     </form>
   );
 };
