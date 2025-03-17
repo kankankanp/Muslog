@@ -8,7 +8,7 @@ const loginSchema = z.object({
 });
 
 // MEMO: ServerActionで実装
-// TODO: RCCにしてバリデーションメッセージを実装実装する
+// TODO: RCCにしてバリデーションメッセージを実装する
 export default function LoginForm() {
   async function handleSubmit(formData: FormData): Promise<void> {
     "use server";
@@ -41,33 +41,37 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <form
         action={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-lg w-96 space-y-4"
+        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 space-y-4"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-700">
+        <h2 className="text-2xl font-bold text-center text-gray-700 dark:text-gray-200">
           ログイン
         </h2>
         <div>
-          <label className="block text-gray-700">メールアドレス:</label>
+          <label className="block text-gray-700 dark:text-gray-300">
+            メールアドレス:
+          </label>
           <input
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="email"
             name="email"
             required
           />
         </div>
         <div>
-          <label className="block text-gray-700">パスワード:</label>
+          <label className="block text-gray-700 dark:text-gray-300">
+            パスワード:
+          </label>
           <input
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="password"
             name="password"
             required
           />
         </div>
-        <button className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300">
+        <button className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 dark:hover:bg-blue-400 transition duration-300">
           ログインする
         </button>
       </form>
