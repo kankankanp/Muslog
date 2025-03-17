@@ -85,7 +85,7 @@ const Header = () => {
             <div className="flex flex-wrap md:flex-nowrap gap-4 items-center">
               <Link
                 href="/registration/login"
-                className="group relative text-gray-700 dark:text-gray-200 text-base md:text-lg font-medium hover:text-blue-700 dark:hover:text-blue-400 transition flex flex-col items-center"
+                className="group relative text-gray-700 dark:text-gray-400 text-base md:text-lg font-medium hover:text-blue-700 dark:hover:text-blue-400 transition flex flex-col items-center"
               >
                 <Image
                   src="/login.png"
