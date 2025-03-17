@@ -1,6 +1,4 @@
 import BlogCard from "@/app/components/elements/BlogCard";
-import Footer from "@/app/components/layouts/Footer";
-import Header from "@/app/components/layouts/Header";
 import { getAllBlogIds, getBlogById } from "@/app/lib/utils/blog";
 
 export async function generateStaticParams() {
@@ -12,12 +10,10 @@ export async function generateStaticParams() {
   }));
 }
 
-const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
+export default async function Page(props: { params: Promise<{ id: number }> }) {
   const params = await props.params;
   const { id } = params;
-
   const post = await getBlogById(Number(id));
-  // console.log(post);
 
   if (!post) {
     return (
@@ -37,5 +33,3 @@ const ShowBlogDetails = async (props: { params: Promise<{ id: number }> }) => {
     </div>
   );
 };
-
-export default ShowBlogDetails;

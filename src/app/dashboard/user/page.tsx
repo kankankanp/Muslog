@@ -1,9 +1,8 @@
 import ProfileCard from "@/app/components/elements/ProfileCard";
-import Header from "@/app/components/layouts/Header";
 import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 
-export default async function User() {
+export default async function Page() {
   "use server";
 
   const session = await auth();

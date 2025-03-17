@@ -1,13 +1,11 @@
 import BlogCard from "@/app/components/elements/BlogCard";
 import Pagination from "@/app/components/elements/Pagination";
-import Footer from "@/app/components/layouts/Footer";
-import Header from "@/app/components/layouts/Header";
 import AddButton from "@/app/components/elements/AddButton";
 import { fetchBlogsByPage } from "@/app/lib/utils/blog";
 import { auth } from "@/app/lib/auth/auth";
 import { redirect } from "next/navigation";
 
-export default async function Index(props: {
+export default async function Page(props: {
   params: Promise<{ page: number }>;
 }) {
   const session = await auth();
