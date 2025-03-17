@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-10">
+    <footer className="bg-blue-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-10">
       <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <div className="flex flex-col items-center md:items-start">
           <Link href="/" className="flex items-center gap-2 mb-3">
@@ -15,7 +15,7 @@ const Footer = () => {
               priority
             />
           </Link>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Simple Blog
           </p>
         </div>
@@ -29,7 +29,7 @@ const Footer = () => {
             <Link
               key={item.href}
               href={item.href}
-              className="hover:text-blue-400 transition"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition"
             >
               {item.label}
             </Link>
@@ -67,7 +67,7 @@ const Footer = () => {
         </div> */}
       </div>
 
-      <div className="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-xs">
+      <div className="border-t border-gray-300 dark:border-gray-700 mt-6 pt-6 text-center text-gray-600 dark:text-gray-400 text-xs">
         © {new Date().getFullYear()} BLOG. All rights reserved.
       </div>
     </footer>
