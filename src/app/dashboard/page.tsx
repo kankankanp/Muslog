@@ -1,12 +1,10 @@
 import ProfileCard from "../components/elements/ProfileCard";
-import Footer from "../components/layouts/Footer";
-import Header from "../components/layouts/Header";
 import { auth } from "../lib/auth/auth";
 import prisma from "../lib/db/prisma";
 import { redirect } from "next/navigation";
 
 
-export default async function Dashboard() {
+export default async function Page() {
   "use server";
 
   const session = await auth();

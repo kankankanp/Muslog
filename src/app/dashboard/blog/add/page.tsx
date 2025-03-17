@@ -7,7 +7,7 @@ import SelectMusicArea, {
 } from "@/app/components/elements/SelectMusciArea";
 import NewBlogForm from "@/app/components/elements/NewBlogForm";
 
-const PostBlog = () => {
+export default function Page()  {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
   return (
@@ -21,4 +21,3 @@ const PostBlog = () => {
   );
 };
 
-export default PostBlog;

@@ -14,7 +14,7 @@ const schema = z.object({
   description: z.string().min(1, "内容を入力してください"),
 });
 
-const EditPost = ({ params }: { params: { id: number } }) => {
+export default function Page({ params }: { params: { id: number } }) {
   const router = useRouter();
   const {
     register,
@@ -129,6 +129,4 @@ const EditPost = ({ params }: { params: { id: number } }) => {
       </form>
     </div>
   );
-};
-
-export default EditPost;
+}
