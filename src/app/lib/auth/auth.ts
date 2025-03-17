@@ -1,10 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthConfig } from "next-auth";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import prisma from "../db/prisma";
 
 export async function fetchUserFromDatabase(email: string, password: string) {
   const user = await prisma.user.findUnique({
