@@ -1,3 +1,4 @@
+import { Track } from "@/app/components/elements/SelectMusciArea";
 import { auth } from "../auth/auth";
 import prisma from "../db/prisma";
 
@@ -55,6 +56,26 @@ export const countAllBlogs = async () => {
     console.error("Error in countAllBlogs:", error);
     return 0;
   }
+};
+
+export const postBlog = async (
+  title: string,
+  description: string,
+  track: Track | null
+) => {
+  const res = await fetch(`${ENDPOINT}/api/blog`, {
+    method: "POST",
+    body: JSON.stringify({
+      title,
+      description,
+      tracks: track ? [track] : [],
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.json();
 };
 
 export const editBlog = async (
@@ -117,7 +138,6 @@ export const getBlogById = async (id: number) => {
 
     const data = await res.json();
 
-    console.log(data.post);
     return data.post;
   } catch (error) {
     console.error("Error in getBlogById:", error);

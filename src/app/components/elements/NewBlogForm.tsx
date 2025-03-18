@@ -9,41 +9,7 @@ import { useRouter } from "next/navigation";
 import { Track } from "@/app/components/elements/SelectMusciArea";
 import Image from "next/image";
 import { CommonButton } from "./CommonButton";
-
-const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
-
-const postBlog = async (
-  title: string,
-  description: string,
-  track: Track | null
-) => {
-  const res = await fetch(`${ENDPOINT}/api/blog`, {
-    method: "POST",
-    body: JSON.stringify({
-      title,
-      description,
-      tracks: track ? [track] : [],
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return res.json();
-};
-
-const schema = z.object({
-  title: z.string().min(1, "タイトルを入力してください"),
-  description: z.string().min(1, "内容を入力してください"),
-  track: z
-    .object({
-      spotifyId: z.string(),
-      name: z.string(),
-      artistName: z.string(),
-      albumImageUrl: z.string(),
-    })
-    .nullable(),
-});
+import { postBlog } from "@/app/lib/utils/blog";
 
 type FormData = {
   title: string;
@@ -54,6 +20,20 @@ type FormData = {
 type NewBlogFormProps = {
   selectedTrack: Track | null;
 };
+
+const schema = z.object({
+  title: z.string().min(1, "タイトルを入力してください"),
+  description: z.string().min(1, "内容を入力してください"),
+  track: z
+    .object({
+      id: z.number(),
+      spotifyId: z.string(),
+      name: z.string(),
+      artistName: z.string(),
+      albumImageUrl: z.string(),
+    })
+    .nullable(),
+});
 
 const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   const router = useRouter();
