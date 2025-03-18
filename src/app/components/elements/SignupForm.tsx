@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
-import prisma from "@/app/lib/db/prisma";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { signIn } from "@/app/lib/auth/auth";
+import prisma from "@/app/lib/db/prisma";
 
 const signupSchema = z.object({
   name: z.string().min(2, "名前は2文字以上で入力してください"),

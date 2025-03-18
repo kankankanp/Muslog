@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CommonButton } from "./CommonButton";
 import Image from "next/image";
+import Link from "next/link";
+import { CommonButton } from "./CommonButton";
 import { Track } from "./SelectMusciArea";
 
 export type PostType = {

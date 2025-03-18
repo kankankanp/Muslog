@@ -1,7 +1,7 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
+import NextAuth from "next-auth";
+import { NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "../db/prisma";
 
 export async function fetchUserFromDatabase(email: string, password: string) {

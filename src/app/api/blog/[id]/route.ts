@@ -1,6 +1,5 @@
-import { auth } from "@/app/lib/auth/auth";
-import prisma from "@/app/lib/db/prisma";
 import { NextResponse } from "next/server";
+import prisma from "@/app/lib/db/prisma";
 
 //ブログ詳細記事取得API
 export const GET = async (req: Request) => {

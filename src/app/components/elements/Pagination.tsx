@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+
 import "@/scss/pagination.scss";
 
 // type Props = {
