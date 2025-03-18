@@ -9,15 +9,13 @@ const Footer = () => {
           <Link href="/" className="flex items-center gap-2 mb-3">
             <Image
               src="/logo.png"
-              alt="BLOG"
+              alt="Muslog"
               width={100}
               height={100}
               priority
             />
           </Link>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Simple Blog
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Muslog</p>
         </div>
 
         <nav className="mt-6 md:mt-0 flex flex-wrap justify-center gap-6 text-sm">
