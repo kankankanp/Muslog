@@ -1,11 +1,8 @@
-'use client';
+"use client";
 
-// import Header from "./components/layouts/Header";
-import Footer from "./components/layouts/Footer";
-import { fetchAllBlogs } from "./lib/utils/blog";
-import { Book } from "./components/elements/Book";
 import { useState, useEffect } from "react";
-import Header from "./components/layouts/Header";
+import { Book } from "./components/elements/Book";
+import { fetchAllBlogs } from "./lib/utils/blog";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);

@@ -1,6 +1,7 @@
 "use client";
 
 import { PostType } from "./BlogCard";
+
 import "@/scss/book.scss";
 
 type BookProps = {

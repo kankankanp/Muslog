@@ -1,6 +1,6 @@
+import { NextResponse } from "next/server";
 import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
-import { NextResponse } from "next/server";
 
 // ページごとのブログ記事取得API
 export const GET = async (
@@ -11,10 +11,7 @@ export const GET = async (
     const session = await auth();
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const PER_PAGE = 4;

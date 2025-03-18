@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { signIn } from "@/app/lib/auth/auth";
 import { z } from "zod";
+import { signIn } from "@/app/lib/auth/auth";
 
 const loginSchema = z.object({
   email: z.string().email("有効なメールアドレスを入力してください"),

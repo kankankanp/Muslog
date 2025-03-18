@@ -1,6 +1,6 @@
 import "@/scss/blog-card.scss";
-import React from "react";
 import "@/scss/profile.scss";
+
 import Image from "next/image";
 
 type ProfileCardProps = {

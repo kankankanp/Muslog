@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import ThemeToggleButton from "../elements/ThemeToggleButton";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import ThemeToggleButton from "../elements/ThemeToggleButton";
 
 const Header = () => {
   const { data: session, status, update } = useSession();

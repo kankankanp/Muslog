@@ -1,9 +1,9 @@
+import { redirect } from "next/navigation";
+import AddButton from "@/app/components/elements/AddButton";
 import BlogCard from "@/app/components/elements/BlogCard";
 import Pagination from "@/app/components/elements/Pagination";
-import AddButton from "@/app/components/elements/AddButton";
-import { fetchBlogsByPage } from "@/app/lib/utils/blog";
 import { auth } from "@/app/lib/auth/auth";
-import { redirect } from "next/navigation";
+import { fetchBlogsByPage } from "@/app/lib/utils/blog";
 
 export default async function Page(props: {
   params: Promise<{ page: number }>;

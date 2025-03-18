@@ -1,6 +1,7 @@
-import { Track } from "@/app/components/elements/SelectMusciArea";
+
 import { auth } from "../auth/auth";
 import prisma from "../db/prisma";
+import { Track } from "@/app/components/elements/SelectMusciArea";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 

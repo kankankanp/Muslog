@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Image from "next/image";
 
 export type Track = {
   id: number;

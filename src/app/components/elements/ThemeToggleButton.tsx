@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/lib/store/store";
 import { setTheme } from "@/app/lib/store/themeSlice";
-import { useDispatch, useSelector } from "react-redux";
 
 export default function ThemeToggleButton() {
   const dispatch = useDispatch();
@@ -17,15 +17,13 @@ export default function ThemeToggleButton() {
   useEffect(() => {
     setNextTheme(theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
-    setIsDark(theme === "dark"); 
+    setIsDark(theme === "dark");
   }, [setNextTheme, theme]);
-  
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     dispatch(setTheme(newTheme));
   };
-
 
   return (
     <label className="inline-flex items-center cursor-pointer">

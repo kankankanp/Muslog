@@ -1,5 +1,5 @@
-import { getAccessToken } from "@/app/lib/utils/spotify";
 import { NextRequest, NextResponse } from "next/server";
+import { getAccessToken } from "@/app/lib/utils/spotify";
 
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("q");

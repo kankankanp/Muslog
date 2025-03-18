@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
+import NewBlogForm from "@/app/components/elements/NewBlogForm";
 import SelectMusicArea, {
   Track,
 } from "@/app/components/elements/SelectMusciArea";
-import NewBlogForm from "@/app/components/elements/NewBlogForm";
 
 export default function Page() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);

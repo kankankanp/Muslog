@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
 import "@/scss/global.css";
 import "../../node_modules/destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import { Providers } from "./lib/store/Providers";
-import { NextAuthProvider } from "./lib/auth/NextAuthProvider";
-import Header from "./components/layouts/Header";
+import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import Footer from "./components/layouts/Footer";
+import Header from "./components/layouts/Header";
+import { NextAuthProvider } from "./lib/auth/NextAuthProvider";
+import { Providers } from "./lib/store/Providers";
+
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({
