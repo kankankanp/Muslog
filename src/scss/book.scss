@@ -105,18 +105,6 @@ $n: 15 / $pages;
   }
 }
 
-// @for $i from 1 through $pages {
-//   .book-inner:nth-of-type(#{$i}) {
-//     @if $i == $pages {
-//       // 最後のページ（裏表紙）だけ perspective を 0 にする
-//       input + span,
-//       input + span + span {
-//         transform: perspective(0px);
-//       }
-//     }
-//   }
-// }
-
 .book-inner__dummy {
   background-color: #e2e1dc;
   color: #333;

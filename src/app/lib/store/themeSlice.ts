@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type ThemeState = {
-  theme: 'light' | 'dark';
-};
+export type ThemeMode = "light" | "dark";
 
-const getInitialTheme = (): 'light' | 'dark' => {
-  if (typeof window !== 'undefined') {
-    return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+interface ThemeState {
+  theme: ThemeMode;
+}
+
+const getInitialTheme = (): ThemeMode => {
+  if (typeof window !== "undefined") {
+    return (localStorage.getItem("theme") as ThemeMode) || "light";
   }
-  return 'light';
+  return "light";
 };
 
 const initialState: ThemeState = {
@@ -18,13 +20,13 @@ const initialState: ThemeState = {
 };
 
 const themeSlice = createSlice({
-  name: 'theme',
+  name: "theme",
   initialState,
   reducers: {
-    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+    setTheme: (state, action: PayloadAction<ThemeMode>) => {
       state.theme = action.payload;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', action.payload);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("theme", action.payload);
       }
     },
   },
