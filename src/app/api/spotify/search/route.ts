@@ -22,10 +22,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const token = await getAccessToken();
+    const LIMIT = 10;
+
     const res = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(
         query
-      )}&type=track&limit=10`,
+      )}&type=track&limit=${LIMIT}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
