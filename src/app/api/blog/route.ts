@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Track } from "@/app/components/elements/SelectMusciArea";
 import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 
@@ -45,7 +46,7 @@ export const POST = async (req: Request) => {
         tracks:
           tracks && tracks.length > 0
             ? {
-                create: tracks.map((track: any) => ({
+                create: tracks.map((track: Track) => ({
                   spotifyId: track.spotifyId,
                   name: track.name,
                   artistName: track.artistName,

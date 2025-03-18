@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken } from "@/app/lib/utils/spotify";
 
+type SpotifyTrackResponse = {
+  id: string;
+  name: string;
+  artists: { name: string }[];
+  album: {
+    images: { url: string }[];
+  };
+};
+
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("q");
 
@@ -30,15 +39,19 @@ export async function GET(req: NextRequest) {
 
     const data = await res.json();
 
-    const formattedTracks = data.tracks.items.map((track: any) => ({
-      spotifyId: track.id,
-      name: track.name,
-      artistName: track.artists.map((artist: any) => artist.name).join(", "),
-      albumImageUrl:
-        track.album.images.length > 0
-          ? track.album.images[0].url
-          : "/default-image.jpg",
-    }));
+    const formattedTracks = data.tracks.items.map(
+      (track: SpotifyTrackResponse) => ({
+        spotifyId: track.id,
+        name: track.name,
+        artistName: track.artists
+          .map((artist: { name: string }) => artist.name)
+          .join(", "),
+        albumImageUrl:
+          track.album.images.length > 0
+            ? track.album.images[0].url
+            : "/default-image.jpg",
+      })
+    );
 
     return NextResponse.json(formattedTracks);
   } catch (err) {
