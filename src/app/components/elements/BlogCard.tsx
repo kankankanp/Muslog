@@ -3,13 +3,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CommonButton } from "./CommonButton";
 import Image from "next/image";
-
-export type Track = {
-  spotifyId: string;
-  name: string;
-  artistName: string;
-  albumImageUrl: string;
-};
+import { Track } from "./SelectMusciArea";
 
 export type PostType = {
   id: number;
@@ -34,7 +28,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
     }
     return text.substring(0, length) + "...";
   };
-  
+
   return (
     <div
       className={`py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${

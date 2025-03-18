@@ -43,7 +43,6 @@ export default function Fff() {
           name: data.name,
           email: data.email,
           password: hashedPassword,
-          emailVerified: false,
         },
       });
 
