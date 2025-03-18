@@ -63,16 +63,9 @@ export const DELETE = async (req: Request) => {
     });
 
     return NextResponse.json({ message: "Success", post }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error deleting post:", error);
 
-    if (error.code === "P2025") {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(
-      { message: "Error", error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };

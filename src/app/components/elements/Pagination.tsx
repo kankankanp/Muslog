@@ -4,16 +4,16 @@ import { useParams } from "next/navigation";
 
 import "@/scss/pagination.scss";
 
-// type Props = {
-//   totalCount: number;
-// };
+type PaginationProps = {
+  totalCount: number;
+};
 
 const range = (start: number, end: number) =>
   Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
 const PER_PAGE = 4;
 
-const Pagination = ({ totalCount }: any) => {
+const Pagination = ({ totalCount }: PaginationProps) => {
   const params = useParams();
   const currentPage = params?.page ? Number(params.page) : 1;
   return (
