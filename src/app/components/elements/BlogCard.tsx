@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CommonButton } from "./CommonButton";
 import { Track } from "./SelectMusciArea";
 
-export type PostType = {
+export type Post = {
   id: number;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ export type PostType = {
 
 type BlogCardProps = {
   isDetailPage?: boolean;
-  posts: PostType[];
+  posts: Post[];
 };
 
 const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
@@ -37,7 +37,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
           : "grid-cols-1 w-3/5"
       }`}
     >
-      {safePosts.map((post: PostType) => {
+      {safePosts.map((post: Post) => {
         // const date = new Date(post.date);
         // const year = date.getFullYear();
         // const month = date.getMonth() + 1;
