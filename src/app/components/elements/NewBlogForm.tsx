@@ -11,6 +11,19 @@ import { CommonButton } from "./CommonButton";
 import { Track } from "@/app/components/elements/SelectMusciArea";
 import { postBlog } from "@/app/lib/utils/blog";
 
+const schema = z.object({
+  title: z.string().min(1, "タイトルを入力してください"),
+  description: z.string().min(1, "内容を入力してください"),
+  track: z
+    .object({
+      spotifyId: z.string(),
+      name: z.string(),
+      artistName: z.string(),
+      albumImageUrl: z.string(),
+    })
+    .nullable(),
+});
+
 type FormData = {
   title: string;
   description: string;
@@ -20,20 +33,6 @@ type FormData = {
 type NewBlogFormProps = {
   selectedTrack: Track | null;
 };
-
-const schema = z.object({
-  title: z.string().min(1, "タイトルを入力してください"),
-  description: z.string().min(1, "内容を入力してください"),
-  track: z
-    .object({
-      id: z.number(),
-      spotifyId: z.string(),
-      name: z.string(),
-      artistName: z.string(),
-      albumImageUrl: z.string(),
-    })
-    .nullable(),
-});
 
 const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   const router = useRouter();
@@ -72,19 +71,19 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-2xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md"
+      className="w-full max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md"
     >
       <div className="mb-4">
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           タイトル
         </label>
         <input
           type="text"
           {...register("title")}
-          className="w-full px-4 py-2 border dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         {errors.title && (
           <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
@@ -94,7 +93,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
       <div className="mb-4">
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+          className="block text-sm font-medium text-gray-700 mb-1"
         >
           内容
         </label>
@@ -102,7 +101,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           {...register("description")}
           name="description"
           rows={5}
-          className="w-full px-4 py-2 border dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
         ></textarea>
         {errors.description && (
           <p className="mt-1 text-sm text-red-500">
@@ -112,7 +111,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
       </div>
 
       {selectedTrack ? (
-        <div className="flex items-center gap-4 p-4 mt-6 border dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700">
+        <div className="flex items-center gap-4 p-4 mt-6 border rounded-md bg-gray-50">
           <Image
             width={50}
             height={50}
@@ -121,20 +120,13 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
             className="w-16 h-16 object-cover rounded"
           />
           <div>
-            <p className="text-lg font-semibold dark:text-white">
-              {selectedTrack.name}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {selectedTrack.artistName}
-            </p>
+            <p className="text-lg font-semibold">{selectedTrack.name}</p>
+            <p className="text-sm text-gray-500">{selectedTrack.artistName}</p>
           </div>
         </div>
       ) : (
-        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-          ※ 曲が選択されていません。
-        </p>
+        <p className="mt-4 text-sm text-gray-500">※ 曲が選択されていません。</p>
       )}
-
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8">
         <button
           type="submit"
