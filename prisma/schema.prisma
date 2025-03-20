@@ -14,7 +14,7 @@ model Post {
   description String
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  tracks      Track[]  @relation("PostTracks")
+  tracks      Track[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
 }
@@ -26,7 +26,7 @@ model Track {
   artistName    String   
   albumImageUrl String 
   postId        Int
-  post          Post     @relation("PostTracks", fields: [postId], references: [id], onDelete: Cascade)
+  post          Post     @relation(fields: [postId], references: [id])
 }
 
 model User {
