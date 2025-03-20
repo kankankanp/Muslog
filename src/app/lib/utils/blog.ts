@@ -1,4 +1,3 @@
-
 import { auth } from "../auth/auth";
 import prisma from "../db/prisma";
 import { Track } from "@/app/components/elements/SelectMusciArea";
