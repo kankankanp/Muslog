@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Track } from "@/app/components/elements/SelectMusciArea";
+import type { Track } from "@/app/components/elements/SelectMusciArea";
 import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 

@@ -1,54 +1,33 @@
-import { redirect } from "next/navigation";
-import { z } from "zod";
-import { signIn } from "@/app/lib/auth/auth";
+"use client";
 
-const loginSchema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください"),
-  password: z.string().min(6, "パスワードは6文字以上で入力してください"),
-});
+import { useFormState } from "react-dom";
+import LoadingButton from "./LoadingButton";
+import { loginAction, type LoginState } from "@/app/actions/login";
 
-// MEMO: ServerActionで実装
-// TODO: RCCにしてバリデーションメッセージを実装する
+const initialState: LoginState = {
+  message: null,
+};
+
 export default function LoginForm() {
-  async function handleSubmit(formData: FormData): Promise<void> {
-    "use server";
-
-    const data = {
-      email: formData.get("email")?.toString().trim() ?? "",
-      password: formData.get("password")?.toString().trim() ?? "",
-    };
-
-    const validation = loginSchema.safeParse(data);
-    if (!validation.success) {
-      throw new Error(validation.error.errors[0].message);
-    }
-
-    try {
-      const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        throw new Error("メールアドレスまたはパスワードが間違っています。");
-      }
-    } catch (error) {
-      throw new Error("ログインに失敗しました。");
-    }
-
-    redirect("/");
-  }
+  const [state, formAction] = useFormState(loginAction, initialState);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <form
-        action={handleSubmit}
+        action={formAction}
+        noValidate
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 space-y-4"
       >
         <h2 className="text-2xl font-bold text-center text-gray-700 dark:text-gray-200">
           ログイン
         </h2>
+
+        {state.message && (
+          <div className="text-red-500 text-sm text-center">
+            {state.message}
+          </div>
+        )}
+
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
             メールアドレス:
@@ -60,6 +39,7 @@ export default function LoginForm() {
             required
           />
         </div>
+
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
             パスワード:
@@ -71,9 +51,7 @@ export default function LoginForm() {
             required
           />
         </div>
-        <button className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 dark:hover:bg-blue-400 transition duration-300">
-          ログインする
-        </button>
+        <LoadingButton label={"ログイン"} color={"blue"} />
       </form>
     </div>
   );

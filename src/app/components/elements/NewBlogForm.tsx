@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { CommonButton } from "./CommonButton";
-import { Track } from "@/app/components/elements/SelectMusciArea";
+import type { Track } from "@/app/components/elements/SelectMusciArea";
 import { postBlog } from "@/app/lib/utils/blog";
 
 const schema = z.object({
