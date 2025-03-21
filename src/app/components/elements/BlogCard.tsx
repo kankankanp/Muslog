@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "./CommonButton";
-import { Track } from "./SelectMusciArea";
+import type { Track } from "./SelectMusciArea";
 
 export type Post = {
   id: number;
