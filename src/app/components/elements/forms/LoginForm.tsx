@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormState } from "react-dom";
-import LoadingButton from "./LoadingButton";
+import LoadingButton from "../buttons/LoadingButton";
 import { loginAction, type LoginState } from "@/app/actions/login";
 
 const initialState: LoginState = {

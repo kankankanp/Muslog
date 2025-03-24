@@ -1,23 +1,11 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
-import ThemeToggleButton from "../elements/ThemeToggleButton";
+import LogoutButton from "../elements/buttons/LogoutButton";
+import ThemeToggleButton from "../elements/buttons/ThemeToggleButton";
+import { auth } from "@/app/lib/auth/auth";
 
-const Header = () => {
-  const { data: session, status, update } = useSession();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (status === "loading") return;
-    setLoading(false);
-  }, [status]);
-
-  useEffect(() => {
-    update();
-  }, []);
+const Header = async () => {
+  const session = await auth();
 
   return (
     <header className="flex flex-col md:flex-row md:justify-around items-center bg-white dark:bg-gray-800 px-4 md:px-8 border-b border-gray-300 dark:border-gray-700 py-4 md:py-0">
@@ -63,24 +51,8 @@ const Header = () => {
           ))}
         </nav>
         <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
-          {loading ? (
-            <p className="text-gray-700 dark:text-gray-200">Loading...</p>
-          ) : session ? (
-            <button
-              onClick={() => signOut()}
-              className="group relative text-gray-700 dark:text-gray-400 text-base md:text-lg font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex flex-col items-center"
-            >
-              <Image
-                src="/logout.png"
-                alt=""
-                width={30}
-                height={30}
-                priority
-                className="md:w-[40px] md:h-[40px] group-hover:-translate-y-1 transition-transform duration-200 text-center"
-              />
-              <span>ログアウト</span>
-              <span className="absolute left-0 bottom-[-4px] w-full h-[2px] bg-blue-600 dark:bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform"></span>
-            </button>
+          {session ? (
+            <LogoutButton />
           ) : (
             <div className="flex flex-wrap md:flex-nowrap gap-4 items-center">
               <Link

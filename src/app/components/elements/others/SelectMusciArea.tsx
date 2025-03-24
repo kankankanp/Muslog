@@ -10,6 +10,7 @@ export type Track = {
   name: string;
   artistName: string;
   albumImageUrl: string;
+  postId: number;
 };
 
 type SelectMusicAreaProps = {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import type { Post } from "./BlogCard";
 import "@/scss/book.scss";
+import { Post } from "../cards/BlogCard";
 
 type BookProps = {
   posts: Post[];

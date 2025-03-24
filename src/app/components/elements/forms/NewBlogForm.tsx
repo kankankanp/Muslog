@@ -1,14 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Track } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { CommonButton } from "./CommonButton";
-import type { Track } from "@/app/components/elements/SelectMusciArea";
+import { CommonButton } from "../buttons/CommonButton";
 import { postBlog } from "@/app/lib/utils/blog";
 
 const schema = z.object({
