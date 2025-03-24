@@ -1,6 +1,5 @@
 import "@/scss/blog-card.scss";
 import "@/scss/profile.scss";
-
 import Image from "next/image";
 
 type ProfileCardProps = {

@@ -1,4 +1,4 @@
-import ProfileCard from "@/app/components/elements/ProfileCard";
+import ProfileCard from "@/app/components/elements/cards/ProfileCard";
 import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 

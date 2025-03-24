@@ -1,4 +1,4 @@
-import BlogCard from "@/app/components/elements/BlogCard";
+import BlogCard from "@/app/components/elements/cards/BlogCard";
 import { getAllBlogIds, getBlogById } from "@/app/lib/utils/blog";
 
 export async function generateStaticParams() {

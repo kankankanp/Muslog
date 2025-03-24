@@ -6,7 +6,7 @@ import { useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { z } from "zod";
-import { CommonButton } from "@/app/components/elements/CommonButton";
+import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
 import { getBlogById, editBlog, deleteBlog } from "@/app/lib/utils/blog";
 
 const schema = z.object({

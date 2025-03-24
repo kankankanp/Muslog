@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Book } from "./components/elements/Book";
+import { Book } from "./components/elements/others/Book";
 import { fetchAllBlogs } from "./lib/utils/blog";
 
 export default function Home() {
@@ -14,6 +14,7 @@ export default function Home() {
     };
     getBlogs();
   }, []);
+
   return (
     <>
       <main className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
