@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   if (!query) {
     return NextResponse.json(
-      { error: "検索ワードがありません" },
+      { message: "Missing search term" },
       { status: 400 }
     );
   }
@@ -34,9 +34,10 @@ export async function GET(req: NextRequest) {
     );
 
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Spotify検索エラー:", errorText);
-      return NextResponse.json({ error: "Spotify検索に失敗" }, { status: 500 });
+      return NextResponse.json(
+        { message: "Failed to search tracks" },
+        { status: 500 }
+      );
     }
 
     const data = await res.json();
@@ -55,9 +56,11 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    return NextResponse.json(formattedTracks);
-  } catch (err) {
-    console.error("サーバーエラー:", err);
-    return NextResponse.json({ error: "サーバーエラー" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Success", tracks: formattedTracks },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 }

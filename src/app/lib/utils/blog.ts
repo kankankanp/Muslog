@@ -15,7 +15,6 @@ export const fetchAllBlogs = async () => {
     const data = await res.json();
     return data.posts;
   } catch (error) {
-    console.error("Error in fetchAllBlogs:", error);
     return [];
   }
 };
@@ -53,7 +52,6 @@ export const countAllBlogs = async () => {
     const countData = await prisma.post.count();
     return countData;
   } catch (error) {
-    console.error("Error in countAllBlogs:", error);
     return 0;
   }
 };
@@ -98,7 +96,6 @@ export const editBlog = async (
 
     return await res.json();
   } catch (error) {
-    console.error("Error in editBlog:", error);
     return null;
   }
 };
@@ -118,7 +115,6 @@ export const deleteBlog = async (id: number) => {
 
     return await res.json();
   } catch (error) {
-    console.error("Error in deleteBlog:", error);
     return null;
   }
 };
@@ -140,7 +136,6 @@ export const getBlogById = async (id: number) => {
 
     return data.post;
   } catch (error) {
-    console.error("Error in getBlogById:", error);
     return null;
   }
 };
@@ -152,7 +147,6 @@ export const getAllBlogIds = async () => {
     });
     return posts.map((post) => post.id);
   } catch (error) {
-    console.error("Error in getAllBlogIds:", error);
     return [];
   }
 };

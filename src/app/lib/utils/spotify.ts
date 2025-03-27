@@ -25,8 +25,6 @@ export const getAccessToken = async () => {
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    console.error("Spotify認証エラー:", errorText);
     throw new Error(`Spotify認証に失敗しました (${res.status})`);
   }
 

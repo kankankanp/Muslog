@@ -22,7 +22,6 @@ export const GET = async (req: Request) => {
 
     return NextResponse.json({ message: "Success", posts }, { status: 200 });
   } catch (error) {
-    console.error("Error in fetchAllBlogs API:", error);
     return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };
@@ -62,10 +61,6 @@ export const POST = async (req: Request) => {
 
     return NextResponse.json({ message: "Success", post }, { status: 201 });
   } catch (error) {
-    console.error("Error creating blog:", error);
-    return NextResponse.json(
-      { message: "Error", error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };
