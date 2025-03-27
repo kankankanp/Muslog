@@ -33,7 +33,7 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
       const data = await res.json();
 
       if (res.ok) {
-        setTracks(data);
+        setTracks(data.tracks);
       } else {
         toast.error(data.error || "検索に失敗しました");
       }

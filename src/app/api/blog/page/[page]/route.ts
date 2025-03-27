@@ -35,10 +35,6 @@ export const GET = async (
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching paginated blogs:", error);
-    return NextResponse.json(
-      { message: "Error", error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };

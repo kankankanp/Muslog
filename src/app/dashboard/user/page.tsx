@@ -3,8 +3,6 @@ import { auth } from "@/app/lib/auth/auth";
 import prisma from "@/app/lib/db/prisma";
 
 export default async function Page() {
-  "use server";
-
   const session = await auth();
   if (!session?.user?.email) {
     throw new Error("ログインが必要です");

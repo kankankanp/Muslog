@@ -19,11 +19,7 @@ export const GET = async (req: Request) => {
 
     return NextResponse.json({ message: "Success", post }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching post:", error);
-    return NextResponse.json(
-      { message: "Error", error: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };
 
@@ -53,7 +49,6 @@ export const DELETE = async (req: Request) => {
     const id = parseInt(req.url.split("/blog/")[1]);
 
     if (isNaN(id)) {
-      console.error("Invalid ID:", req.url);
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }
 
@@ -64,8 +59,6 @@ export const DELETE = async (req: Request) => {
 
     return NextResponse.json({ message: "Success", post }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting post:", error);
-
     return NextResponse.json({ message: "Error", error }, { status: 500 });
   }
 };
