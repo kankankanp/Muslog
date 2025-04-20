@@ -44,7 +44,7 @@ export const Book = ({ posts }: BookProps) => {
               }`}
             >
               {isCover ? (
-                "表紙"
+                <p className="book-inner__cover-text">Your Diary</p>
               ) : post ? (
                 <div>
                   <h2>{post.title}</h2>
@@ -60,7 +60,7 @@ export const Book = ({ posts }: BookProps) => {
               }`}
             >
               {isCover ? (
-                "表紙"
+                <p className="book-inner__cover-text">Your Diary</p>
               ) : post ? (
                 <div>
                   <h2>{post.title}</h2>
