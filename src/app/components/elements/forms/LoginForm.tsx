@@ -51,6 +51,43 @@ export default function LoginForm() {
             required
           />
         </div>
+
+        <div className="bg-blue-200 rounded-md p-4 text-gray-700 dark:text-gray-300 flex flex-col gap-2">
+          <p className="text-center text-md font-medium">
+            ポートフォリオを閲覧の方は
+            <span className="inline-block">
+              下記を入力してログインしてください。
+            </span>
+          </p>
+          <div className="flex justify-between items-center bg-white rounded-md p-2">
+            <div className="flex flex-col">
+              <p className="text-sm">メールアドレス:</p>
+              <p className="font-mono">user1@example.com</p>
+            </div>
+            <button
+              type="button"
+              className="ml-2 px-2 py-1 text-sm border-gray-400 border rounded hover:bg-blue-500 hover:text-white transition"
+              onClick={() => navigator.clipboard.writeText("user1@example.com")}
+            >
+              コピー
+            </button>
+          </div>
+
+          <div className="flex justify-between items-center bg-white rounded-md p-2">
+            <div className="flex flex-col">
+              <p className="text-sm">パスワード:</p>
+              <p className="font-mono">password</p>
+            </div>
+            <button
+              type="button"
+              className="ml-2 px-2 py-1 text-sm border-gray-400 border rounded hover:bg-blue-500 hover:text-white transition"
+              onClick={() => navigator.clipboard.writeText("password")}
+            >
+              コピー
+            </button>
+          </div>
+        </div>
+
         <LoadingButton label={"ログイン"} color={"blue"} />
       </form>
     </div>
