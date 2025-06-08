@@ -12,6 +12,7 @@ import {
   Music2,
   PenTool,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const fadeInUp = {
@@ -28,33 +29,45 @@ const staggerContainer = {
   },
 };
 
-const WaveDivider = () => (
-  <div className="relative h-24 overflow-hidden">
+const WaveDivider = ({
+  upperSectionBg,
+  lowerSectionBg,
+}: {
+  upperSectionBg: string;
+  lowerSectionBg: string;
+}) => (
+  <div className={`relative h-24 overflow-hidden`}>
     <svg
-      className="absolute bottom-0 w-full h-24 bg-emerald-50"
+      className={`absolute bottom-0 w-full h-24 ${lowerSectionBg}`}
       viewBox="0 0 1440 100"
       preserveAspectRatio="none"
       fill="currentColor"
     >
       <path
         d="M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 C1150,100 1350,0 1440,50 L1440,100 L0,100 Z"
-        className="text-white"
+        className={upperSectionBg}
       />
     </svg>
   </div>
 );
 
-const WaveDividerInverted = () => (
-  <div className="relative h-24 overflow-hidden">
+const WaveDividerInverted = ({
+  upperSectionBg,
+  lowerSectionBg,
+}: {
+  upperSectionBg: string;
+  lowerSectionBg: string;
+}) => (
+  <div className={`relative h-24 overflow-hidden`}>
     <svg
-      className="absolute bottom-0 w-full h-24 bg-white"
+      className={`absolute bottom-0 w-full h-24 ${lowerSectionBg}`}
       viewBox="0 0 1440 100"
       preserveAspectRatio="none"
       fill="currentColor"
     >
       <path
         d="M0,50 C150,0 350,100 500,50 C650,0 850,100 1000,50 C1150,0 1350,100 1440,50 L1440,100 L0,100 Z"
-        className="text-emerald-50"
+        className={upperSectionBg}
       />
     </svg>
   </div>
@@ -62,9 +75,9 @@ const WaveDividerInverted = () => (
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-gray-950 dark:to-gray-900">
       {/* ヒーローセクション */}
-      <section className="relative h-screen flex items-center justify-center text-center px-4 md:text-left">
+      <section className="relative h-screen flex items-center justify-center text-center px-4 md:text-left bg-emerald-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <motion.div
             className="md:w-1/2"
@@ -73,17 +86,15 @@ export default function Home() {
             transition={{ duration: 0.8 }}
           >
             <motion.h1
-              className="text-5xl md:text-6xl font-bold text-emerald-800 mb-6"
+              className="text-5xl md:text-6xl font-bold text-emerald-800 dark:text-emerald-100 mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              あなたの音楽の物語を
-              <br />
-              シェアしよう
+              あなたの音楽の物語をシェアしよう。
             </motion.h1>
             <motion.p
-              className="text-xl text-emerald-600 mb-8"
+              className="text-xl text-emerald-600 dark:text-emerald-300 mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -99,7 +110,7 @@ export default function Home() {
             >
               <Link
                 href="/dashboard"
-                className="inline-flex items-center px-8 py-4 bg-emerald-600 text-white rounded-full text-lg font-semibold hover:bg-emerald-700 transition-colors"
+                className="inline-flex items-center px-8 py-4 bg-emerald-600 dark:bg-emerald-700 text-white rounded-full text-lg font-semibold hover:bg-emerald-700 dark:hover:bg-emerald-800 transition-colors"
               >
                 はじめる
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -113,8 +124,10 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             {/* Replace this with your actual image */}
-            <img
-              src="/mv.png" // 例：public/images/music-community-hero.svg に配置してください
+            <Image
+              src="/mv.png"
+              width={560}
+              height={560}
               alt="音楽コミュニティのイラスト"
               className="w-full h-auto object-contain"
             />
@@ -122,10 +135,13 @@ export default function Home() {
         </div>
       </section>
 
-      <WaveDivider />
+      <WaveDivider
+        upperSectionBg="text-white dark:text-gray-800"
+        lowerSectionBg="bg-emerald-50 dark:bg-gray-900"
+      />
 
       {/* 特徴セクション */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-white dark:bg-gray-800">
         <motion.div
           className="max-w-6xl mx-auto"
           initial="initial"
@@ -134,7 +150,7 @@ export default function Home() {
           variants={staggerContainer}
         >
           <motion.h2
-            className="text-3xl font-bold text-emerald-800 text-center mb-16"
+            className="text-3xl font-bold text-emerald-800 dark:text-emerald-100 text-center mb-16"
             variants={fadeInUp}
           >
             3つの特徴
@@ -165,26 +181,31 @@ export default function Home() {
                 variants={fadeInUp}
               >
                 <motion.div
-                  className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                  className="w-16 h-16 bg-emerald-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6"
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <feature.icon className="w-8 h-8 text-emerald-600" />
+                  <feature.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-300" />
                 </motion.div>
-                <h3 className="text-xl font-semibold text-emerald-800 mb-4">
+                <h3 className="text-xl font-semibold text-emerald-800 dark:text-emerald-100 mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-emerald-600">{feature.description}</p>
+                <p className="text-emerald-600 dark:text-emerald-300">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </section>
 
-      <WaveDividerInverted />
+      <WaveDividerInverted
+        upperSectionBg="text-emerald-50 dark:text-gray-900"
+        lowerSectionBg="bg-white dark:bg-gray-800"
+      />
 
       {/* 使い方セクション */}
-      <section className="py-20 px-4 bg-emerald-50">
+      <section className="py-20 px-4 bg-emerald-50 dark:bg-gray-900">
         <motion.div
           className="max-w-6xl mx-auto"
           initial="initial"
@@ -193,7 +214,7 @@ export default function Home() {
           variants={staggerContainer}
         >
           <motion.h2
-            className="text-3xl font-bold text-emerald-800 text-center mb-16"
+            className="text-3xl font-bold text-emerald-800 dark:text-emerald-100 text-center mb-16"
             variants={fadeInUp}
           >
             簡単3ステップ
@@ -221,37 +242,42 @@ export default function Home() {
             ].map((step, index) => (
               <motion.div
                 key={index}
-                className="bg-white p-8 rounded-lg shadow-sm"
+                className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm"
                 variants={fadeInUp}
                 whileHover={{ y: -10 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-4xl font-bold text-emerald-600">
+                  <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-300">
                     {step.number}
                   </div>
                   <motion.div
-                    className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center"
+                    className="w-12 h-12 bg-emerald-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
                     whileHover={{ scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    <step.icon className="w-6 h-6 text-emerald-600" />
+                    <step.icon className="w-6 h-6 text-emerald-600 dark:text-emerald-300" />
                   </motion.div>
                 </div>
-                <h3 className="text-xl font-semibold text-emerald-800 mb-4">
+                <h3 className="text-xl font-semibold text-emerald-800 dark:text-emerald-100 mb-4">
                   {step.title}
                 </h3>
-                <p className="text-emerald-600">{step.description}</p>
+                <p className="text-emerald-600 dark:text-emerald-300">
+                  {step.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </section>
 
-      <WaveDivider />
+      <WaveDivider
+        upperSectionBg="text-white dark:text-gray-800"
+        lowerSectionBg="bg-emerald-50 dark:bg-gray-900"
+      />
 
       {/* メリットセクション */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-white dark:bg-gray-800">
         <motion.div
           className="max-w-6xl mx-auto"
           initial="initial"
@@ -260,7 +286,7 @@ export default function Home() {
           variants={staggerContainer}
         >
           <motion.h2
-            className="text-3xl font-bold text-emerald-800 text-center mb-16"
+            className="text-3xl font-bold text-emerald-800 dark:text-emerald-100 text-center mb-16"
             variants={fadeInUp}
           >
             こんな方におすすめ
@@ -287,12 +313,14 @@ export default function Home() {
                 whileHover={{ x: 10 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <benefit.icon className="w-6 h-6 text-emerald-600 mt-1" />
+                <benefit.icon className="w-6 h-6 text-emerald-600 dark:text-emerald-300 mt-1" />
                 <div>
-                  <h3 className="text-xl font-semibold text-emerald-800 mb-2">
+                  <h3 className="text-xl font-semibold text-emerald-800 dark:text-emerald-100 mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-emerald-600">{benefit.description}</p>
+                  <p className="text-emerald-600 dark:text-emerald-300">
+                    {benefit.description}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -300,44 +328,10 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <WaveDividerInverted />
-
-      {/* CTAセクション */}
-      <section className="py-20 px-4 bg-emerald-50 text-emerald-600">
-        <motion.div
-          className="max-w-4xl mx-auto text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.h2
-            className="text-3xl font-bold mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            さあ、あなたの音楽の物語を
-            <br />
-            はじめましょう
-          </motion.h2>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center px-8 py-4 bg-white text-emerald-600 rounded-full text-lg font-semibold hover:bg-emerald-50 transition-colors"
-            >
-              無料ではじめる
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </motion.div>
-        </motion.div>
-      </section>
+      <WaveDividerInverted
+        upperSectionBg="text-emerald-50 dark:text-gray-900"
+        lowerSectionBg="bg-white dark:bg-gray-800"
+      />
     </div>
   );
 }
