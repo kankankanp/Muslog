@@ -1,37 +1,48 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 開発者向け情報
 
-## Getting Started
+## 前提条件
 
-First, run the development server:
+- Node.js(v22.6 以上)
+- npm(v10.8 以上)
+- Git(v2.39 以上)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 依存パッケージのインストール
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm install`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ローカルサーバーの起動
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+`npm run dev`
+サーバーを起動後、http://localhost:3000 でアクセスしてください。
 
-## Learn More
+# 利用者向け情報
+![日記](/public/readme/intro1.png)
+![ブログ検索画面](/public/readme/intro2.png)
+この Web アプリケーションは、「1 日を象徴する音楽を添えた日記」を投稿できるブログサイトです。
 
-To learn more about Next.js, take a look at the following resources:
+## 使用技術
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### フロントエンド
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- 言語：TypeScript
+- フレームワーク： Next.js 14.2.15(App Router)
+- スタイル： TailwindCSS
+- 状態管理： Redux Toolkit
 
-## Deploy on Vercel
+### バックエンド
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 言語：TypeScript
+- フレームワーク：Next.js 14.2.15(App Router)
+- データベース：PostgreSQL(Supabase Database)
+- ORM: Prisma
+- 認証：Auth.js
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# my-next-blog
+### 開発環境・インフラ
+
+- IDE：Visual Studio Code
+- ホスティング：Vercel
+- バージョン管理：Git、GitHub
+
+### システム構成図
+
+![システム構成図](/public/readme/system-configuration.png)
