@@ -33,7 +33,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
     <div
       className={`py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
         !isDetailPage
-          ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full"
+          ? "grid-cols-1 sm:grid-cols-2 gap-6 w-full"
           : "grid-cols-1 w-3/5"
       }`}
     >
@@ -74,6 +74,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                         width={48}
                         height={48}
                         className="w-12 h-12 rounded object-cover"
+                        style={{ width: "auto", height: "auto" }}
                       />
                       <div>
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
