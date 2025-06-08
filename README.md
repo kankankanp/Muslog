@@ -8,11 +8,11 @@
 
 ## 依存パッケージのインストール
 
-`npm install`
+```npm install```
 
 ## ローカルサーバーの起動
 
-`npm run dev`
+```npm run dev```
 サーバーを起動後、http://localhost:3000 でアクセスしてください。
 
 # 利用者向け情報
@@ -26,7 +26,7 @@
 
 - 言語：TypeScript
 - フレームワーク： Next.js 14.2.15(App Router)
-- スタイル： TailwindCSS
+- スタイル： TailwindCSS, Sass
 - 状態管理： Redux Toolkit
 
 ### バックエンド
