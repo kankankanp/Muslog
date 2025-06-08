@@ -2,11 +2,11 @@ import { Track } from "@prisma/client";
 import { auth } from "../auth/auth";
 import prisma from "../db/prisma";
 
-const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
+export const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
 
 export const fetchAllBlogs = async () => {
   try {
-    const res = await fetch("/api/blog", { cache: "no-store" });
+    const res = await fetch(`${ENDPOINT}/api/blog`, { cache: "no-store" });
 
     if (!res.ok) {
       throw new Error(`Error fetching blogs: ${res.statusText}`);
@@ -45,15 +45,6 @@ export const fetchBlogsByPage = async (page: number) => {
   ]);
 
   return { posts, totalCount };
-};
-
-export const countAllBlogs = async () => {
-  try {
-    const countData = await prisma.post.count();
-    return countData;
-  } catch (error) {
-    return 0;
-  }
 };
 
 export const postBlog = async (

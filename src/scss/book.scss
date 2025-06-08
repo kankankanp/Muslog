@@ -57,6 +57,7 @@ $n: 15 / $pages;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 90%;
     gap: 12px;
   }
 
@@ -118,6 +119,8 @@ $n: 15 / $pages;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 90%;
+
     gap: 12px;
   }
 
@@ -157,5 +160,5 @@ $n: 15 / $pages;
 }
 
 .book-inner__cover-text {
-  font-size: 30px!important;
+  font-size: 30px !important;
 }

@@ -32,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <body className={notoJp.variable}>
+    <html lang="ja" suppressHydrationWarning>
+      <body className={`${notoJp.variable} antialiased`}>
         <NextAuthProvider>
           <Providers>
             <Header />

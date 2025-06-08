@@ -73,7 +73,7 @@ const WaveDividerInverted = ({
   </div>
 );
 
-export default function Home() {
+export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-gray-950 dark:to-gray-900">
       {/* ヒーローセクション */}
@@ -130,6 +130,7 @@ export default function Home() {
               height={560}
               alt="音楽コミュニティのイラスト"
               className="w-full h-auto object-contain"
+              style={{ width: "auto", height: "auto" }}
             />
           </motion.div>
         </div>

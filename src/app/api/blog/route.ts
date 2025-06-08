@@ -6,14 +6,7 @@ import prisma from "@/app/lib/db/prisma";
 //ブログ全記事取得API
 export const GET = async (req: Request) => {
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const posts = await prisma.post.findMany({
-      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
       include: {
         tracks: true,

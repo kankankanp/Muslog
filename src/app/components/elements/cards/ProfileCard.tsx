@@ -12,7 +12,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ name, email }) => {
     <div className="proflie mt-4">
       <div className="max-w-lg mx-auto bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg flex flex-col items-center">
         <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
-          <Image src="" alt="" className="w-full h-full object-cover" />
+          <Image
+            // TODO: Supabase Storageを使用し、画像取得APIを作成・取得
+            src=""
+            alt=""
+            className="w-full h-full object-cover"
+            style={{ width: "auto", height: "auto" }}
+          />
         </div>
         <h2 className="text-xl font-bold mt-4 text-gray-800 dark:text-white">
           PROFILE

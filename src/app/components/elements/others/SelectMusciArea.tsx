@@ -18,9 +18,9 @@ type SelectMusicAreaProps = {
 };
 
 const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState<string>("");
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearch = async () => {
     if (!query) return toast.error("検索ワードを入力してください");
