@@ -76,9 +76,8 @@ const WaveDividerInverted = ({
 export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-gray-950 dark:to-gray-900">
-      {/* ヒーローセクション */}
       <section className="relative h-screen flex items-center justify-center text-center px-4 md:text-left bg-emerald-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="flex flex-col md:flex-row max-w-6xl mx-auto items-center justify-between gap-2">
           <motion.div
             className="md:w-1/2"
             initial={{ opacity: 0, x: -60 }}
@@ -86,12 +85,12 @@ export default function Page() {
             transition={{ duration: 0.8 }}
           >
             <motion.h1
-              className="text-5xl md:text-6xl font-bold text-emerald-800 dark:text-emerald-100 mb-6"
+              className="text-2xl md:text-6xl font-bold text-emerald-800 dark:text-emerald-100 mb-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              あなたの音楽の物語をシェアしよう。
+              あなたの音楽の物語を<span className="inline-block">シェアしよう。</span>
             </motion.h1>
             <motion.p
               className="text-xl text-emerald-600 dark:text-emerald-300 mb-8"
@@ -99,7 +98,7 @@ export default function Page() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              好きな曲と共に、あなたの想いを綴る。
+              好きな曲と共に、<span className="inline-block">あなたの想いを綴る。</span>
               <br />
               新しい音楽との出会いの場へ。
             </motion.p>
@@ -123,14 +122,12 @@ export default function Page() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            {/* Replace this with your actual image */}
             <Image
               src="/mv.png"
-              width={560}
-              height={560}
+              width={200}
+              height={200}
               alt="音楽コミュニティのイラスト"
-              className="w-full h-auto object-contain"
-              style={{ width: "auto", height: "auto" }}
+              className="w-full h-auto object-contain md:w-[560px]"
             />
           </motion.div>
         </div>
@@ -141,7 +138,6 @@ export default function Page() {
         lowerSectionBg="bg-emerald-50 dark:bg-gray-900"
       />
 
-      {/* 特徴セクション */}
       <section className="py-20 px-4 bg-white dark:bg-gray-800">
         <motion.div
           className="max-w-6xl mx-auto"
@@ -205,7 +201,6 @@ export default function Page() {
         lowerSectionBg="bg-white dark:bg-gray-800"
       />
 
-      {/* 使い方セクション */}
       <section className="py-20 px-4 bg-emerald-50 dark:bg-gray-900">
         <motion.div
           className="max-w-6xl mx-auto"
@@ -277,7 +272,6 @@ export default function Page() {
         lowerSectionBg="bg-emerald-50 dark:bg-gray-900"
       />
 
-      {/* メリットセクション */}
       <section className="py-20 px-4 bg-white dark:bg-gray-800">
         <motion.div
           className="max-w-6xl mx-auto"
