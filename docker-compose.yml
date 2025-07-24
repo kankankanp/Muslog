@@ -15,7 +15,7 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=simpleblog
     networks:
-      - simpleblog-net # ネットワーク設定を追加
+      - simpleblog-net
 
   db:
     image: postgres:15
@@ -28,11 +28,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-      - simpleblog-net # 同じネットワークに追加
+      - simpleblog-net
 
 volumes:
   db-data:
 
 networks:
   simpleblog-net:
-    driver: bridge # ネットワークの設定を追加
+    driver: bridge
