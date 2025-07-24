@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/app/lib/store/store";
-import { setTheme } from "@/app/lib/store/themeSlice";
+import type { RootState } from "@/app/libs/store/store";
+import { setTheme } from "@/app/libs/store/themeSlice";
 
 export default function ThemeToggleButton() {
   const dispatch = useDispatch();

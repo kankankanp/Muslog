@@ -1,0 +1,13 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/BlogsApi.md
+docs/ModelPost.md
+docs/ModelTrack.md
+docs/UsersApi.md
+git_push.sh
+index.ts

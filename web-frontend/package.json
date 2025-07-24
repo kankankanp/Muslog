@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "debug": "NODE_OPTIONS='--inspect' next dev"
+    "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/swagger/doc.json -g typescript-axios -o src/app/lib/api/generated"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
@@ -19,8 +19,10 @@
     "@mapbox/node-pre-gyp": "^2.0.0",
     "@prisma/client": "^6.4.1",
     "@reduxjs/toolkit": "^2.5.1",
+    "@tanstack/react-query": "^5.83.0",
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
+    "axios": "^1.11.0",
     "bcryptjs": "^2.4.3",
     "destyle.css": "^4.0.1",
     "eslint-plugin-import": "^2.31.0",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@openapitools/openapi-generator-cli": "^2.21.4",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",

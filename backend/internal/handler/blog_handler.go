@@ -14,6 +14,14 @@ type BlogHandler struct {
 	Service *service.BlogService
 }
 
+// GetAllBlogs godoc
+// @Summary Get all blogs
+// @Description Get all blog posts
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]interface{}
+// @Router /blogs [get]
 func (h *BlogHandler) GetAllBlogs(c echo.Context) error {
 	posts, err := h.Service.GetAllBlogs()
 	if err != nil {
@@ -22,6 +30,15 @@ func (h *BlogHandler) GetAllBlogs(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
 
+// GetBlogByID godoc
+// @Summary Get a blog by ID
+// @Description Get a single blog post by its ID
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Blog ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /blogs/{id} [get]
 func (h *BlogHandler) GetBlogByID(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -35,6 +52,15 @@ func (h *BlogHandler) GetBlogByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
+// CreateBlog godoc
+// @Summary Create a new blog
+// @Description Create a new blog post
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Param blog body model.Post true "Blog post to create"
+// @Success 201 {object} map[string]interface{}
+// @Router /blogs [post]
 func (h *BlogHandler) CreateBlog(c echo.Context) error {
 	type TrackInput struct {
 		SpotifyID     string `json:"spotifyId"`
@@ -72,6 +98,16 @@ func (h *BlogHandler) CreateBlog(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
 }
 
+// UpdateBlog godoc
+// @Summary Update a blog
+// @Description Update an existing blog post
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Blog ID"
+// @Param blog body model.Post true "Blog post to update"
+// @Success 200 {object} map[string]interface{}
+// @Router /blogs/{id} [put]
 func (h *BlogHandler) UpdateBlog(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -98,6 +134,15 @@ func (h *BlogHandler) UpdateBlog(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
+// DeleteBlog godoc
+// @Summary Delete a blog
+// @Description Delete a blog post by its ID
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Blog ID"
+// @Success 200 {object} map[string]interface{}
+// @Router /blogs/{id} [delete]
 func (h *BlogHandler) DeleteBlog(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -110,6 +155,15 @@ func (h *BlogHandler) DeleteBlog(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
 }
 
+// GetBlogsByPage godoc
+// @Summary Get blogs by page
+// @Description Get blog posts paginated
+// @Tags blogs
+// @Accept  json
+// @Produce  json
+// @Param page path int true "Page number"
+// @Success 200 {object} map[string]interface{}
+// @Router /blogs/page/{page} [get]
 func (h *BlogHandler) GetBlogsByPage(c echo.Context) error {
 	pageStr := c.Param("page")
 	page, err := strconv.Atoi(pageStr)
