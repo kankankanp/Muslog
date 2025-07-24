@@ -1,5 +1,5 @@
 import "@/scss/global.css";
-import "../../node_modules/destyle.css";
+import "destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { Metadata } from "next";
