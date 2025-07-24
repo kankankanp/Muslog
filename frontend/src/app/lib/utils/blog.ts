@@ -1,12 +1,10 @@
 import { Track } from "@prisma/client";
-import { auth } from "../auth/auth";
-import prisma from "../db/prisma";
 
-export const ENDPOINT = process.env.NEXT_PUBLIC_API_URL;
+export const ENDPOINT = "http://localhost:8080";
 
 export const fetchAllBlogs = async () => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog`, { cache: "no-store" });
+    const res = await fetch(`${ENDPOINT}/blogs`, { cache: "no-store" });
 
     if (!res.ok) {
       throw new Error(`Error fetching blogs: ${res.statusText}`);
@@ -20,43 +18,32 @@ export const fetchAllBlogs = async () => {
 };
 
 export const fetchBlogsByPage = async (page: number) => {
-  const session = await auth();
+  try {
+    const res = await fetch(`${ENDPOINT}/blogs/page/${page}`, { cache: "no-store" });
 
-  if (!session?.user?.id) {
+    if (!res.ok) {
+      throw new Error(`Error fetching blogs: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
     return { posts: [], totalCount: 0 };
   }
-
-  const PER_PAGE = 4;
-  const skip = (page - 1) * PER_PAGE;
-
-  const [posts, totalCount] = await Promise.all([
-    prisma.post.findMany({
-      where: { userId: session.user.id },
-      skip,
-      take: PER_PAGE,
-      orderBy: { createdAt: "desc" },
-      include: {
-        tracks: true,
-      },
-    }),
-    prisma.post.count({
-      where: { userId: session.user.id },
-    }),
-  ]);
-
-  return { posts, totalCount };
 };
 
 export const postBlog = async (
   title: string,
   description: string,
-  track: Track | null
+  track: Track | null,
+  userId: string
 ) => {
-  const res = await fetch(`${ENDPOINT}/api/blog`, {
+  const res = await fetch(`${ENDPOINT}/blogs`, {
     method: "POST",
     body: JSON.stringify({
       title,
       description,
+      userId,
       tracks: track ? [track] : [],
     }),
     headers: {
@@ -73,9 +60,9 @@ export const editBlog = async (
   id: number
 ) => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
+    const res = await fetch(`${ENDPOINT}/blogs/${id}`, {
       method: "PUT",
-      body: JSON.stringify({ title, description, id }),
+      body: JSON.stringify({ title, description }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -93,7 +80,7 @@ export const editBlog = async (
 
 export const deleteBlog = async (id: number) => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
+    const res = await fetch(`${ENDPOINT}/blogs/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -112,7 +99,7 @@ export const deleteBlog = async (id: number) => {
 
 export const getBlogById = async (id: number) => {
   try {
-    const res = await fetch(`${ENDPOINT}/api/blog/${id}`, {
+    const res = await fetch(`${ENDPOINT}/blogs/${id}`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -133,10 +120,12 @@ export const getBlogById = async (id: number) => {
 
 export const getAllBlogIds = async () => {
   try {
-    const posts = await prisma.post.findMany({
-      select: { id: true },
-    });
-    return posts.map((post) => post.id);
+    const res = await fetch(`${ENDPOINT}/blogs`, { cache: "no-store" });
+    if (!res.ok) {
+      throw new Error(`Error fetching blogs: ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data.posts.map((post: { id: number }) => post.id);
   } catch (error) {
     return [];
   }
