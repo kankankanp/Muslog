@@ -2,8 +2,8 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import ProfileCard from "../components/elements/cards/ProfileCard";
-import { auth } from "../lib/auth/auth";
-import prisma from "../lib/db/prisma";
+import { auth } from "../libs/auth/auth";
+import prisma from "../libs/db/prisma";
 
 export default async function Page() {
   const session = await auth();

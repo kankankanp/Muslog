@@ -4,10 +4,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
-import Footer from "./components/layouts/Footer";
-import Header from "./components/layouts/Header";
-import { NextAuthProvider } from "./lib/auth/NextAuthProvider";
-import { Providers } from "./lib/store/Providers";
+import Providers from "./providers";
 
 config.autoAddCss = false;
 
@@ -34,13 +31,13 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoJp.variable} antialiased`}>
-        <NextAuthProvider>
+        {/* <NextAuthProvider>
           <Providers>
-            <Header />
-            {children}
-            <Footer />
+            <Header /> */}
+        <Providers>{children}</Providers>
+        {/* <Footer />
           </Providers>
-        </NextAuthProvider>
+        </NextAuthProvider> */}
       </body>
     </html>
   );
