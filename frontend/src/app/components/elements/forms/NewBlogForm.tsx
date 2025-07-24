@@ -54,8 +54,12 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   }, [selectedTrack, setValue]);
 
   const onSubmit = async (data: FormData) => {
+    if (!session?.user?.id) {
+      toast.error("You must be logged in to post.");
+      return;
+    }
     try {
-      await postBlog(data.title, data.description, data.track);
+      await postBlog(data.title, data.description, data.track, session.user.id);
 
       toast.success("Posted!", { duration: 1500 });
       setTimeout(() => {
