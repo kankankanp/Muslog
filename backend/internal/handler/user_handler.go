@@ -96,6 +96,19 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed"})
 }
 
+// Logout godoc
+// @Summary User logout
+// @Description Log out a user by clearing JWT cookies.
+// @Tags auth
+// @Produce  json
+// @Success 200 {object} map[string]interface{}
+// @Router /logout [post]
+func (h *UserHandler) Logout(c echo.Context) error {
+	clearTokenCookie(c, "access_token")
+	clearTokenCookie(c, "refresh_token")
+	return c.JSON(http.StatusOK, echo.Map{"message": "Logout successful"})
+}
+
 // GetMe godoc
 // @Summary Get current user
 // @Description Get the currently logged in user's information.
@@ -167,7 +180,7 @@ func (h *UserHandler) GetUserPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
 
-func createToken(userID uint, expiry time.Duration) (string, error) {
+func createToken(userID string, expiry time.Duration) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(expiry).Unix(),
@@ -181,6 +194,18 @@ func setTokenCookie(c echo.Context, name, token string) {
 	cookie.Name = name
 	cookie.Value = token
 	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Path = "/"
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteLaxMode
+	// cookie.Secure = true // In production, set this to true
+	c.SetCookie(cookie)
+}
+
+func clearTokenCookie(c echo.Context, name string) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = ""
+	cookie.Expires = time.Unix(0, 0) // Set expiry to a past date
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteLaxMode
