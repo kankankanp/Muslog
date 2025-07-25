@@ -34,7 +34,7 @@
 - 言語：TypeScript
 - フレームワーク：Next.js 14.2.15(App Router)
 - データベース：PostgreSQL(Supabase Database)
-- ORM: Prisma
+
 - 認証：Auth.js
 
 ### 開発環境・インフラ

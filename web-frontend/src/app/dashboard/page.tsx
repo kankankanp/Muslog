@@ -1,29 +1,11 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import ProfileCard from "../components/elements/cards/ProfileCard";
-import { auth } from "../libs/auth/auth";
-import prisma from "../libs/db/prisma";
 
 export default async function Page() {
-  const session = await auth();
-  if (!session?.user?.email) {
-    redirect("/registration/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { name: true, email: true },
-  });
-
-  if (!user) {
-    throw new Error("ユーザーが見つかりません");
-  }
-
   return (
     <div className="dark:bg-gray-900 bg-gray-100 min-h-screen">
       <div className="py-8 px-4 max-w-6xl mx-auto">
-        <ProfileCard name={user.name} email={user.email} />
+        {/* <ProfileCard name={user.name} email={user.email} /> */}
         <div className="mt-8">
           <Link href="/library" className="block">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex items-center space-x-4">

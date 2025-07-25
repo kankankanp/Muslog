@@ -1,20 +1,61 @@
 "use client";
 
-import { useFormState } from "react-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
-import { loginAction, type LoginState } from "@/app/actions/login";
+import { loginSuccess } from "@/app/libs/store/authSlice";
 
-const initialState: LoginState = {
-  message: null,
-};
+const loginSchema = z.object({
+  email: z
+    .string()
+    .email({ message: "有効なメールアドレスを入力してください。" }),
+  password: z
+    .string()
+    .min(6, { message: "パスワードは6文字以上で入力してください。" }),
+});
+
+type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const [state, formAction] = useFormState(loginAction, initialState);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: LoginFormInputs) => {
+
+    }
+    onSuccess: (data) => {
+      dispatch(loginSuccess(data.data.user));
+      toast.success("ログインしました。");
+      router.push("/");
+    },
+    onError: (error) => {
+      toast.error("ログインに失敗しました。");
+      console.error("Login failed:", error);
+    },
+  });
+
+  const onSubmit = (data: LoginFormInputs) => {
+    mutation.mutate(data);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <form
-        action={formAction}
+        onSubmit={handleSubmit(onSubmit)}
         noValidate
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 space-y-4"
       >
@@ -22,9 +63,14 @@ export default function LoginForm() {
           ログイン
         </h2>
 
-        {state.message && (
+        {errors.email && (
           <div className="text-red-500 text-sm text-center">
-            {state.message}
+            {errors.email.message}
+          </div>
+        )}
+        {errors.password && (
+          <div className="text-red-500 text-sm text-center">
+            {errors.password.message}
           </div>
         )}
 
@@ -35,8 +81,7 @@ export default function LoginForm() {
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="email"
-            name="email"
-            required
+            {...register("email")}
           />
         </div>
 
@@ -45,10 +90,9 @@ export default function LoginForm() {
             パスワード:
           </label>
           <input
-            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="password"
-            name="password"
-            required
+            {...register("password")}
           />
         </div>
 
@@ -88,7 +132,11 @@ export default function LoginForm() {
           </div>
         </div>
 
-        <LoadingButton label={"ログイン"} color={"blue"} />
+        <LoadingButton
+          label={"ログイン"}
+          color={"blue"}
+          isLoading={mutation.isPending}
+        />
       </form>
     </div>
   );
