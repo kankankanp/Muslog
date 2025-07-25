@@ -1,16 +1,15 @@
 import "@/scss/global.css";
-import "destyle.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import "destyle.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
-import Providers from "./providers";
-
+import { Providers } from "./libs/store/Providers";
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({
   subsets: ["latin"],
-  weight: ["100", "300", "400", "500", "700", "900"], // 必要なウェイトを指定
+  weight: ["100", "300", "400", "500", "700", "900"],
   variable: "--font-notojp",
   display: "swap",
 });

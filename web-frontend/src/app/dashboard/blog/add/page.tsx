@@ -1,6 +1,6 @@
 "use client";
 
-import { Track } from "@prisma/client";
+
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import NewBlogForm from "@/app/components/elements/forms/NewBlogForm";
