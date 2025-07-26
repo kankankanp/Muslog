@@ -4,10 +4,34 @@
 /* eslint-disable */
 import type { User } from '../models/User';
 import type { UserLogin } from '../models/UserLogin';
+import type { UserRegister } from '../models/UserRegister';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class AuthService {
+    /**
+     * User registration
+     * Register a new user.
+     * @param requestBody
+     * @returns any User registered successfully
+     * @throws ApiError
+     */
+    public static postRegister(
+        requestBody: UserRegister,
+    ): CancelablePromise<{
+        message?: string;
+        user?: User;
+    }> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/register',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Invalid input`,
+            },
+        });
+    }
     /**
      * User login
      * Log in a user and return a JWT token.

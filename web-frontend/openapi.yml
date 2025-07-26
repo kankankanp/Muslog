@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Simple Blog API
+  title: Muslog API
   version: 1.0.0
 paths:
   /blogs:
@@ -203,6 +203,32 @@ paths:
           description: Bad request, missing search term.
         '500':
           description: Internal server error.
+  /register:
+    post:
+      summary: User registration
+      description: Register a new user.
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
   /login:
     post:
       summary: User login

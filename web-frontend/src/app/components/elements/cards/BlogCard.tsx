@@ -71,7 +71,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                     >
                       <Image
                         src={track.albumImageUrl || "/default-image.jpg"}
-                        alt={track.name}
+                        alt={track.name || ""}
                         width={48}
                         height={48}
                         className="w-12 h-12 rounded object-cover"
