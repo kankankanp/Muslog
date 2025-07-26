@@ -26,23 +26,38 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unauthorized"})
 	}
 
-	// Create access token
-	accessToken, err := createToken(user.ID, time.Hour*24) // 24 hours
+	accessToken, err := createToken(user.ID, time.Hour*24) // 有効期限は24時間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
 
-	// Create refresh token
-	refreshToken, err := createToken(user.ID, time.Hour*24*7) // 7 days
+	refreshToken, err := createToken(user.ID, time.Hour*24*7) // 有効期限は7日間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create refresh token"})
 	}
 
-	// Set tokens in cookies
 	setTokenCookie(c, "access_token", accessToken)
 	setTokenCookie(c, "refresh_token", refreshToken)
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": user})
+}
+
+func (h *UserHandler) Register(c echo.Context) error {
+	var req struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
+	}
+
+	user, err := h.Service.CreateUser(req.Name, req.Email, req.Password)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to register user"})
+	}
+
+	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": user})
 }
 
 func (h *UserHandler) RefreshToken(c echo.Context) error {
@@ -55,7 +70,7 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, echo.NewHTTPError(http.StatusUnauthorized, "Unexpected signing method")
 		}
-		return []byte("secret"), nil // Replace "secret" with your secret key
+		return []byte("secret"), nil
 	})
 
 	if err != nil || !token.Valid {
@@ -69,7 +84,6 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 
 	userID := uint(claims["user_id"].(float64))
 
-	// Create new access token
 	accessToken, err := createToken(fmt.Sprintf("%d", userID), time.Hour*24) // 24 hours
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
@@ -77,7 +91,7 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 
 	setTokenCookie(c, "access_token", accessToken)
 
-	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed"})
+	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed", "accessToken": accessToken})
 }
 
 func (h *UserHandler) Logout(c echo.Context) error {
@@ -130,7 +144,7 @@ func createToken(userID string, expiry time.Duration) (string, error) {
 		"exp":     time.Now().Add(expiry).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("secret")) // Replace "secret" with a real secret key
+	return token.SignedString([]byte("secret"))
 }
 
 func setTokenCookie(c echo.Context, name, token string) {
@@ -141,7 +155,7 @@ func setTokenCookie(c echo.Context, name, token string) {
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteLaxMode
-	// cookie.Secure = true // In production, set this to true
+	// cookie.Secure = true // 本番環境ではtrueにする
 	c.SetCookie(cookie)
 }
 
@@ -149,10 +163,10 @@ func clearTokenCookie(c echo.Context, name string) {
 	cookie := new(http.Cookie)
 	cookie.Name = name
 	cookie.Value = ""
-	cookie.Expires = time.Unix(0, 0) // Set expiry to a past date
+	cookie.Expires = time.Unix(0, 0)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteLaxMode
-	// cookie.Secure = true // In production, set this to true
+	// cookie.Secure = true // 本番環境ではtrueにする
 	c.SetCookie(cookie)
 }

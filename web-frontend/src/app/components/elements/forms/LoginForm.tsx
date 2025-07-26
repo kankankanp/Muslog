@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
+import { useLogin } from "@/app/libs/hooks/api/useAuth";
 import { loginSuccess } from "@/app/libs/store/authSlice";
 
 const loginSchema = z.object({
@@ -33,23 +33,19 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: (data: LoginFormInputs) => {
-
-    }
-    onSuccess: (data) => {
-      dispatch(loginSuccess(data.data.user));
-      toast.success("ログインしました。");
-      router.push("/");
-    },
-    onError: (error) => {
-      toast.error("ログインに失敗しました。");
-      console.error("Login failed:", error);
-    },
-  });
+  const loginMutation = useLogin();
 
   const onSubmit = (data: LoginFormInputs) => {
-    mutation.mutate(data);
+    loginMutation.mutate(data, {
+      onSuccess: (user) => {
+        dispatch(loginSuccess(user));
+        toast.success("ログインに成功しました");
+        router.push("/dashboard");
+      },
+      onError: (error) => {
+        toast.error(error.message || "ログインに失敗しました");
+      },
+    });
   };
 
   return (
@@ -135,7 +131,7 @@ export default function LoginForm() {
         <LoadingButton
           label={"ログイン"}
           color={"blue"}
-          isLoading={mutation.isPending}
+          isPending={loginMutation.isPending}
         />
       </form>
     </div>

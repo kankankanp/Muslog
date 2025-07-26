@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
+import { Track } from "@/app/libs/api/generated/models/Track";
 
 export type Post = {
   id: number;
@@ -69,7 +70,7 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                       className="flex items-center gap-4 p-2 border rounded-md bg-gray-50 dark:bg-gray-700"
                     >
                       <Image
-                        src={track.albumImageUrl}
+                        src={track.albumImageUrl || "/default-image.jpg"}
                         alt={track.name}
                         width={48}
                         height={48}

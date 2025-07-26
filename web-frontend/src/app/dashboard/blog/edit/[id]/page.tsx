@@ -7,15 +7,19 @@ import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { z } from "zod";
 import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
-import { getBlogById, editBlog, deleteBlog } from "@/app/lib/utils/blog";
+import { useGetBlogById, useUpdateBlog, useDeleteBlog } from "@/app/libs/hooks/api/useBlogs";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
   description: z.string().min(1, "内容を入力してください"),
 });
 
-export default function Page({ params }: { params: { id: number } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const { data: post, isLoading, isError } = useGetBlogById(Number(params.id));
+  const { mutateAsync: updateBlog } = useUpdateBlog();
+  const { mutateAsync: deleteBlog } = useDeleteBlog();
+
   const {
     register,
     handleSubmit,
@@ -26,22 +30,15 @@ export default function Page({ params }: { params: { id: number } }) {
     defaultValues: { title: "", description: "" },
   });
 
-  const fetchPost = useCallback(async () => {
-    try {
-      const data = await getBlogById(params.id);
-      reset(data);
-    } catch {
-      toast.error("データの取得に失敗しました");
-    }
-  }, [params.id, reset]);
-
   useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
+    if (post) {
+      reset({ title: post.title, description: post.description });
+    }
+  }, [post, reset]);
 
   const onSubmit = async (data: { title: string; description: string }) => {
     try {
-      await editBlog(data.title, data.description, params.id);
+      await updateBlog({ id: Number(params.id), title: data.title, description: data.description });
       toast.success("更新しました！", { duration: 1500 });
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
@@ -54,7 +51,7 @@ export default function Page({ params }: { params: { id: number } }) {
 
   const handleDelete = async () => {
     try {
-      await deleteBlog(params.id);
+      await deleteBlog(Number(params.id));
       toast.success("削除しました！");
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
@@ -64,6 +61,9 @@ export default function Page({ params }: { params: { id: number } }) {
       toast.error("削除に失敗しました。");
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !post) return <div>Error loading post.</div>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">

@@ -14,4 +14,5 @@ export type { UserLogin } from './models/UserLogin';
 
 export { AuthService } from './services/AuthService';
 export { BlogsService } from './services/BlogsService';
+export { SpotifyService } from './services/SpotifyService';
 export { UsersService } from './services/UsersService';

@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type User = {
-    id?: number;
-    email?: string;
-    username?: string;
-    createdAt?: string;
-    updatedAt?: string;
+    id: string;
+    email: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
 };
 

@@ -1,19 +1,19 @@
 import BlogCard from "@/app/components/elements/cards/BlogCard";
-import { getAllBlogIds, getBlogById } from "@/app/lib/utils/blog";
+import { BlogsService } from "@/app/libs/api/generated";
 
 export async function generateStaticParams() {
-  const ids = await getAllBlogIds();
+  const response = await BlogsService.getBlogs();
+  const ids = response.posts?.map(post => post.id) || [];
 
   return ids.map((id: number) => ({
-    //メモ：動的ルーティングではURLパラメータを文字列として扱う必要あり
     id: id.toString(),
   }));
 }
 
-export default async function Page(props: { params: Promise<{ id: number }> }) {
-  const params = await props.params;
-  const { id } = params;
-  const post = await getBlogById(Number(id));
+export default async function Page(props: { params: { id: string } }) {
+  const { id } = props.params;
+  const response = await BlogsService.getBlogs1(Number(id));
+  const post = response.post;
 
   if (!post) {
     return (
