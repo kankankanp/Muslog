@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies (frontend)
+        run: |
+          cd web-frontend
+          npm ci
+
+      - name: Format (frontend)
+        run: |
+          cd web-frontend
+          npm run format
+
+      - name: Lint (frontend)
+        run: |
+          cd web-frontend
+          npm run lint
+
+      - name: Build (frontend)
+        run: |
+          cd web-frontend
+          npm run build
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+
+      - name: Install dependencies (backend)
+        run: |
+          cd backend
+          go mod tidy
+
+      - name: Format (backend)
+        run: |
+          cd backend
+          go fmt ./...
+
+      - name: Staticcheck (backend)
+        run: |
+          cd backend
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          staticcheck ./...
+
+      - name: Build (backend)
+        run: |
+          cd backend/cmd/backend
+          go build .
