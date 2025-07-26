@@ -1,6 +1,5 @@
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";

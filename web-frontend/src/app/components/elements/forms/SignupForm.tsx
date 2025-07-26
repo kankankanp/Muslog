@@ -36,7 +36,7 @@ export default function SignupForm() {
     signup(data, {
       onSuccess: () => {
         toast.success("登録しました。");
-        router.push("/registration/login");
+        router.push("/dashboard");
       },
       onError: (error) => {
         toast.error("登録に失敗しました。");

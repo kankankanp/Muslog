@@ -33,10 +33,10 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const loginMutation = useLogin();
+  const {mutate: loginMutation, isPending} = useLogin();
 
   const onSubmit = (data: LoginFormInputs) => {
-    loginMutation.mutate(data, {
+    loginMutation(data, {
       onSuccess: (user) => {
         dispatch(loginSuccess(user));
         toast.success("ログインに成功しました");
@@ -131,7 +131,7 @@ export default function LoginForm() {
         <LoadingButton
           label={"ログイン"}
           color={"blue"}
-          isPending={loginMutation.isPending}
+          isPending={isPending}
         />
       </form>
     </div>
