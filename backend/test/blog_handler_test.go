@@ -1,0 +1,29 @@
+package test
+
+import (
+	"backend/internal/handler"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/labstack/echo/v4"
+)
+
+func TestGetAllPosts(t *testing.T) {
+	e := echo.New()
+	h := &handler.PostHandler{} // Serviceはモック化推奨
+
+	req := httptest.NewRequest(http.MethodGet, "/api/posts", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	// 実行
+	err := h.GetAllPosts(c)
+	if err != nil {
+		t.Fatalf("handler returned error: %v", err)
+	}
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", rec.Code)
+	}
+}
