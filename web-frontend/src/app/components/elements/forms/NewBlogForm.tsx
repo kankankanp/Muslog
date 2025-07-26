@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -9,7 +8,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
-import { postBlog } from "@/app/lib/utils/blog";
+import { Track } from "../others/SelectMusciArea";
+import { useCreateBlog } from "@/app/libs/hooks/api/useBlogs";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -53,23 +53,19 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
     setValue("track", selectedTrack);
   }, [selectedTrack, setValue]);
 
-  const onSubmit = async (data: FormData) => {
-    if (!session?.user?.id) {
-      toast.error("You must be logged in to post.");
-      return;
-    }
-    try {
-      await postBlog(data.title, data.description, data.track, session.user.id);
+  const createBlogMutation = useCreateBlog();
 
-      toast.success("Posted!", { duration: 1500 });
-      setTimeout(() => {
+  const onSubmit = async (data: FormData) => {
+    createBlogMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success("ブログが作成されました");
         reset();
         router.push("/dashboard/blog/page/1");
-        router.refresh();
-      }, 2000);
-    } catch {
-      toast.error("Failed to post.");
-    }
+      },
+      onError: (error) => {
+        toast.error(error.message || "ブログの作成に失敗しました");
+      } 
+    });
   };
 
   return (

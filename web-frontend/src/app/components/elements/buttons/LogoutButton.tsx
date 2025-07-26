@@ -1,34 +1,29 @@
 "use client";
 
-import { DefaultApi } from "@/app/libs/api/generated";
-import { logout } from "@/app/libs/store/authSlice";
-import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-
-const api = new DefaultApi();
+import { useLogout } from "@/app/libs/hooks/api/useAuth";
+import { logout } from "@/app/libs/store/authSlice";
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-
-  const mutation = useMutation({
-    mutationFn: () => api.logout(),
-    onSuccess: () => {
-      dispatch(logout());
-      toast.success("ログアウトしました。");
-      router.push("/login");
-    },
-    onError: (error) => {
-      toast.error("ログアウトに失敗しました。");
-      console.error("Logout failed:", error);
-    },
-  });
+  const { mutate: logoutMutation } = useLogout();
 
   const handleLogout = () => {
-    mutation.mutate();
+    logoutMutation(undefined, {
+      onSuccess: () => {
+        dispatch(logout());
+        toast.success("ログアウトしました。");
+        router.push("/login");
+      },
+      onError: (error) => {
+        toast.error("ログアウトに失敗しました。");
+        console.error("Logout failed:", error);
+      },
+    });
   };
 
   return (

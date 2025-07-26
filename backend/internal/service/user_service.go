@@ -11,6 +11,10 @@ type UserService struct {
 	Repo *repository.UserRepository
 }
 
+func (s *UserService) CreateUser(name string, email string, password string) (any, any) {
+	panic("unimplemented")
+}
+
 func (s *UserService) AuthenticateUser(email, password string) (*model.User, error) {
 	user, err := s.Repo.FindByEmail(email)
 	if err != nil {

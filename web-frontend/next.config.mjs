@@ -13,7 +13,7 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ["bcrypt"],
-    reactCompiler: true,
+    
   },
   images: {
     domains: ["i.scdn.co"],

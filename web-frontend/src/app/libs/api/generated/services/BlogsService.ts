@@ -50,7 +50,7 @@ export class BlogsService {
     }
     /**
      * Get a post by ID
-     * Get a single post post by its ID
+     * Get a single post by its ID
      * @param id Post ID
      * @returns any Successful response
      * @throws ApiError
@@ -74,7 +74,7 @@ export class BlogsService {
     }
     /**
      * Update a post
-     * Update an existing post post
+     * Update an existing post
      * @param id Post ID
      * @param requestBody
      * @returns any Post updated successfully
@@ -105,7 +105,7 @@ export class BlogsService {
     }
     /**
      * Delete a post
-     * Delete a post post by its ID
+     * Delete a post by its ID
      * @param id Post ID
      * @returns any Post deleted successfully
      * @throws ApiError
@@ -125,7 +125,7 @@ export class BlogsService {
     }
     /**
      * Get blogs by page
-     * Get post posts paginated
+     * Get posts paginated
      * @param page Page number
      * @returns any Successful response
      * @throws ApiError

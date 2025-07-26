@@ -39,6 +39,7 @@ export class AuthService {
      */
     public static postRefresh(): CancelablePromise<{
         message?: string;
+        accessToken?: string;
     }> {
         return __request(OpenAPI, {
             method: 'POST',

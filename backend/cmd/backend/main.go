@@ -11,10 +11,11 @@ import (
 	"log"
 	"os"
 	"time"
+
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -74,6 +75,9 @@ func main() {
 	userService := &service.UserService{Repo: userRepo}
 	userHandler := &handler.UserHandler{Service: userService}
 
+	spotifyService := service.NewSpotifyService()
+	spotifyHandler := handler.NewSpotifyHandler(spotifyService)
+
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
@@ -83,11 +87,10 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	
-
 	// Auth routes
 	authGroup := e.Group("/auth")
 	authGroup.POST("/login", userHandler.Login)
+	authGroup.POST("/register", userHandler.Register)
 	authGroup.POST("/refresh", userHandler.RefreshToken)
 	authGroup.GET("/me", userHandler.GetMe, middleware.AuthMiddleware)
 
@@ -109,6 +112,9 @@ func main() {
 	userGroup.GET("", userHandler.GetAllUsers)
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
+
+	// Spotify routes
+	e.GET("/spotify/search", spotifyHandler.SearchTracks)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

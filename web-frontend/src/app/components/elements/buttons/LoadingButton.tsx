@@ -5,6 +5,7 @@ import { useFormStatus } from "react-dom";
 type LoadingButtonProps = {
   label: string;
   color?: "blue" | "green";
+  isPending?: boolean;
 };
 
 export default function LoadingButton({
