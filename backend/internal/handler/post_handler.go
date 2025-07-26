@@ -10,58 +10,32 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type BlogHandler struct {
-	Service *service.BlogService
+type PostHandler struct {
+	Service *service.PostService
 }
 
-// GetAllBlogs godoc
-// @Summary Get all blogs
-// @Description Get all blog posts
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} map[string]interface{}
-// @Router /blogs [get]
-func (h *BlogHandler) GetAllBlogs(c echo.Context) error {
-	posts, err := h.Service.GetAllBlogs()
+func (h *PostHandler) GetAllPosts(c echo.Context) error {
+	posts, err := h.Service.GetAllPosts()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
 
-// GetBlogByID godoc
-// @Summary Get a blog by ID
-// @Description Get a single blog post by its ID
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Blog ID"
-// @Success 200 {object} map[string]interface{}
-// @Router /blogs/{id} [get]
-func (h *BlogHandler) GetBlogByID(c echo.Context) error {
+func (h *PostHandler) GetPostByID(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	post, err := h.Service.GetBlogByID(uint(id))
+	post, err := h.Service.GetPostByID(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
-// CreateBlog godoc
-// @Summary Create a new blog
-// @Description Create a new blog post
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Param blog body model.Post true "Blog post to create"
-// @Success 201 {object} map[string]interface{}
-// @Router /blogs [post]
-func (h *BlogHandler) CreateBlog(c echo.Context) error {
+func (h *PostHandler) CreatePost(c echo.Context) error {
 	type TrackInput struct {
 		SpotifyID     string `json:"spotifyId"`
 		Name          string `json:"name"`
@@ -92,23 +66,13 @@ func (h *BlogHandler) CreateBlog(c echo.Context) error {
 			AlbumImageUrl: t.AlbumImageUrl,
 		})
 	}
-	if err := h.Service.CreateBlog(&post); err != nil {
+	if err := h.Service.CreatePost(&post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
 }
 
-// UpdateBlog godoc
-// @Summary Update a blog
-// @Description Update an existing blog post
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Blog ID"
-// @Param blog body model.Post true "Blog post to update"
-// @Success 200 {object} map[string]interface{}
-// @Router /blogs/{id} [put]
-func (h *BlogHandler) UpdateBlog(c echo.Context) error {
+func (h *PostHandler) UpdatePost(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -121,59 +85,41 @@ func (h *BlogHandler) UpdateBlog(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
-	post, err := h.Service.GetBlogByID(uint(id))
+	post, err := h.Service.GetPostByID(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
 	post.Title = req.Title
 	post.Description = req.Description
 	post.UpdatedAt = time.Now()
-	if err := h.Service.UpdateBlog(post); err != nil {
+	if err := h.Service.UpdatePost(post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
-// DeleteBlog godoc
-// @Summary Delete a blog
-// @Description Delete a blog post by its ID
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Blog ID"
-// @Success 200 {object} map[string]interface{}
-// @Router /blogs/{id} [delete]
-func (h *BlogHandler) DeleteBlog(c echo.Context) error {
+func (h *PostHandler) DeletePost(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	if err := h.Service.DeleteBlog(uint(id)); err != nil {
+	if err := h.Service.DeletePost(uint(id)); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
 }
 
-// GetBlogsByPage godoc
-// @Summary Get blogs by page
-// @Description Get blog posts paginated
-// @Tags blogs
-// @Accept  json
-// @Produce  json
-// @Param page path int true "Page number"
-// @Success 200 {object} map[string]interface{}
-// @Router /blogs/page/{page} [get]
-func (h *BlogHandler) GetBlogsByPage(c echo.Context) error {
+func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 	pageStr := c.Param("page")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
 	}
 	const PerPage = 4
-	posts, totalCount, err := h.Service.GetBlogsByPage(page, PerPage)
+	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts, "totalCount": totalCount})
-} 
+}
