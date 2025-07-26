@@ -4,7 +4,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import "destyle.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
-import { Providers } from "./libs/store/Providers";
+import { Providers } from "./providers";
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({

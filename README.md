@@ -163,3 +163,28 @@ VSCodeの拡張機能を検索し、
 ### Gemini CLIの実行
 npx https://github.com/google-gemini/gemini-cli
 
+
+### DBのマイグレーション・シーディング
+```
+# backendコンテナに直接入る
+docker-compose exec -it backend bash
+# マイグレーションファイルの作成
+
+# マイグレーションの実行
+
+# シードデータの追加
+```
+### テーブルの確認
+```
+# dbコンテナに直接入る
+docker-compose exec -it db bash
+# PostgreSQLに移動
+psql -U postgres -d postgres
+# 特定のテーブルの中身を確認
+SELECT * FROM <テーブル名>;
+# 特定のテーブルの中身を削除
+TRUNCATE TABLE <テーブル名> CASCADE;
+# テーブル一覧を確認
+\dt:
+```
+
