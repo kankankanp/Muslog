@@ -9,16 +9,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func TestGetAllBlogs(t *testing.T) {
+func TestGetAllPosts(t *testing.T) {
 	e := echo.New()
-	h := &handler.BlogHandler{} // Serviceはモック化推奨
+	h := &handler.PostHandler{} // Serviceはモック化推奨
 
-	req := httptest.NewRequest(http.MethodGet, "/api/blog", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/posts", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
 	// 実行
-	err := h.GetAllBlogs(c)
+	err := h.GetAllPosts(c)
 	if err != nil {
 		t.Fatalf("handler returned error: %v", err)
 	}
@@ -26,4 +26,4 @@ func TestGetAllBlogs(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Errorf("expected status 200, got %d", rec.Code)
 	}
-} 
+}

@@ -15,15 +15,6 @@ type UserHandler struct {
 	Service *service.UserService
 }
 
-// Login godoc
-// @Summary User login
-// @Description Log in a user and return a JWT token.
-// @Tags auth
-// @Accept  json
-// @Produce  json
-// @Param user body model.User true "User credentials"
-// @Success 200 {object} map[string]interface{}
-// @Router /login [post]
 func (h *UserHandler) Login(c echo.Context) error {
 	u := new(model.User)
 	if err := c.Bind(u); err != nil {
@@ -54,13 +45,6 @@ func (h *UserHandler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": user})
 }
 
-// RefreshToken godoc
-// @Summary Refresh JWT token
-// @Description Refresh the JWT access token using the refresh token.
-// @Tags auth
-// @Produce  json
-// @Success 200 {object} map[string]interface{}
-// @Router /refresh [post]
 func (h *UserHandler) RefreshToken(c echo.Context) error {
 	cookie, err := c.Cookie("refresh_token")
 	if err != nil {
@@ -86,7 +70,7 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 	userID := uint(claims["user_id"].(float64))
 
 	// Create new access token
-	accessToken, err := createToken(userID, time.Hour*24) // 24 hours
+	accessToken, err := createToken(fmt.Sprintf("%d", userID), time.Hour*24) // 24 hours
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
@@ -96,26 +80,12 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed"})
 }
 
-// Logout godoc
-// @Summary User logout
-// @Description Log out a user by clearing JWT cookies.
-// @Tags auth
-// @Produce  json
-// @Success 200 {object} map[string]interface{}
-// @Router /logout [post]
 func (h *UserHandler) Logout(c echo.Context) error {
 	clearTokenCookie(c, "access_token")
 	clearTokenCookie(c, "refresh_token")
 	return c.JSON(http.StatusOK, echo.Map{"message": "Logout successful"})
 }
 
-// GetMe godoc
-// @Summary Get current user
-// @Description Get the currently logged in user's information.
-// @Tags auth
-// @Produce  json
-// @Success 200 {object} map[string]interface{}
-// @Router /me [get]
 func (h *UserHandler) GetMe(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := uint(userContext["user_id"].(float64))
@@ -128,14 +98,6 @@ func (h *UserHandler) GetMe(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
-// GetAllUsers godoc
-// @Summary Get all users
-// @Description Get all users
-// @Tags users
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} map[string]interface{}
-// @Router /users [get]
 func (h *UserHandler) GetAllUsers(c echo.Context) error {
 	users, err := h.Service.GetAllUsers()
 	if err != nil {
@@ -144,15 +106,6 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "users": users})
 }
 
-// GetUserByID godoc
-// @Summary Get a user by ID
-// @Description Get a single user by their ID
-// @Tags users
-// @Accept  json
-// @Produce  json
-// @Param id path string true "User ID"
-// @Success 200 {object} map[string]interface{}
-// @Router /users/{id} [get]
 func (h *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("id")
 	user, err := h.Service.GetUserByID(id)
@@ -162,15 +115,6 @@ func (h *UserHandler) GetUserByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "user": user})
 }
 
-// GetUserPosts godoc
-// @Summary Get user posts
-// @Description Get all posts by a user
-// @Tags users
-// @Accept  json
-// @Produce  json
-// @Param id path string true "User ID"
-// @Success 200 {object} map[string]interface{}
-// @Router /users/{id}/posts [get]
 func (h *UserHandler) GetUserPosts(c echo.Context) error {
 	id := c.Param("id")
 	posts, err := h.Service.GetUserPosts(id)
@@ -212,4 +156,3 @@ func clearTokenCookie(c echo.Context, name string) {
 	// cookie.Secure = true // In production, set this to true
 	c.SetCookie(cookie)
 }
- 

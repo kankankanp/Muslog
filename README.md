@@ -156,3 +156,10 @@ VSCodeの拡張機能を検索し、
 }
 ```
 設定後、ファイル保存時にコード整形とインポート整理・不要インポート削除が実行されます。
+
+
+
+
+### Gemini CLIの実行
+npx https://github.com/google-gemini/gemini-cli
+

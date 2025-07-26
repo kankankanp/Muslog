@@ -10,4 +10,4 @@ type Post struct {
     Tracks      []Track
     CreatedAt   time.Time
     UpdatedAt   time.Time
-} 
+}

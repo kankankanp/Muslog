@@ -14,7 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	swagger "github.com/swaggo/echo-swagger"
+	
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -66,9 +66,9 @@ func main() {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
 
-	blogRepo := &repository.BlogRepository{DB: db}
-	blogService := &service.BlogService{Repo: blogRepo}
-	blogHandler := &handler.BlogHandler{Service: blogService}
+	postRepo := &repository.PostRepository{DB: db}
+	postService := &service.PostService{Repo: postRepo}
+	postHandler := &handler.PostHandler{Service: postService}
 
 	userRepo := &repository.UserRepository{DB: db}
 	userService := &service.UserService{Repo: userRepo}
@@ -83,7 +83,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	e.GET("/swagger/*", swagger.WrapHandler)
+	
 
 	// Auth routes
 	authGroup := e.Group("/auth")
@@ -92,17 +92,17 @@ func main() {
 	authGroup.GET("/me", userHandler.GetMe, middleware.AuthMiddleware)
 
 	// Blog routes
-	blogGroup := e.Group("/blogs")
-	blogGroup.GET("", blogHandler.GetAllBlogs)
-	blogGroup.GET("/:id", blogHandler.GetBlogByID)
-	blogGroup.GET("/page/:page", blogHandler.GetBlogsByPage)
+	postGroup := e.Group("/posts")
+	postGroup.GET("", postHandler.GetAllPosts)
+	postGroup.GET("/:id", postHandler.GetPostByID)
+	postGroup.GET("/page/:page", postHandler.GetPostsByPage)
 
 	// Protected blog routes
 	protectedBlogGroup := e.Group("/blogs")
 	protectedBlogGroup.Use(middleware.AuthMiddleware)
-	protectedBlogGroup.POST("", blogHandler.CreateBlog)
-	protectedBlogGroup.PUT("/:id", blogHandler.UpdateBlog)
-	protectedBlogGroup.DELETE("/:id", blogHandler.DeleteBlog)
+	protectedBlogGroup.POST("", postHandler.CreatePost)
+	protectedBlogGroup.PUT("/:id", postHandler.UpdatePost)
+	protectedBlogGroup.DELETE("/:id", postHandler.DeletePost)
 
 	// User routes
 	userGroup := e.Group("/users")
