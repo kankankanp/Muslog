@@ -102,12 +102,12 @@ export default function LoginForm() {
           <div className="flex justify-between items-center bg-white rounded-md p-2">
             <div className="flex flex-col">
               <p className="text-sm">メールアドレス:</p>
-              <p className="font-mono">user1@example.com</p>
+              <p className="font-mono">EygQJpu@NillQOs.net</p>
             </div>
             <button
               type="button"
               className="ml-2 px-2 py-1 text-sm border-gray-400 border rounded hover:bg-blue-500 hover:text-white transition"
-              onClick={() => navigator.clipboard.writeText("user1@example.com")}
+              onClick={() => navigator.clipboard.writeText("EygQJpu@NillQOs.net")}
             >
               コピー
             </button>

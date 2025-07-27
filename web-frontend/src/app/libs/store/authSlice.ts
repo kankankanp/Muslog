@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthResponse } from "../api/generated";
 
 interface AuthState {
+  accessToken: any;
   user: AuthResponse | null;
 }
 
