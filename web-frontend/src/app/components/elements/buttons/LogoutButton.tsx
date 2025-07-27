@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useLogout } from "@/app/libs/hooks/api/useAuth";
-import { fetchUser } from "@/app/libs/store/authSlice";
+import { logout } from "@/app/libs/store/authSlice";
 import { AppDispatch } from "@/app/libs/store/store";
 
 const LogoutButton = () => {
@@ -16,7 +16,7 @@ const LogoutButton = () => {
   const handleLogout = () => {
     logoutMutation(undefined, {
       onSuccess: () => {
-        dispatch(fetchUser() as any);
+        dispatch(logout());
         toast.success("ログアウトしました。");
         router.push("/login");
       },

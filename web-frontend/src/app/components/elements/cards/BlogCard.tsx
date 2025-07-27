@@ -3,20 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
-import { Tag } from "@/app/libs/api/generated/models/Tag";
-import { Track } from "@/app/libs/api/generated/models/Track";
-
-export type Post = {
-  id: number;
-  title: string;
-  description: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  tracks: Track[];
-  tags: Tag[];
-  likesCount: number;
-};
+import { Post } from "@/app/libs/api/generated";
 
 type BlogCardProps = {
   isDetailPage?: boolean;
@@ -25,7 +12,12 @@ type BlogCardProps = {
   onLikeClick?: () => void;
 };
 
-const BlogCard = ({ isDetailPage, posts, isLiked, onLikeClick }: BlogCardProps) => {
+const BlogCard = ({
+  isDetailPage,
+  posts,
+  isLiked,
+  onLikeClick,
+}: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
@@ -112,7 +104,9 @@ const BlogCard = ({ isDetailPage, posts, isLiked, onLikeClick }: BlogCardProps) 
               <div className="flex items-center">
                 <FontAwesomeIcon
                   icon={faHeart}
-                  className={`cursor-pointer mr-1 ${isLiked ? "text-red-500" : "text-gray-400"}`}
+                  className={`cursor-pointer mr-1 ${
+                    isLiked ? "text-red-500" : "text-gray-400"
+                  }`}
                   onClick={onLikeClick}
                 />
                 <span className="text-gray-700 dark:text-gray-300">

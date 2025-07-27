@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import NewBlogForm from "@/app/components/elements/forms/NewBlogForm";
 import SelectMusicArea from "@/app/components/elements/others/SelectMusciArea";
-import { Track } from "@/app/libs/api/generated/models/Track";
+import { Track } from "@/app/components/elements/others/SelectMusciArea";
 
 export default function Page() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);

@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type Track = {
-    spotifyId?: string;
-    name?: string;
-    artistName?: string;
-    albumImageUrl?: string;
+export type RegisterRequest = {
+    name: string;
+    email: string;
+    password: string;
 };
 

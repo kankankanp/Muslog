@@ -3,26 +3,14 @@
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/app/libs/store/store";
-import { setTheme } from "@/app/libs/store/themeSlice";
 
 export default function ThemeToggleButton() {
-  const dispatch = useDispatch();
-  const theme = useSelector((state: RootState) => state.theme.theme);
-  const { setTheme: setNextTheme } = useTheme();
-  const [isDark, setIsDark] = useState(theme === "dark");
+  const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    setNextTheme(theme);
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    setIsDark(theme === "dark");
-  }, [setNextTheme, theme]);
+  const isDark = theme === "dark";
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    dispatch(setTheme(newTheme));
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (

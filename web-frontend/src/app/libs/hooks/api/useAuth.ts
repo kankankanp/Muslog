@@ -1,22 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
-import { AuthService } from "@/app/libs/api/generated";
-import { User } from "@/app/libs/api/generated/models/User";
-import { UserLogin } from "@/app/libs/api/generated/models/UserLogin";
+import {
+  AuthResponse,
+  AuthService,
+  LoginRequest,
+  RegisterRequest,
+} from "@/app/libs/api/generated";
 
 export const useLogin = () => {
-  const { mutate, isPending, error } = useMutation<{
-    id: string;
-    name: string;
-    accessToken: string;
-  }, Error, UserLogin>({
+  const { mutate, isPending, error } = useMutation<
+    AuthResponse,
+    Error,
+    LoginRequest
+  >({
     mutationFn: async (credentials) => {
       const loginResponse = await AuthService.postLogin(credentials);
-      const refreshResponse = await AuthService.postRefresh();
-      return {
-        id: loginResponse.user!.id,
-        name: loginResponse.user!.name,
-        accessToken: refreshResponse.accessToken!,
-      };
+      return loginResponse.user!;
     },
   });
   return { mutate, isPending, error };
@@ -41,11 +39,15 @@ export const useRefreshToken = () => {
 };
 
 export const useSignup = () => {
-  const { mutate, data, isPending, error } = useMutation<User, Error, { name: string; email: string; password: string }>({
+  const { mutate, isPending, error } = useMutation<
+    AuthResponse,
+    Error,
+    RegisterRequest
+  >({
     mutationFn: async (credentials) => {
       const response = await AuthService.postRegister(credentials);
       return response.user!;
     },
   });
-  return { mutate, data, isPending, error };
+  return { mutate, isPending, error };
 };

@@ -2,9 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AuthResponse } from '../models/AuthResponse';
+import type { LoginRequest } from '../models/LoginRequest';
+import type { RegisterRequest } from '../models/RegisterRequest';
 import type { User } from '../models/User';
-import type { UserLogin } from '../models/UserLogin';
-import type { UserRegister } from '../models/UserRegister';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -17,10 +18,10 @@ export class AuthService {
      * @throws ApiError
      */
     public static postRegister(
-        requestBody: UserRegister,
+        requestBody: RegisterRequest,
     ): CancelablePromise<{
         message?: string;
-        user?: User;
+        user?: AuthResponse;
     }> {
         return __request(OpenAPI, {
             method: 'POST',
@@ -40,10 +41,10 @@ export class AuthService {
      * @throws ApiError
      */
     public static postLogin(
-        requestBody: UserLogin,
+        requestBody: LoginRequest,
     ): CancelablePromise<{
         message?: string;
-        user?: User;
+        user?: AuthResponse;
     }> {
         return __request(OpenAPI, {
             method: 'POST',

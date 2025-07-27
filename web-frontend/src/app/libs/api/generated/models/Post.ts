@@ -9,10 +9,10 @@ export type Post = {
     title: string;
     description: string;
     userId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: string;
+    updatedAt?: string;
     tracks: Array<Track>;
-    tags: Array<Tag>;
-    likesCount: number;
+    tags?: Array<Tag>;
+    likesCount?: number;
 };
 

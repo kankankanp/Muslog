@@ -179,7 +179,7 @@ docker-compose exec -it backend bash
 # dbコンテナに直接入る
 docker-compose exec -it db bash
 # PostgreSQLに移動
-psql -U postgres -d postgres
+psql -U postgres -d simpleblog
 # 特定のテーブルの中身を確認
 SELECT * FROM <テーブル名>;
 # 特定のテーブルの中身を削除
@@ -187,4 +187,7 @@ TRUNCATE TABLE <テーブル名> CASCADE;
 # テーブル一覧を確認
 \dt:
 ```
+
+### ゲストログイン
+NbekDfg@QNqqGvl.info
 
