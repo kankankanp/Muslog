@@ -1,7 +1,7 @@
 package seeder
 
 import (
-	"backend/internal/model"
+	"simple-blog/backend/internal/model"
 	"log"
 	"math/rand"
 	"time"

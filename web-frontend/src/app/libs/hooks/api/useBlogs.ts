@@ -34,6 +34,7 @@ export const useCreateBlog = () => {
       description: string;
       userId: string;
       tracks?: {
+        id: number;
         spotifyId: string;
         name: string;
         artistName: string;

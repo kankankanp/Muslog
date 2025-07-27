@@ -5,9 +5,8 @@ import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Provider, useDispatch } from "react-redux";
-import apiClient from "./libs/axios";
-import { loginSuccess } from "./libs/store/authSlice";
-import store from "./libs/store/store";
+import { fetchUser } from "./libs/store/authSlice";
+import { store } from "./libs/store/store";
 
 const queryClient = new QueryClient();
 
@@ -23,16 +22,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await apiClient.get("/auth/me");
-        dispatch(loginSuccess(response.data));
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    };
-
-    fetchUser();
+    dispatch(fetchUser() as any);
   }, [dispatch]);
 
   return (

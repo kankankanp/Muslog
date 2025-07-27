@@ -1,14 +1,12 @@
 import axios from "axios";
+import { AuthService } from "@/app/libs/api/generated";
+import { fetchUser, logout } from "@/app/libs/store/authSlice";
 import { store } from "@/app/libs/store/store";
-import { logout, loginSuccess } from "@/app/libs/store/authSlice";
-import { AuthService, OpenAPI } from "@/app/libs/api/generated";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // Cookieを送信するために必要
 });
-
-OpenAPI.AXIOS_INSTANCE = apiClient;
 
 // Request interceptor to add access token to headers
 apiClient.interceptors.request.use(
@@ -41,7 +39,7 @@ apiClient.interceptors.response.use(
         const newAccessToken = refreshResponse.accessToken; // Adjust this line
 
         // Update Redux store with new access token
-        store.dispatch(loginSuccess({ accessToken: newAccessToken })); // Adjust this line
+        store.dispatch(fetchUser() as any); // Adjust this line
 
         // Update the original request with the new token and retry
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;

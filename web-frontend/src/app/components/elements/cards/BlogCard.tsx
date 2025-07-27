@@ -1,8 +1,9 @@
-import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
+import { Tag } from "@/app/libs/api/generated/models/Tag";
 import { Track } from "@/app/libs/api/generated/models/Track";
 
 export type Post = {
@@ -13,14 +14,18 @@ export type Post = {
   createdAt: Date;
   updatedAt: Date;
   tracks: Track[];
+  tags: Tag[];
+  likesCount: number;
 };
 
 type BlogCardProps = {
   isDetailPage?: boolean;
   posts: Post[];
+  isLiked?: boolean;
+  onLikeClick?: () => void;
 };
 
-const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
+const BlogCard = ({ isDetailPage, posts, isLiked, onLikeClick }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
   const truncateText = (text: string, length: number) => {
     if (text.length <= length) {
@@ -60,6 +65,19 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
                 : truncateText(post.description, 40)}
             </p>
 
+            {post.tags && post.tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300"
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {post.tracks?.length > 0 && (
               <div className="mt-4 space-y-3">
                 <ul className="space-y-2">
@@ -91,6 +109,16 @@ const BlogCard = ({ isDetailPage, posts }: BlogCardProps) => {
             )}
 
             <div className="flex justify-between items-center mt-4">
+              <div className="flex items-center">
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  className={`cursor-pointer mr-1 ${isLiked ? "text-red-500" : "text-gray-400"}`}
+                  onClick={onLikeClick}
+                />
+                <span className="text-gray-700 dark:text-gray-300">
+                  {post.likesCount}
+                </span>
+              </div>
               {!isDetailPage && (
                 <Link
                   href={`/dashboard/blog/edit/${post.id}`}

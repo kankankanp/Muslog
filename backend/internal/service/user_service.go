@@ -1,8 +1,8 @@
 package service
 
 import (
-	"backend/internal/model"
-	"backend/internal/repository"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/repository"
 
 	"golang.org/x/crypto/bcrypt"
 )

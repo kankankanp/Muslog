@@ -12,7 +12,7 @@ Simple Blogは、Next.jsとGoを使用して構築されたブログプラット
   - フレームワーク：Echo
   - コンテナ：Docker
   - ORM：GORM
-- データベース：MySQL (Docker Compose経由)
+- データベース：PostgreSQL (Docker Compose経由)
 - API仕様：Swagger (Swag)
 
 ## システム構成図

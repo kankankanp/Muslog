@@ -1,21 +1,27 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import "easymde/dist/easymde.min.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import SimpleMDEEditor from "react-simplemde-editor";
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
 import { Track } from "../others/SelectMusciArea";
 import { useCreateBlog } from "@/app/libs/hooks/api/useBlogs";
+import { useAddTagsToPost } from "@/app/libs/hooks/api/useTags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
   description: z.string().min(1, "内容を入力してください"),
+  tags: z.string().optional(),
   track: z
     .object({
+      id: z.number(),
+      postId: z.number().optional(),
       spotifyId: z.string(),
       name: z.string(),
       artistName: z.string(),
@@ -28,6 +34,7 @@ type FormData = {
   title: string;
   description: string;
   track: Track | null;
+  tags?: string;
 };
 
 type NewBlogFormProps = {
@@ -42,10 +49,14 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
     setValue,
     formState: { errors, isSubmitting },
     reset,
+    control,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
+      title: "",
+      description: "",
       track: null,
+      tags: "",
     },
   });
 
@@ -54,18 +65,36 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   }, [selectedTrack, setValue]);
 
   const createBlogMutation = useCreateBlog();
+  const addTagsToPostMutation = useAddTagsToPost();
 
   const onSubmit = async (data: FormData) => {
-    createBlogMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success("ブログが作成されました");
-        reset();
-        router.push("/dashboard/blog/page/1");
-      },
-      onError: (error) => {
-        toast.error(error.message || "ブログの作成に失敗しました");
-      } 
-    });
+    const userId = "dummy-user-id"; // ここを適切なユーザーIDに置き換える
+    createBlogMutation.mutate(
+      { ...data, userId },
+      {
+        onSuccess: (response) => {
+          toast.success("ブログが作成されました");
+          reset();
+          router.push("/dashboard/blog/page/1");
+
+          if (data.tags) {
+            const tagNames = data.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter((tag) => tag.length > 0);
+            if (tagNames.length > 0 && response.id) {
+              addTagsToPostMutation.mutate({
+                postID: response.id,
+                requestBody: { tag_names: tagNames },
+              });
+            }
+          }
+        },
+        onError: (error) => {
+          toast.error(error.message || "ブログの作成に失敗しました");
+        },
+      }
+    );
   };
 
   return (
@@ -97,16 +126,47 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
         >
           内容
         </label>
-        <textarea
-          {...register("description")}
+        <Controller
           name="description"
-          rows={5}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        ></textarea>
+          control={control}
+          render={({ field }) => {
+            const memoizedOptions = () => ({
+              spellChecker: false,
+              hideIcons: ["side-by-side", "fullscreen"] as const,
+            });
+
+            return (
+              <SimpleMDEEditor
+                key="description-editor"
+                value={field.value}
+                onChange={field.onChange}
+                // options={memoizedOptions}
+              />
+            );
+          }}
+        />
         {errors.description && (
           <p className="mt-1 text-sm text-red-500">
             {errors.description.message}
           </p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="tags"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          タグ (カンマ区切り)
+        </label>
+        <input
+          type="text"
+          {...register("tags")}
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          placeholder="例: プログラミング, 日常, 音楽"
+        />
+        {errors.tags && (
+          <p className="mt-1 text-sm text-red-500">{errors.tags.message}</p>
         )}
       </div>
 

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"backend/internal/service"
+	"simple-blog/backend/internal/service"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

@@ -8,6 +8,8 @@ type Post struct {
     Description string
     UserID      string
     Tracks      []Track
+    Tags        []Tag `gorm:"many2many:post_tags;"`
+    LikesCount  int       `gorm:"default:0"`
     CreatedAt   time.Time
     UpdatedAt   time.Time
 }

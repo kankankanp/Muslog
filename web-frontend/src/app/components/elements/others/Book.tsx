@@ -69,8 +69,8 @@ export const Book = ({ posts }: BookProps) => {
                               className="flex items-center gap-2 p-1 border rounded-md bg-gray-50 dark:bg-gray-700"
                             >
                               <Image
-                                src={track.albumImageUrl}
-                                alt={track.name}
+                                src={track.albumImageUrl || "/default-image.jpg"}
+                                alt={track.name || ""}
                                 width={32}
                                 height={32}
                                 className="w-8 h-8 rounded object-cover"
@@ -162,8 +162,8 @@ export const Book = ({ posts }: BookProps) => {
                               className="flex items-center gap-2 p-1 border rounded-md bg-gray-50 dark:bg-gray-700"
                             >
                               <Image
-                                src={track.albumImageUrl}
-                                alt={track.name}
+                                src={track.albumImageUrl || "/default-image.jpg"}
+                                alt={track.name || ""}
                                 width={32}
                                 height={32}
                                 className="w-8 h-8 rounded object-cover"

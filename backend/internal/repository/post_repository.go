@@ -1,22 +1,31 @@
 package repository
 
 import (
-	"backend/internal/model"
+	"simple-blog/backend/internal/model"
 
 	"gorm.io/gorm"
 )
 
-type PostRepository struct {
+type PostRepository interface {
+	Create(post *model.Post) error
+	FindAll() ([]model.Post, error)
+	FindByPage(page, perPage int) ([]model.Post, int64, error)
+	FindByID(id uint) (*model.Post, error)
+	Update(post *model.Post) error
+	Delete(id uint) error
+	GetPostByID(id uint) (*model.Post, error)
+	UpdatePost(post *model.Post) error
+}
+
+type postRepository struct {
 	DB *gorm.DB
 }
 
-func (r *PostRepository) FindAll() ([]model.Post, error) {
-	var posts []model.Post
-	err := r.DB.Preload("Tracks").Order("created_at desc").Find(&posts).Error
-	return posts, err
+func NewPostRepository(db *gorm.DB) PostRepository {
+	return &postRepository{DB: db}
 }
 
-func (r *PostRepository) FindByID(id uint) (*model.Post, error) {
+func (r *postRepository) GetPostByID(id uint) (*model.Post, error) {
 	var post model.Post
 	err := r.DB.Preload("Tracks").First(&post, id).Error
 	if err != nil {
@@ -25,15 +34,34 @@ func (r *PostRepository) FindByID(id uint) (*model.Post, error) {
 	return &post, nil
 }
 
-func (r *PostRepository) Create(post *model.Post) error {
-	return r.DB.Create(post).Error
-}
-
-func (r *PostRepository) Update(post *model.Post) error {
+func (r *postRepository) UpdatePost(post *model.Post) error {
 	return r.DB.Save(post).Error
 }
 
-func (r *PostRepository) Delete(id uint) error {
+func (r *postRepository) FindAll() ([]model.Post, error) {
+	var posts []model.Post
+	err := r.DB.Preload("Tracks").Order("created_at desc").Find(&posts).Error
+	return posts, err
+}
+
+func (r *postRepository) FindByID(id uint) (*model.Post, error) {
+	var post model.Post
+	err := r.DB.Preload("Tracks").First(&post, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
+func (r *postRepository) Create(post *model.Post) error {
+	return r.DB.Create(post).Error
+}
+
+func (r *postRepository) Update(post *model.Post) error {
+	return r.DB.Save(post).Error
+}
+
+func (r *postRepository) Delete(id uint) error {
 	// 先にtracksを削除
 	err := r.DB.Where("post_id = ?", id).Delete(&model.Track{}).Error
 	if err != nil {
@@ -42,7 +70,7 @@ func (r *PostRepository) Delete(id uint) error {
 	return r.DB.Delete(&model.Post{}, id).Error
 }
 
-func (r *PostRepository) FindByPage(page, perPage int) ([]model.Post, int64, error) {
+func (r *postRepository) FindByPage(page, perPage int) ([]model.Post, int64, error) {
 	var posts []model.Post
 	var totalCount int64
 	r.DB.Model(&model.Post{}).Count(&totalCount)

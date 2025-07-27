@@ -8,6 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { Post } from './models/Post';
+export type { Tag } from './models/Tag';
 export type { Track } from './models/Track';
 export type { User } from './models/User';
 export type { UserLogin } from './models/UserLogin';
@@ -15,5 +16,7 @@ export type { UserRegister } from './models/UserRegister';
 
 export { AuthService } from './services/AuthService';
 export { BlogsService } from './services/BlogsService';
+export { LikesService } from './services/LikesService';
 export { SpotifyService } from './services/SpotifyService';
+export { TagsService } from './services/TagsService';
 export { UsersService } from './services/UsersService';

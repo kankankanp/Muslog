@@ -1,11 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import LogoutButton from "../elements/buttons/LogoutButton";
+// import LogoutButton from "../elements/buttons/LogoutButton";
 import ThemeToggleButton from "../elements/buttons/ThemeToggleButton";
-import { auth } from "@/app/lib/auth/auth";
 
-const Header = async () => {
-  const session = await auth();
+const Header = () => {
 
   return (
     <header className="flex flex-col md:flex-row md:justify-around items-center bg-white dark:bg-gray-800 px-4 md:px-8 border-b border-gray-300 dark:border-gray-700 py-4 md:py-0">
@@ -51,7 +51,7 @@ const Header = async () => {
           ))}
         </nav>
         <div className="flex flex-wrap justify-center md:flex-nowrap items-center gap-4 md:gap-6">
-          {session ? (
+          {/* {session ? (
             <LogoutButton />
           ) : (
             <div className="flex flex-wrap md:flex-nowrap gap-4 items-center">
@@ -77,7 +77,7 @@ const Header = async () => {
                 <span>新規登録</span>
               </Link>
             </div>
-          )}
+          )} */}
           <ThemeToggleButton />
         </div>
       </div>

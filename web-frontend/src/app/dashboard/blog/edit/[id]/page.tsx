@@ -1,44 +1,105 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
-import { z } from "zod";
 import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
-import { useGetBlogById, useUpdateBlog, useDeleteBlog } from "@/app/libs/hooks/api/useBlogs";
+import { Tag } from "@/app/libs/api/generated/models/Tag";
+import {
+  useDeleteBlog,
+  useGetBlogById,
+  useUpdateBlog,
+} from "@/app/libs/hooks/api/useBlogs";
+import {
+  useAddTagsToPost,
+  useGetTagsByPostID,
+  useRemoveTagsFromPost,
+} from "@/app/libs/hooks/api/useTags";
+import { zodResolver } from "@hookform/resolvers/zod";
+import "easymde/dist/easymde.min.css";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import SimpleMDEEditor from "react-simplemde-editor";
+import { z } from "zod";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
   description: z.string().min(1, "内容を入力してください"),
+  tags: z.string().optional(),
 });
 
-export default function Page({ params }: { params: { id: string } }) {
+export default function Page() {
   const router = useRouter();
-  const { data: post, isLoading, isError } = useGetBlogById(Number(params.id));
-  const { mutateAsync: updateBlog } = useUpdateBlog();
-  const { mutateAsync: deleteBlog } = useDeleteBlog();
+  const params = useParams();
+  const { id } = params as { id: string };
+  const { data: post, isPending, error } = useGetBlogById(Number(id));
+  const { data: tagsData } = useGetTagsByPostID(Number(id));
+  const { mutate: updateBlog } = useUpdateBlog();
+  const { mutate: deleteBlog } = useDeleteBlog();
+  const addTagsToPostMutation = useAddTagsToPost();
+  const removeTagsFromPostMutation = useRemoveTagsFromPost();
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<{ title: string; description: string }>({
+    control,
+  } = useForm<{ title: string; description: string; tags?: string }>({
     resolver: zodResolver(schema),
-    defaultValues: { title: "", description: "" },
+    defaultValues: { title: "", description: "", tags: "" },
   });
 
   useEffect(() => {
     if (post) {
       reset({ title: post.title, description: post.description });
     }
-  }, [post, reset]);
+    if (tagsData && tagsData.tags) {
+      setValue("tags", tagsData.tags.map((tag: Tag) => tag.name).join(", "));
+    }
+  }, [post, tagsData, reset, setValue]);
 
-  const onSubmit = async (data: { title: string; description: string }) => {
+  const onSubmit = async (data: {
+    title: string;
+    description: string;
+    tags?: string;
+  }) => {
     try {
-      await updateBlog({ id: Number(params.id), title: data.title, description: data.description });
+      await updateBlog({
+        id: Number(id),
+        title: data.title,
+        description: data.description,
+      });
+
+      // タグの更新処理
+      const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
+      const newTagNames = data.tags
+        ? data.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag.length > 0)
+        : [];
+
+      const tagsToAdd = newTagNames.filter(
+        (tagName) => !currentTagNames.includes(tagName)
+      );
+      const tagsToRemove = currentTagNames.filter(
+        (tagName: string) => !newTagNames.includes(tagName as string)
+      );
+
+      if (tagsToAdd.length > 0) {
+        addTagsToPostMutation.mutate({
+          postID: Number(id),
+          requestBody: { tag_names: tagsToAdd },
+        });
+      }
+      if (tagsToRemove.length > 0) {
+        removeTagsFromPostMutation.mutate({
+          postID: Number(id),
+          requestBody: { tag_names: tagsToRemove },
+        });
+      }
+
       toast.success("更新しました！", { duration: 1500 });
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
@@ -51,7 +112,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const handleDelete = async () => {
     try {
-      await deleteBlog(Number(params.id));
+      await deleteBlog(Number(id));
       toast.success("削除しました！");
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
@@ -62,8 +123,8 @@ export default function Page({ params }: { params: { id: string } }) {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !post) return <div>Error loading post.</div>;
+  if (isPending) return <div>Loading...</div>;
+  if (error || !post) return <div>Error loading post.</div>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -98,15 +159,48 @@ export default function Page({ params }: { params: { id: string } }) {
           >
             内容
           </label>
-          <textarea
-            {...register("description")}
-            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring focus:ring-indigo-300"
-            rows={5}
-          ></textarea>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => {
+              const memoizedOptions = useMemo(
+                () => ({
+                  spellChecker: false,
+                  hideIcons: ["side-by-side", "fullscreen"] as const,
+                }),
+                []
+              );
+              return (
+                <SimpleMDEEditor
+                  key="description-editor"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={memoizedOptions}
+                />
+              );
+            }}
+          />
           {errors.description && (
             <p className="text-red-500 text-sm mt-1">
               {errors.description.message}
             </p>
+          )}
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="tags"
+            className="block text-gray-700 dark:text-gray-300 font-medium mb-1"
+          >
+            タグ (カンマ区切り)
+          </label>
+          <input
+            type="text"
+            {...register("tags")}
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white focus:ring focus:ring-indigo-300"
+            placeholder="例: プログラミング, 日常, 音楽"
+          />
+          {errors.tags && (
+            <p className="text-red-500 text-sm mt-1">{errors.tags.message}</p>
           )}
         </div>
         <div className="flex space-x-4">
