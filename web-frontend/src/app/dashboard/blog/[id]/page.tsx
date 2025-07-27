@@ -12,7 +12,6 @@ export default function Page() {
   const [post, setPost] = useState<any>(null);
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
-
   useEffect(() => {
     const fetchPostAndLikeStatus = async () => {
       try {
@@ -20,7 +19,9 @@ export default function Page() {
         setPost(postResponse.post);
 
         if (user) {
-          const likeStatusResponse = await LikesService.getPostsLiked(Number(id));
+          const likeStatusResponse = await LikesService.getPostsLiked(
+            Number(id)
+          );
           setIsLiked(likeStatusResponse.isLiked ?? false);
         }
       } catch (error) {
@@ -40,10 +41,16 @@ export default function Page() {
     try {
       if (isLiked) {
         await LikesService.deletePostsUnlike(Number(id));
-        setPost((prevPost: any) => ({ ...prevPost, likesCount: prevPost.likesCount - 1 }));
+        setPost((prevPost: any) => ({
+          ...prevPost,
+          likesCount: prevPost.likesCount - 1,
+        }));
       } else {
         await LikesService.postPostsLike(Number(id));
-        setPost((prevPost: any) => ({ ...prevPost, likesCount: prevPost.likesCount + 1 }));
+        setPost((prevPost: any) => ({
+          ...prevPost,
+          likesCount: prevPost.likesCount + 1,
+        }));
       }
       setIsLiked(!isLiked);
     } catch (error) {
@@ -64,7 +71,12 @@ export default function Page() {
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <main>
-        <BlogCard isDetailPage={true} posts={[post]} onLikeClick={handleLikeClick} isLiked={isLiked} />
+        <BlogCard
+          isDetailPage={true}
+          posts={[post]}
+          onLikeClick={handleLikeClick}
+          isLiked={isLiked}
+        />
       </main>
     </div>
   );

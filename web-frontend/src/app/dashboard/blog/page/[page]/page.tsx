@@ -1,15 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import AddButton from "@/app/components/elements/buttons/AddButton";
 import BlogCard from "@/app/components/elements/cards/BlogCard";
 import Pagination from "@/app/components/elements/others/Pagination";
-import { BlogsService } from "@/app/libs/api/generated";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/libs/store/store";
-import { useEffect } from "react";
 import { useGetBlogsByPage } from "@/app/libs/hooks/api/useBlogs";
-import { useParams } from "next/navigation";
+import { RootState } from "@/app/libs/store/store";
 
 export default function Page() {
   const session = useSelector((state: RootState) => state.auth);
