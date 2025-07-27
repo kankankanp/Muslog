@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/service"
 	"fmt"
 	"net/http"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/service"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,6 +16,7 @@ type UserHandler struct {
 }
 
 func (h *UserHandler) Login(c echo.Context) error {
+	fmt.Println("Login handler called")
 	u := new(model.User)
 	if err := c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})

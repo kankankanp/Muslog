@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authSlice';
-import themeReducer from './themeSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./authSlice";
 
 export const store = configureStore({
   reducer: {
-    theme: themeReducer,
     auth: authReducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export default store;

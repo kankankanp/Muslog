@@ -1,15 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"simple-blog/backend/internal/handler"
 	"simple-blog/backend/internal/middleware"
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/repository"
 	"simple-blog/backend/internal/seeder"
 	"simple-blog/backend/internal/service"
-	"fmt"
-	"log"
-	"os"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -26,6 +26,7 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	log.SetOutput(os.Stdout)
 	if _, err := os.Stat(".env"); err == nil {
 		_ = godotenv.Load(".env")
 	}
