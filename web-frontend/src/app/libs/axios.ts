@@ -1,3 +1,5 @@
+"use client";
+
 import axios from "axios";
 import { AuthService } from "@/app/libs/api/generated";
 import { logout } from "@/app/libs/store/authSlice";
@@ -6,8 +8,9 @@ import { store } from "@/app/libs/store/store";
 const NEXT_PUBLIC_API_URL: string =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
+console.log("API Base URL:", NEXT_PUBLIC_API_URL);
 const apiClient = axios.create({
-  baseURL: NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", // ✅ APIサーバーのポート
   withCredentials: true,
 });
 

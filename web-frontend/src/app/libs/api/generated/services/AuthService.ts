@@ -40,7 +40,7 @@ export class AuthService {
      * @returns any Login successful
      * @throws ApiError
      */
-    public static postLogin(
+    public static postAuthLogin(
         requestBody: LoginRequest,
     ): CancelablePromise<{
         message?: string;
@@ -48,7 +48,7 @@ export class AuthService {
     }> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/login',
+            url: '/auth/login',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

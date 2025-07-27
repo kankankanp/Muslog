@@ -13,7 +13,7 @@ export const useLogin = () => {
     LoginRequest
   >({
     mutationFn: async (credentials) => {
-      const loginResponse = await AuthService.postLogin(credentials);
+      const loginResponse = await AuthService.postAuthLogin(credentials);
       return loginResponse.user!;
     },
   });
