@@ -1,5 +1,13 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import "easymde/dist/easymde.min.css";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import SimpleMDEEditor from "react-simplemde-editor";
+import { z } from "zod";
 import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
 import { Tag } from "@/app/libs/api/generated/models/Tag";
 import {
@@ -12,14 +20,6 @@ import {
   useGetTagsByPostID,
   useRemoveTagsFromPost,
 } from "@/app/libs/hooks/api/useTags";
-import { zodResolver } from "@hookform/resolvers/zod";
-import "easymde/dist/easymde.min.css";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
-import SimpleMDEEditor from "react-simplemde-editor";
-import { z } from "zod";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -163,19 +163,16 @@ export default function Page() {
             name="description"
             control={control}
             render={({ field }) => {
-              const memoizedOptions = useMemo(
-                () => ({
-                  spellChecker: false,
-                  hideIcons: ["side-by-side", "fullscreen"] as const,
-                }),
-                []
-              );
+              const memoizedOptions = () => ({
+                spellChecker: false,
+                hideIcons: ["side-by-side", "fullscreen"] as const,
+              });
               return (
                 <SimpleMDEEditor
                   key="description-editor"
                   value={field.value}
                   onChange={field.onChange}
-                  options={memoizedOptions}
+                  // options={memoizedOptions}
                 />
               );
             }}
