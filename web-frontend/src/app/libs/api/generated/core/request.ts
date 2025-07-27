@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import axios from 'axios';
+import apiClient from '../../../axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios';
 import FormData from 'form-data';
 
@@ -291,7 +292,7 @@ export const catchErrorCodes = (options: ApiRequestOptions, result: ApiResult): 
  * @returns CancelablePromise<T>
  * @throws ApiError
  */
-export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions, axiosClient: AxiosInstance = axios): CancelablePromise<T> => {
+export const request = <T>(config: OpenAPIConfig, options: ApiRequestOptions, axiosClient: AxiosInstance = apiClient): CancelablePromise<T> => {
     return new CancelablePromise(async (resolve, reject, onCancel) => {
         try {
             const url = getUrl(config, options);

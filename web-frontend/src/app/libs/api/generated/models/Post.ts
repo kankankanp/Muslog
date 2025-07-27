@@ -2,14 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { Tag } from './Tag';
 import type { Track } from './Track';
 export type Post = {
-    id?: number;
-    title?: string;
-    description?: string;
-    userId?: string;
-    createdAt?: string;
-    updatedAt?: string;
-    tracks?: Array<Track>;
+    id: number;
+    title: string;
+    description: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+    tracks: Array<Track>;
+    tags: Array<Tag>;
+    likesCount: number;
 };
 

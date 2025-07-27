@@ -172,6 +172,91 @@ paths:
                       $ref: '#/components/schemas/Post'
                   totalCount:
                     type: integer
+  /posts/{postID}/like:
+    post:
+      summary: Like a post
+      description: Like a post by its ID
+      tags:
+        - likes
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        '200':
+          description: Post liked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /posts/{postID}/unlike:
+    delete:
+      summary: Unlike a post
+      description: Unlike a post by its ID
+      tags:
+        - likes
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        '200':
+          description: Post unliked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /posts/{postID}/liked:
+    get:
+      summary: Check if post is liked by user
+      description: Check if the current user has liked a specific post
+      tags:
+        - likes
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isLiked:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
   /spotify/search:
     get:
       summary: Search Spotify tracks
@@ -380,6 +465,215 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Post'
+  /tags:
+    post:
+      summary: Create a new tag
+      description: Create a new tag
+      tags:
+        - tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Tag created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tag:
+                    $ref: '#/components/schemas/Tag'
+    get:
+      summary: Get all tags
+      description: Get all tags
+      tags:
+        - tags
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+  /tags/{id}:
+    get:
+      summary: Get a tag by ID
+      description: Get a single tag by its ID
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Tag ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tag:
+                    $ref: '#/components/schemas/Tag'
+        '404':
+          description: Not Found
+    put:
+      summary: Update a tag
+      description: Update an existing tag
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Tag ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Tag updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tag:
+                    $ref: '#/components/schemas/Tag'
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a tag
+      description: Delete a tag by its ID
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Tag ID
+      responses:
+        '200':
+          description: Tag deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /tags/posts/{postID}:
+    post:
+      summary: Add tags to a post
+      description: Add tags to a specific post
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_names:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '204':
+          description: Tags added successfully
+    delete:
+      summary: Remove tags from a post
+      description: Remove tags from a specific post
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_names:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '204':
+          description: Tags removed successfully
+    get:
+      summary: Get tags by post ID
+      description: Get all tags associated with a specific post
+      tags:
+        - tags
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
 components:
   schemas:
     Post:
@@ -404,6 +698,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Track'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        likesCount:
+          type: integer
+          format: int32
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     Track:
       type: object
       properties:

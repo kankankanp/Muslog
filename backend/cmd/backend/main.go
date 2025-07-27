@@ -1,12 +1,12 @@
 package main
 
 import (
-	"backend/internal/handler"
-	"backend/internal/middleware"
-	"backend/internal/model"
-	"backend/internal/repository"
-	"backend/internal/seeder"
-	"backend/internal/service"
+	"simple-blog/backend/internal/handler"
+	"simple-blog/backend/internal/middleware"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/repository"
+	"simple-blog/backend/internal/seeder"
+	"simple-blog/backend/internal/service"
 	"fmt"
 	"log"
 	"os"
@@ -59,7 +59,7 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
@@ -67,16 +67,24 @@ func main() {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
 
-	postRepo := &repository.PostRepository{DB: db}
-	postService := &service.PostService{Repo: postRepo}
-	postHandler := &handler.PostHandler{Service: postService}
+	postRepo := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepo)
+	postHandler := handler.NewPostHandler(postService)
 
 	userRepo := &repository.UserRepository{DB: db}
 	userService := &service.UserService{Repo: userRepo}
 	userHandler := &handler.UserHandler{Service: userService}
 
+	tagRepo := repository.NewTagRepository(db)
+	tagService := service.NewTagService(tagRepo, postRepo)
+	tagHandler := handler.NewTagHandler(tagService)
+
 	spotifyService := service.NewSpotifyService()
 	spotifyHandler := handler.NewSpotifyHandler(spotifyService)
+
+	likeRepo := repository.NewLikeRepository(db)
+	likeService := service.NewLikeService(likeRepo, postRepo)
+	likeHandler := handler.NewLikeHandler(likeService)
 
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
@@ -87,34 +95,45 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Auth routes
-	authGroup := e.Group("/auth")
-	authGroup.POST("/login", userHandler.Login)
-	authGroup.POST("/register", userHandler.Register)
-	authGroup.POST("/refresh", userHandler.RefreshToken)
-	authGroup.GET("/me", userHandler.GetMe, middleware.AuthMiddleware)
+	e.POST("/auth/login", userHandler.Login)
+	e.POST("/auth/register", userHandler.Register)
 
-	// Blog routes
-	postGroup := e.Group("/posts")
-	postGroup.GET("", postHandler.GetAllPosts)
-	postGroup.GET("/:id", postHandler.GetPostByID)
-	postGroup.GET("/page/:page", postHandler.GetPostsByPage)
+	authGroup := e.Group("")
+	authGroup.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{}))
 
-	// Protected blog routes
-	protectedBlogGroup := e.Group("/blogs")
-	protectedBlogGroup.Use(middleware.AuthMiddleware)
-	protectedBlogGroup.POST("", postHandler.CreatePost)
-	protectedBlogGroup.PUT("/:id", postHandler.UpdatePost)
-	protectedBlogGroup.DELETE("/:id", postHandler.DeletePost)
+	authGroup.POST("/auth/refresh", userHandler.RefreshToken)
+	authGroup.GET("/auth/me", userHandler.GetMe)
 
-	// User routes
-	userGroup := e.Group("/users")
-	userGroup.GET("", userHandler.GetAllUsers)
-	userGroup.GET("/:id", userHandler.GetUserByID)
-	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
+	authGroup.GET("/posts", postHandler.GetAllPosts)
+	authGroup.GET("/posts/:id", postHandler.GetPostByID)
+	authGroup.GET("/posts/page/:page", postHandler.GetPostsByPage)
+	authGroup.POST("/blogs", postHandler.CreatePost)
+	authGroup.PUT("/blogs/:id", postHandler.UpdatePost)
+	authGroup.DELETE("/blogs/:id", postHandler.DeletePost)
 
-	// Spotify routes
-	e.GET("/spotify/search", spotifyHandler.SearchTracks)
+	// User routes (authentication required)
+	authGroup.GET("/users", userHandler.GetAllUsers)
+	authGroup.GET("/users/:id", userHandler.GetUserByID)
+	authGroup.GET("/users/:id/posts", userHandler.GetUserPosts)
+
+	// Like routes (authentication required)
+	authGroup.POST("/posts/:postID/like", likeHandler.LikePost)
+	authGroup.DELETE("/posts/:postID/unlike", likeHandler.UnlikePost)
+	authGroup.GET("/posts/:postID/liked", likeHandler.IsPostLikedByUser)
+
+	// Spotify routes (authentication required)
+	authGroup.GET("/spotify/search", spotifyHandler.SearchTracks)
+
+	// Tag routes (authentication required)
+	tagGroup := authGroup.Group("/tags")
+	tagGroup.POST("", tagHandler.CreateTag)
+	tagGroup.GET("", tagHandler.GetAllTags)
+	tagGroup.GET("/:id", tagHandler.GetTagByID)
+	tagGroup.PUT("/:id", tagHandler.UpdateTag)
+	tagGroup.DELETE("/:id", tagHandler.DeleteTag)
+	tagGroup.POST("/posts/:postID", tagHandler.AddTagsToPost)
+	tagGroup.DELETE("/posts/:postID", tagHandler.RemoveTagsFromPost)
+	tagGroup.GET("/posts/:postID", tagHandler.GetTagsByPostID)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

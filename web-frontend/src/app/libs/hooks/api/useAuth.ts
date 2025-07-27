@@ -4,10 +4,19 @@ import { User } from "@/app/libs/api/generated/models/User";
 import { UserLogin } from "@/app/libs/api/generated/models/UserLogin";
 
 export const useLogin = () => {
-  const { mutate, isPending, error } = useMutation<User, Error, UserLogin>({
+  const { mutate, isPending, error } = useMutation<{
+    id: string;
+    name: string;
+    accessToken: string;
+  }, Error, UserLogin>({
     mutationFn: async (credentials) => {
-      const response = await AuthService.postLogin(credentials);
-      return response.user!;
+      const loginResponse = await AuthService.postLogin(credentials);
+      const refreshResponse = await AuthService.postRefresh();
+      return {
+        id: loginResponse.user!.id,
+        name: loginResponse.user!.name,
+        accessToken: refreshResponse.accessToken!,
+      };
     },
   });
   return { mutate, isPending, error };

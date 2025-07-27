@@ -3,9 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Track = {
-    spotifyId?: string;
-    name?: string;
-    artistName?: string;
-    albumImageUrl?: string;
+    id: number;
+    spotifyId: string;
+    name: string;
+    artistName: string;
+    albumImageUrl: string;
 };
 

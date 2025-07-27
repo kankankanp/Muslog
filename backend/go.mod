@@ -1,4 +1,4 @@
-module backend
+module simple-blog/backend
 
 go 1.23.0
 

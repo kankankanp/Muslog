@@ -1,19 +1,55 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import BlogCard from "@/app/components/elements/cards/BlogCard";
 import { BlogsService } from "@/app/libs/api/generated";
+import { LikesService } from "@/app/libs/api/generated/services/LikesService";
 
-export async function generateStaticParams() {
-  const response = await BlogsService.getBlogs();
-  const ids = response.posts?.map(post => post.id) || [];
+export default function Page() {
+  const params = useParams();
+  const { id } = params as { id: string };
+  const [post, setPost] = useState<any>(null);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
-  return ids.map((id: number) => ({
-    id: id.toString(),
-  }));
-}
 
-export default async function Page(props: { params: { id: string } }) {
-  const { id } = props.params;
-  const response = await BlogsService.getBlogs1(Number(id));
-  const post = response.post;
+  useEffect(() => {
+    const fetchPostAndLikeStatus = async () => {
+      try {
+        const postResponse = await BlogsService.getBlogs1(Number(id));
+        setPost(postResponse.post);
+
+        if (user) {
+          const likeStatusResponse = await LikesService.getPostsLiked(Number(id));
+          setIsLiked(likeStatusResponse.isLiked ?? false);
+        }
+      } catch (error) {
+        console.error("Failed to fetch post or like status:", error);
+      }
+    };
+
+    fetchPostAndLikeStatus();
+  }, [id, user]);
+
+  const handleLikeClick = async () => {
+    if (!user) {
+      alert("ログインしてください");
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await LikesService.deletePostsUnlike(Number(id));
+        setPost((prevPost: any) => ({ ...prevPost, likesCount: prevPost.likesCount - 1 }));
+      } else {
+        await LikesService.postPostsLike(Number(id));
+        setPost((prevPost: any) => ({ ...prevPost, likesCount: prevPost.likesCount + 1 }));
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error("Failed to update like status:", error);
+    }
+  };
 
   if (!post) {
     return (
@@ -28,7 +64,7 @@ export default async function Page(props: { params: { id: string } }) {
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <main>
-        <BlogCard isDetailPage={true} posts={[post]} />
+        <BlogCard isDetailPage={true} posts={[post]} onLikeClick={handleLikeClick} isLiked={isLiked} />
       </main>
     </div>
   );

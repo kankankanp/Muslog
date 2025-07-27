@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
 import { useLogin } from "@/app/libs/hooks/api/useAuth";
-import { loginSuccess } from "@/app/libs/store/authSlice";
+import { fetchUser } from "@/app/libs/store/authSlice";
 
 const loginSchema = z.object({
   email: z
@@ -38,7 +38,7 @@ export default function LoginForm() {
   const onSubmit = (data: LoginFormInputs) => {
     loginMutation(data, {
       onSuccess: (user) => {
-        dispatch(loginSuccess(user));
+        dispatch(fetchUser() as any);
         toast.success("ログインに成功しました");
         router.push("/dashboard");
       },

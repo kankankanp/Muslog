@@ -5,17 +5,18 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useLogout } from "@/app/libs/hooks/api/useAuth";
-import { logout } from "@/app/libs/store/authSlice";
+import { fetchUser } from "@/app/libs/store/authSlice";
+import { AppDispatch } from "@/app/libs/store/store";
 
 const LogoutButton = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const router = useRouter();
   const { mutate: logoutMutation } = useLogout();
 
   const handleLogout = () => {
     logoutMutation(undefined, {
       onSuccess: () => {
-        dispatch(logout());
+        dispatch(fetchUser() as any);
         toast.success("ログアウトしました。");
         router.push("/login");
       },

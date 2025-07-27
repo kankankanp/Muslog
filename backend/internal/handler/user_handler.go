@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"backend/internal/model"
-	"backend/internal/service"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/service"
 	"fmt"
 	"net/http"
 	"time"

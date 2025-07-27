@@ -9,18 +9,20 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/libs/store/store";
 import { useEffect } from "react";
 import { useGetBlogsByPage } from "@/app/libs/hooks/api/useBlogs";
+import { useParams } from "next/navigation";
 
-export default function Page({ params }: { params: { page: number } }) {
+export default function Page() {
   const session = useSelector((state: RootState) => state.auth);
   const router = useRouter();
+  const params = useParams();
+  const { page } = params as { page: string };
+  const pageIndex = Number(page);
 
   useEffect(() => {
-    if (!session?.accessToken) {
+    if (!session?.user) {
       router.push("/registration/login");
     }
   }, [session, router]);
-
-  const pageIndex = params.page;
 
   const { data: blogsData, isPending, error } = useGetBlogsByPage(pageIndex);
 

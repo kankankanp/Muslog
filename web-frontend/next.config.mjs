@@ -11,10 +11,7 @@ const nextConfig = {
 
     return config;
   },
-  experimental: {
-    serverComponentsExternalPackages: ["bcrypt"],
-    
-  },
+  serverExternalPackages: ["bcrypt"],
   images: {
     domains: ["i.scdn.co"],
   },

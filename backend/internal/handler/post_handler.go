@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"backend/internal/model"
-	"backend/internal/service"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/service"
 	"net/http"
 	"strconv"
 	"time"
@@ -12,6 +12,10 @@ import (
 
 type PostHandler struct {
 	Service *service.PostService
+}
+
+func NewPostHandler(service *service.PostService) *PostHandler {
+	return &PostHandler{Service: service}
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
@@ -32,7 +36,7 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post, "likesCount": post.LikesCount})
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {

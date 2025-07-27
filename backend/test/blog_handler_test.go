@@ -1,9 +1,9 @@
 package test
 
 import (
-	"backend/internal/handler"
 	"net/http"
 	"net/http/httptest"
+	"simple-blog/backend/internal/handler"
 	"testing"
 
 	"github.com/labstack/echo/v4"
