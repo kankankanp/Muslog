@@ -104,6 +104,7 @@ const BlogCard = ({
               <div className="flex items-center">
                 <FontAwesomeIcon
                   icon={faHeart}
+                  data-testid="like-icon"
                   className={`cursor-pointer mr-1 ${
                     isLiked ? "text-red-500" : "text-gray-400"
                   }`}

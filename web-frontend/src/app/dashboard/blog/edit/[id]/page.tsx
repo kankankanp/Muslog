@@ -71,34 +71,34 @@ export default function Page() {
         description: data.description,
       });
 
-      // // タグの更新処理
-      // const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
-      // const newTagNames = data.tags
-      //   ? data.tags
-      //       .split(",")
-      //       .map((tag) => tag.trim())
-      //       .filter((tag) => tag.length > 0)
-      //   : [];
+      // タグの更新処理
+      const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
+      const newTagNames = data.tags
+        ? data.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag.length > 0)
+        : [];
 
-      // const tagsToAdd = newTagNames.filter(
-      //   (tagName) => !currentTagNames.includes(tagName)
-      // );
-      // const tagsToRemove = currentTagNames.filter(
-      //   (tagName: string) => !newTagNames.includes(tagName as string)
-      // );
+      const tagsToAdd = newTagNames.filter(
+        (tagName) => !currentTagNames.includes(tagName)
+      );
+      const tagsToRemove = currentTagNames.filter(
+        (tagName: string) => !newTagNames.includes(tagName as string)
+      );
 
-      // if (tagsToAdd.length > 0) {
-      //   addTagsToPostMutation.mutate({
-      //     postID: Number(id),
-      //     requestBody: { tag_names: tagsToAdd },
-      //   });
-      // }
-      // if (tagsToRemove.length > 0) {
-      //   removeTagsFromPostMutation.mutate({
-      //     postID: Number(id),
-      //     requestBody: { tag_names: tagsToRemove },
-      //   });
-      // }
+      if (tagsToAdd.length > 0) {
+        addTagsToPostMutation.mutate({
+          postID: Number(id),
+          requestBody: { tag_names: tagsToAdd },
+        });
+      }
+      if (tagsToRemove.length > 0) {
+        removeTagsFromPostMutation.mutate({
+          postID: Number(id),
+          requestBody: { tag_names: tagsToRemove },
+        });
+      }
 
       toast.success("更新しました！", { duration: 1500 });
       setTimeout(() => {

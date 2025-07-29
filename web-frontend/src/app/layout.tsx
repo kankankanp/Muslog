@@ -5,6 +5,9 @@ import "destyle.css";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Providers } from "./providers";
+import { NextAuthProvider } from "./providers/NextAuthProvider";
+import Header from "./components/layouts/Header";
+import Footer from "./components/layouts/Footer";
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({
@@ -30,13 +33,13 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoJp.variable} antialiased`}>
-        {/* <NextAuthProvider>
+        <NextAuthProvider>
           <Providers>
-            <Header /> */}
-        <Providers>{children}</Providers>
-        {/* <Footer />
+            <Header />
+            {children}
+            <Footer />
           </Providers>
-        </NextAuthProvider> */}
+        </NextAuthProvider>
       </body>
     </html>
   );

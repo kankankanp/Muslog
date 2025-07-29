@@ -798,8 +798,11 @@ components:
       properties:
         name:
           type: string
+        accessToken:
+          type: string
       required:
         - name
+        - accessToken
   securitySchemes:
     cookieAuth:
       type: apiKey

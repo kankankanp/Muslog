@@ -4,5 +4,6 @@
 /* eslint-disable */
 export type AuthResponse = {
     name: string;
+    accessToken: string;
 };
 

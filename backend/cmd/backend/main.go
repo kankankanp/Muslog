@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"simple-blog/backend/config"
 	"simple-blog/backend/internal/handler"
 	"simple-blog/backend/internal/middleware"
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/repository"
 	"simple-blog/backend/internal/seeder"
-	"simple-blog/backend/internal/service"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -31,15 +31,14 @@ func main() {
 		_ = godotenv.Load(".env")
 	}
 
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("設定の読み込みに失敗しました: %v", err)
+	}
 
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName,
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
 	)
 
 	var db *gorm.DB
@@ -100,7 +99,7 @@ func main() {
 	e.POST("/auth/register", userHandler.Register)
 
 	authGroup := e.Group("")
-	authGroup.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{}))
+	authGroup.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{JWTSecret: cfg.JWTSecret}))
 
 	authGroup.POST("/auth/refresh", userHandler.RefreshToken)
 	authGroup.GET("/auth/me", userHandler.GetMe)

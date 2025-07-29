@@ -10,7 +10,8 @@ import (
 )
 
 type AuthMiddlewareConfig struct {
-	Skipper echoMiddleware.Skipper
+	Skipper   echoMiddleware.Skipper
+	JWTSecret string
 }
 
 func AuthMiddleware(config AuthMiddlewareConfig) echo.MiddlewareFunc {
@@ -35,7 +36,7 @@ func AuthMiddleware(config AuthMiddlewareConfig) echo.MiddlewareFunc {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, echo.NewHTTPError(http.StatusUnauthorized, "Unexpected signing method")
 				}
-				return []byte("secret"), nil
+				return []byte(config.JWTSecret), nil
 			})
 
 			if err != nil || !token.Valid {

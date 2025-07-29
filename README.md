@@ -31,6 +31,61 @@ graph TD
     B -- CRUD --> C
 ```
 
+## インフラ構成図 (AWS with Terraform)
+
+このプロジェクトのインフラはAWS上にTerraformを用いて構築されています。主要なサービスは以下の通りです。
+
+- **VPC**: ネットワークの論理的な分離
+- **Public Subnet**: インターネットからのアクセスを許可するリソース（EC2インスタンス）
+- **Private Subnet**: 内部からのアクセスのみを許可するリソース（RDSデータベース）
+- **EC2**: Goバックエンドアプリケーションのホスティング
+- **RDS (PostgreSQL)**: データベースサービス
+- **S3 (Frontend)**: Next.jsフロントエンドの静的ファイルホスティング
+- **S3 (Uploads)**: ユーザーがアップロードするファイルの保存
+- **CloudFront**: フロントエンドコンテンツのCDN
+
+```mermaid
+graph TD
+    subgraph "User"
+        User[User]
+    end
+
+    subgraph "AWS Cloud"
+        subgraph "VPC"
+            subgraph "Public Subnet"
+                EC2[EC2 Instance (Go Backend)]
+            end
+
+            subgraph "Private Subnet"
+                RDS[RDS (PostgreSQL)]
+            end
+
+            EC2 -- DB Connection --> RDS
+        end
+
+        subgraph "Global Services"
+            CloudFront[CloudFront]
+            S3Frontend[S3 Bucket (Frontend)]
+            S3Uploads[S3 Bucket (Uploads)]
+        end
+
+        User -- HTTPS --> CloudFront
+        CloudFront -- Get Objects --> S3Frontend
+        CloudFront -- API Requests --> EC2
+        EC2 -- Read/Write --> S3Uploads
+    end
+
+    style CloudFront fill:#f9f,stroke:#333,stroke-width:2px
+    style S3Frontend fill:#ccf,stroke:#333,stroke-width:2px
+    style S3Uploads fill:#ccf,stroke:#333,stroke-width:2px
+    style EC2 fill:#bbf,stroke:#333,stroke-width:2px
+    style RDS fill:#bfb,stroke:#333,stroke-width:2px
+    style VPC fill:#eee,stroke:#333,stroke-width:2px
+    style PublicSubnet fill:#fcf,stroke:#333,stroke-width:2px
+    style PrivateSubnet fill:#cff,stroke:#333,stroke-width:2px
+
+```
+
 ## ブランチ管理
 - main
   - 本番用のソースコードを管理するブランチ
@@ -149,9 +204,6 @@ VSCodeの拡張機能を検索し、
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
 ```
@@ -162,6 +214,8 @@ VSCodeの拡張機能を検索し、
 
 ### Gemini CLIの実行
 npx https://github.com/google-gemini/gemini-cli
+gemini -m "gemini-2.5-flash"
+
 
 
 ### DBのマイグレーション・シーディング
@@ -190,4 +244,3 @@ TRUNCATE TABLE <テーブル名> CASCADE;
 
 ### ゲストログイン
 NbekDfg@QNqqGvl.info
-

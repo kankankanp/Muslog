@@ -1,12 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
 import {
   AuthResponse,
   AuthService,
   LoginRequest,
   RegisterRequest,
+  OpenAPI,
 } from "@/app/libs/api/generated";
+import { login } from "@/app/libs/store/authSlice";
 
 export const useLogin = () => {
+  const dispatch = useDispatch();
   const { mutate, isPending, error } = useMutation<
     AuthResponse,
     Error,
@@ -15,6 +19,10 @@ export const useLogin = () => {
     mutationFn: async (credentials) => {
       const loginResponse = await AuthService.postAuthLogin(credentials);
       return loginResponse.user!;
+    },
+    onSuccess: (data) => {
+      OpenAPI.TOKEN = data.accessToken;
+      dispatch(login(data));
     },
   });
   return { mutate, isPending, error };
@@ -30,9 +38,13 @@ export const useLogout = () => {
 };
 
 export const useRefreshToken = () => {
-  const { mutate, isPending, error } = useMutation<void, Error>({
+  const { mutate, isPending, error } = useMutation<AuthResponse, Error, void>({
     mutationFn: async () => {
-      await AuthService.postRefresh();
+      const response = await AuthService.postRefresh();
+      return response;
+    },
+    onSuccess: (data) => {
+      OpenAPI.TOKEN = data.accessToken;
     },
   });
   return { mutate, isPending, error };
