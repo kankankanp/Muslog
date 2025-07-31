@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
-import { useLogin } from "@/app/libs/hooks/api/useAuth";
+import { usePostAuthLogin } from "@/app/libs/api/generated/orval/auth/auth";
 import { login } from "@/app/libs/store/authSlice";
 
 const loginSchema = z.object({
@@ -33,16 +33,18 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate: loginMutation, isPending } = useLogin();
+  const { mutate: loginMutation, isPending } = usePostAuthLogin();
 
   const onSubmit = (data: LoginFormInputs) => {
-    loginMutation(data, {
+    loginMutation({ data }, {
       onSuccess: (user) => {
-        dispatch(login(user));
+        if (user.user) {
+          dispatch(login(user.user));
+        }
         toast.success("ログインに成功しました");
         router.push("/dashboard");
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast.error(error.message || "ログインに失敗しました");
       },
     });

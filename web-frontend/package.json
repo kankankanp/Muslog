@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gen": "openapi --input ./openapi.yml --output ./src/app/libs/api/generated --client axios"
+    "gen": "npm run gen:types && npm run gen:client",
+    "gen:types": "openapi-typescript ./openapi.yml --output ./src/app/libs/api/generated/openapi-types.ts",
+    "gen:client": "orval --config ./orval.config.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
@@ -32,6 +34,9 @@
     "lucide-react": "^0.513.0",
     "next": "^15.0.0-rc.0",
     "next-themes": "^0.4.4",
+    "openapi-typescript": "^7.8.0",
+    "orval": "^7.10.0",
+    "prettier": "^3.6.2",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.61.1",
@@ -53,7 +58,6 @@
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "eslint": "^8",
     "eslint-config-next": "^15.0.0",
-    "openapi-typescript-codegen": "^0.29.0",
     "postcss": "^8",
     "prisma": "^6.4.1",
     "sass": "^1.77.6",

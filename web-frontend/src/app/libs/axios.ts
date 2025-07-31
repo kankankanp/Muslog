@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { AuthService } from "@/app/libs/api/generated";
+import { postRefresh as AuthServicePostRefresh } from "@/app/libs/api/generated/orval/auth/auth";
 import { logout } from "@/app/libs/store/authSlice";
 import { store } from "@/app/libs/store/store";
 
@@ -10,7 +10,7 @@ const NEXT_PUBLIC_API_URL: string =
 
 console.log("API Base URL:", NEXT_PUBLIC_API_URL);
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", // ✅ APIサーバーのポート
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
   withCredentials: true,
 });
 
@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshResponse = await AuthService.postRefresh();
+        const refreshResponse = await AuthServicePostRefresh();
         const newAccessToken = refreshResponse.accessToken;
 
         // store.dispatch(login());

@@ -1,79 +1,52 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useGetBlogsId } from "@/app/libs/api/generated/orval/blogs/blogs";
+import { useGetPostsPostIDLiked, usePostPostsPostIDLike, useDeletePostsPostIDUnlike } from "@/app/libs/api/generated/orval/likes/likes";
+import { RootState } from "@/app/libs/store/store";
+import BlogCard from "@/app/components/elements/cards/BlogCard";
 
 export default function Page() {
   const params = useParams();
   const { id } = params as { id: string };
-  const [post, setPost] = useState<any>(null);
-  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  // useEffect(() => {
-  //   const fetchPostAndLikeStatus = async () => {
-  //     try {
-  //       const postResponse = await BlogsService.getBlogs1(Number(id));
-  //       setPost(postResponse.post);
+  const { data: post, isPending: isPostPending, error: postError } = useGetBlogsId(Number(id));
+  const { data: likeStatusData, isPending: isLikeStatusPending, error: likeStatusError } = useGetPostsPostIDLiked(Number(id), { query: { enabled: !!user } });
 
-  //       if (user) {
-  //         const likeStatusResponse = await LikesService.getPostsLiked(
-  //           Number(id)
-  //         );
-  //         setIsLiked(likeStatusResponse.isLiked ?? false);
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch post or like status:", error);
-  //     }
-  //   };
+  const { mutate: likePost } = usePostPostsPostIDLike();
+  const { mutate: unlikePost } = useDeletePostsPostIDUnlike();
 
-  //   fetchPostAndLikeStatus();
-  // }, [id, user]);
+  const handleLikeClick = async () => {
+    if (!user) {
+      alert("ログインしてください");
+      return;
+    }
 
-  // const handleLikeClick = async () => {
-  //   if (!user) {
-  //     alert("ログインしてください");
-  //     return;
-  //   }
+    try {
+      if (likeStatusData?.isLiked) {
+        unlikePost({ postID: Number(id) });
+      } else {
+        likePost({ postID: Number(id) });
+      }
+    } catch (error: any) {
+      console.error("Failed to update like status:", error);
+    }
+  };
 
-  //   try {
-  //     if (isLiked) {
-  //       await LikesService.deletePostsUnlike(Number(id));
-  //       setPost((prevPost: any) => ({
-  //         ...prevPost,
-  //         likesCount: prevPost.likesCount - 1,
-  //       }));
-  //     } else {
-  //       await LikesService.postPostsLike(Number(id));
-  //       setPost((prevPost: any) => ({
-  //         ...prevPost,
-  //         likesCount: prevPost.likesCount + 1,
-  //       }));
-  //     }
-  //     setIsLiked(!isLiked);
-  //   } catch (error) {
-  //     console.error("Failed to update like status:", error);
-  //   }
-  // };
-
-  // if (!post) {
-  //   return (
-  //     <div className="dark:bg-gray-900 bg-gray-100 h-screen flex items-center justify-center">
-  //       <h1 className="text-2xl font-bold text-red-500">
-  //         記事が見つかりません
-  //       </h1>
-  //     </div>
-  //   );
-  // }
+  if (isPostPending || isLikeStatusPending) return <div>Loading...</div>;
+  if (postError || likeStatusError || !post) return <div>Error loading post.</div>;
 
   return (
     <div className="dark:bg-gray-900 bg-gray-100">
       <main>
-        {/* <BlogCard
+        <BlogCard
           isDetailPage={true}
-          posts={[post]}
+          posts={post.post ? [post.post] : []}
           onLikeClick={handleLikeClick}
-          isLiked={isLiked}
-        /> */}
+          isLiked={likeStatusData?.isLiked ?? false}
+        />
       </main>
     </div>
   );

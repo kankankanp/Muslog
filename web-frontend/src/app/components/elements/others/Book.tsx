@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useMemo } from "react";
 import "@/scss/book.scss";
-import { Post } from "../cards/BlogCard";
+import { Post } from "@/app/libs/api/generated/orval/model/post";
 
 type BookProps = {
   posts: Post[];
@@ -52,7 +52,7 @@ export const Book = ({ posts }: BookProps) => {
                     <div className="flex-1 pr-4 text-left">
                       <div className="text-sm text-gray-600 dark:text-gray-400 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Date:{" "}
-                        {new Date(post.createdAt).toLocaleDateString("ja-JP")}
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString("ja-JP") : ""}
                       </div>
                       <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Subject: {post.title}
@@ -145,7 +145,7 @@ export const Book = ({ posts }: BookProps) => {
                     <div className="flex-1 pr-4 text-left">
                       <div className="text-sm text-gray-600 dark:text-gray-400 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Date:{" "}
-                        {new Date(post.createdAt).toLocaleDateString("ja-JP")}
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString("ja-JP") : ""}
                       </div>
                       <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Subject: {post.title}

@@ -9,17 +9,9 @@ import toast, { Toaster } from "react-hot-toast";
 import SimpleMDEEditor from "react-simplemde-editor";
 import { z } from "zod";
 import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
-import { Tag } from "@/app/libs/api/generated/models/Tag";
-import {
-  useDeleteBlog,
-  useGetBlogById,
-  useUpdateBlog,
-} from "@/app/libs/hooks/api/useBlogs";
-import {
-  useAddTagsToPost,
-  useGetTagsByPostID,
-  useRemoveTagsFromPost,
-} from "@/app/libs/hooks/api/useTags";
+import { Tag } from "@/app/libs/api/generated/orval/model/tag";
+import { useDeleteBlogsId, useGetBlogsId, usePutBlogsId } from "@/app/libs/api/generated/orval/blogs/blogs";
+import { useGetTagsPostsPostID, usePostTagsPostsPostID, useDeleteTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -31,12 +23,12 @@ export default function Page() {
   const router = useRouter();
   const params = useParams();
   const { id } = params as { id: string };
-  const { data: post, isPending, error } = useGetBlogById(Number(id));
-  const { data: tagsData } = useGetTagsByPostID(Number(id));
-  const { mutate: updateBlog } = useUpdateBlog();
-  const { mutate: deleteBlog } = useDeleteBlog();
-  const addTagsToPostMutation = useAddTagsToPost();
-  const removeTagsFromPostMutation = useRemoveTagsFromPost();
+  const { data: post, isPending, error } = useGetBlogsId(Number(id));
+  const { data: tagsData } = useGetTagsPostsPostID(Number(id));
+  const { mutate: updateBlog } = usePutBlogsId();
+  const { mutate: deleteBlog } = useDeleteBlogsId();
+  const addTagsToPostMutation = usePostTagsPostsPostID();
+  const removeTagsFromPostMutation = useDeleteTagsPostsPostID();
 
   const {
     register,
@@ -47,17 +39,18 @@ export default function Page() {
     control,
   } = useForm<{ title: string; description: string; tags?: string }>({
     resolver: zodResolver(schema),
-    defaultValues: { title: "", description: "", tags: "" },
   });
 
   useEffect(() => {
     if (post) {
-      reset({ title: post.title, description: post.description });
+      reset({ title: post.post?.title, description: post.post?.description });
     }
     if (tagsData && tagsData.tags) {
       setValue("tags", tagsData.tags.map((tag: Tag) => tag.name).join(", "));
     }
   }, [post, tagsData, reset, setValue]);
+
+  
 
   const onSubmit = async (data: {
     title: string;
@@ -65,60 +58,60 @@ export default function Page() {
     tags?: string;
   }) => {
     try {
-      await updateBlog({
-        id: Number(id),
+      await updateBlog({ id: Number(id), data: {
         title: data.title,
         description: data.description,
-      });
+      } });
 
-      // // タグの更新処理
-      // const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
-      // const newTagNames = data.tags
-      //   ? data.tags
-      //       .split(",")
-      //       .map((tag) => tag.trim())
-      //       .filter((tag) => tag.length > 0)
-      //   : [];
+      // タグの更新処理
+      const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
+      const newTagNames = data.tags
+        ? data.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag.length > 0)
+        : [];
 
-      // const tagsToAdd = newTagNames.filter(
-      //   (tagName) => !currentTagNames.includes(tagName)
-      // );
-      // const tagsToRemove = currentTagNames.filter(
-      //   (tagName: string) => !newTagNames.includes(tagName as string)
-      // );
+      const tagsToAdd = newTagNames.filter(
+        (tagName) => !currentTagNames.includes(tagName)
+      );
+      const tagsToRemove = currentTagNames.filter(
+        (tagName): tagName is string =>
+          typeof tagName === "string" && !newTagNames.includes(tagName)
+      );
 
-      // if (tagsToAdd.length > 0) {
-      //   addTagsToPostMutation.mutate({
-      //     postID: Number(id),
-      //     requestBody: { tag_names: tagsToAdd },
-      //   });
-      // }
-      // if (tagsToRemove.length > 0) {
-      //   removeTagsFromPostMutation.mutate({
-      //     postID: Number(id),
-      //     requestBody: { tag_names: tagsToRemove },
-      //   });
-      // }
+      if (tagsToAdd.length > 0) {
+        addTagsToPostMutation.mutate({
+          postID: Number(id),
+          data: { tag_names: tagsToAdd },
+        });
+      }
+      if (tagsToRemove.length > 0) {
+        removeTagsFromPostMutation.mutate({
+          postID: Number(id),
+          data: { tag_names: tagsToRemove },
+        });
+      }
 
       toast.success("更新しました！", { duration: 1500 });
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
         router.refresh();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       toast.error("更新に失敗しました。");
     }
   };
 
   const handleDelete = async () => {
     try {
-      await deleteBlog(Number(id));
+      await deleteBlog({ id: Number(id) });
       toast.success("削除しました！");
       setTimeout(() => {
         router.push("/dashboard/blog/page/1");
         router.refresh();
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       toast.error("削除に失敗しました。");
     }
   };

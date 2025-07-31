@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthResponse } from "../api/generated";
+import { AuthResponse } from "../api/generated/orval/model/authResponse";
 
 interface AuthState {
   accessToken: any;
@@ -8,6 +8,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
+  accessToken: undefined
 };
 
 const authSlice = createSlice({

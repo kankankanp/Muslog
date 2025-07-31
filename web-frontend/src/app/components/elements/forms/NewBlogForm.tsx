@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import SimpleMDEEditor from "react-simplemde-editor";
+import dynamic from "next/dynamic";
+
+const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), { ssr: false });
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
-import { Track } from "../others/SelectMusciArea";
-import { useCreateBlog } from "@/app/libs/hooks/api/useBlogs";
-import { useAddTagsToPost } from "@/app/libs/hooks/api/useTags";
+import { Track } from "@/app/libs/api/generated/orval/model/track";
+import { usePostBlogs } from "@/app/libs/api/generated/orval/blogs/blogs";
+import { usePostTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -20,12 +22,10 @@ const schema = z.object({
   tags: z.string().optional(),
   track: z
     .object({
-      id: z.number(),
-      postId: z.number().optional(),
-      spotifyId: z.string(),
-      name: z.string(),
-      artistName: z.string(),
-      albumImageUrl: z.string(),
+      spotifyId: z.string().optional(),
+      name: z.string().optional(),
+      artistName: z.string().optional(),
+      albumImageUrl: z.string().optional(),
     })
     .nullable(),
 });
@@ -64,13 +64,13 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
     setValue("track", selectedTrack);
   }, [selectedTrack, setValue]);
 
-  const createBlogMutation = useCreateBlog();
-  const addTagsToPostMutation = useAddTagsToPost();
+  const createBlogMutation = usePostBlogs();
+  const addTagsToPostMutation = usePostTagsPostsPostID();
 
   const onSubmit = async (data: FormData) => {
     const userId = "dummy-user-id"; // ここを適切なユーザーIDに置き換える
     createBlogMutation.mutate(
-      { ...data, userId },
+      { data: { ...data, userId } },
       {
         onSuccess: (response) => {
           toast.success("ブログが作成されました");
@@ -82,15 +82,15 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
               .split(",")
               .map((tag) => tag.trim())
               .filter((tag) => tag.length > 0);
-            if (tagNames.length > 0 && response.id) {
+            if (tagNames.length > 0 && response.post?.id) {
               addTagsToPostMutation.mutate({
-                postID: response.id,
-                requestBody: { tag_names: tagNames },
+                postID: response.post.id,
+                data: { tag_names: tagNames },
               });
             }
           }
         },
-        onError: (error) => {
+        onError: (error: any) => {
           toast.error(error.message || "ブログの作成に失敗しました");
         },
       }
@@ -175,8 +175,8 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           <Image
             width={50}
             height={50}
-            src={selectedTrack.albumImageUrl}
-            alt={selectedTrack.name}
+            src={selectedTrack.albumImageUrl || "/default-image.jpg"}
+            alt={selectedTrack.name || ""}
             className="w-16 h-16 object-cover rounded"
           />
           <div>
