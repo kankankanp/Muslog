@@ -1,4 +1,3 @@
-
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import Page from "./page";
@@ -6,7 +5,9 @@ import Page from "./page";
 // Mock framer-motion components to avoid actual animations in tests
 vi.mock("framer-motion", () => ({
   motion: {
-    div: vi.fn(({ children }) => <div data-testid="motion-div">{children}</div>),
+    div: vi.fn(({ children }) => (
+      <div data-testid="motion-div">{children}</div>
+    )),
     h1: vi.fn(({ children }) => <h1 data-testid="motion-h1">{children}</h1>),
     p: vi.fn(({ children }) => <p data-testid="motion-p">{children}</p>),
   },
@@ -17,8 +18,12 @@ describe("Landing Page", () => {
     render(<Page />);
 
     // Hero section
-    expect(screen.getByText(/あなたの音楽の物語をシェアしよう。/i)).toBeInTheDocument();
-    expect(screen.getByText(/好きな曲と共に、あなたの想いを綴る。/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/あなたの音楽の物語をシェアしよう。/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/好きな曲と共に、あなたの想いを綴る。/i)
+    ).toBeInTheDocument();
     const startButton = screen.getByRole("link", { name: /はじめる/i });
     expect(startButton).toBeInTheDocument();
     expect(startButton).toHaveAttribute("href", "/dashboard");

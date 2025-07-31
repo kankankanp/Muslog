@@ -1,12 +1,12 @@
-
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import RootLayout from "./layout";
-import { Providers } from "./providers";
 
 // Mock the Providers component
 vi.mock("./providers", () => ({
-  Providers: vi.fn(({ children }) => <div data-testid="providers-mock">{children}</div>),
+  Providers: vi.fn(({ children }) => (
+    <div data-testid="providers-mock">{children}</div>
+  )),
 }));
 
 describe("RootLayout", () => {

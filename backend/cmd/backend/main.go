@@ -10,6 +10,7 @@ import (
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/repository"
 	"simple-blog/backend/internal/seeder"
+	"simple-blog/backend/internal/service"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -42,7 +43,6 @@ func main() {
 	)
 
 	var db *gorm.DB
-	var err error
 	maxRetries := 10
 
 	for i := 0; i < maxRetries; i++ {

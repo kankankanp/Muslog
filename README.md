@@ -46,27 +46,27 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "User"
+    subgraph User
         User[User]
     end
 
-    subgraph "AWS Cloud"
-        subgraph "VPC"
-            subgraph "Public Subnet"
+    subgraph AWS Cloud
+        subgraph Global Services
+            CloudFront[CloudFront]
+            S3Frontend[S3 Bucket (Frontend)]
+            S3Uploads[S3 Bucket (Uploads)]
+        end
+
+        subgraph VPC
+            subgraph Public Subnet
                 EC2[EC2 Instance (Go Backend)]
             end
 
-            subgraph "Private Subnet"
+            subgraph Private Subnet
                 RDS[RDS (PostgreSQL)]
             end
 
             EC2 -- DB Connection --> RDS
-        end
-
-        subgraph "Global Services"
-            CloudFront[CloudFront]
-            S3Frontend[S3 Bucket (Frontend)]
-            S3Uploads[S3 Bucket (Uploads)]
         end
 
         User -- HTTPS --> CloudFront
@@ -75,15 +75,20 @@ graph TD
         EC2 -- Read/Write --> S3Uploads
     end
 
-    style CloudFront fill:#f9f,stroke:#333,stroke-width:2px
-    style S3Frontend fill:#ccf,stroke:#333,stroke-width:2px
-    style S3Uploads fill:#ccf,stroke:#333,stroke-width:2px
-    style EC2 fill:#bbf,stroke:#333,stroke-width:2px
-    style RDS fill:#bfb,stroke:#333,stroke-width:2px
-    style VPC fill:#eee,stroke:#333,stroke-width:2px
-    style PublicSubnet fill:#fcf,stroke:#333,stroke-width:2px
-    style PrivateSubnet fill:#cff,stroke:#333,stroke-width:2px
+    classDef default fill:#fff,stroke:#333,stroke-width:2px;
+    classDef user fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef cdn fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef s3 fill:#ccf,stroke:#333,stroke-width:2px;
+    classDef ec2 fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef rds fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef vpc fill:#eee,stroke:#333,stroke-width:1px;
+    classDef subnet fill:#ddd,stroke:#333,stroke-width:1px;
 
+    class User user;
+    class CloudFront cdn;
+    class S3Frontend,S3Uploads s3;
+    class EC2 ec2;
+    class RDS rds;
 ```
 
 ## ブランチ管理
