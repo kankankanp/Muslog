@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
-import { Post } from "@/app/libs/api/generated/orval/model/post";
+import { Post } from "@/libs/api/generated/orval/model/post";
 
 type BlogCardProps = {
   isDetailPage?: boolean;

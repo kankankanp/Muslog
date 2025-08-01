@@ -5,13 +5,13 @@ export default defineConfig({
     input: './openapi.yml',
     output: {
       mode: 'tags-split',
-      target: './src/app/libs/api/generated/orval',
-      schemas: './src/app/libs/api/generated/orval/model',
+      target: './src/libs/api/generated/orval',
+      schemas: './src/libs/api/generated/orval/model',
       client: 'react-query',
       prettier: true,
       override: {
         mutator: {
-          path: './src/app/libs/api/custom-instance.ts',
+          path: './src/libs/api/custom-instance.ts',
           name: 'customInstance',
         },
         query: {

@@ -8,18 +8,18 @@ import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import SimpleMDEEditor from "react-simplemde-editor";
 import { z } from "zod";
-import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
+import { CommonButton } from "@/components/elements/buttons/CommonButton";
 import {
   useGetBlogsId,
   usePutBlogsId,
-} from "@/app/libs/api/generated/orval/blogs/blogs";
-import { Tag } from "@/app/libs/api/generated/orval/model/tag";
-import { useDeletePostsId } from "@/app/libs/api/generated/orval/posts/posts";
+} from "@/libs/api/generated/orval/blogs/blogs";
+import { Tag } from "@/libs/api/generated/orval/model/tag";
+import { useDeletePostsId } from "@/libs/api/generated/orval/posts/posts";
 import {
   useGetTagsPostsPostID,
   usePostTagsPostsPostID,
   useDeleteTagsPostsPostID,
-} from "@/app/libs/api/generated/orval/tags/tags";
+} from "@/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -32,8 +32,8 @@ export default function Page() {
   const params = useParams();
   const { id } = params as { id: string };
   const { data: post, isPending, error } = useGetBlogsId(Number(id));
-  const { data: tagsData } = useGetTagsPostsPostID(Number(id));
-  const { mutate: updateBlog } = usePutBlogsId();
+  const { data: tags } = useGetTagsPostsPostID(Number(id));
+  const { mutate: updatePost } = usePutBlogsId();
   const { mutate: deletePost } = useDeletePostsId();
   const addTagsToPostMutation = usePostTagsPostsPostID();
   const removeTagsFromPostMutation = useDeleteTagsPostsPostID();
@@ -53,76 +53,83 @@ export default function Page() {
     if (post) {
       reset({ title: post.post?.title, description: post.post?.description });
     }
-    if (tagsData && tagsData.tags) {
-      setValue("tags", tagsData.tags.map((tag: Tag) => tag.name).join(", "));
+    if (tags && tags.tags) {
+      setValue("tags", tags.tags.map((tag: Tag) => tag.name).join(", "));
     }
-  }, [post, tagsData, reset, setValue]);
+  }, [post, tags, reset, setValue]);
 
   const onSubmit = async (data: {
     title: string;
     description: string;
     tags?: string;
   }) => {
-    try {
-      await updateBlog({
+    updatePost(
+      {
         id: Number(id),
         data: {
           title: data.title,
           description: data.description,
         },
+      },
+      {
+        onSuccess: () => {
+          toast.success("更新しました！");
+          reset();
+        },
+        onError: (error: any) => {
+          console.error("Update error:", error);
+          toast.error("更新に失敗しました。");
+        },
+      }
+    );
+
+    const currentTagNames = tags?.tags?.map((tag: Tag) => tag.name) || [];
+    const newTagNames = data.tags
+      ? data.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0)
+      : [];
+
+    const tagsToAdd = newTagNames.filter(
+      (tagName) => !currentTagNames.includes(tagName)
+    );
+    const tagsToRemove = currentTagNames.filter(
+      (tagName): tagName is string =>
+        typeof tagName === "string" && !newTagNames.includes(tagName)
+    );
+
+    if (tagsToAdd.length > 0) {
+      addTagsToPostMutation.mutate({
+        postID: Number(id),
+        data: { tag_names: tagsToAdd },
       });
-
-      // タグの更新処理
-      const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
-      const newTagNames = data.tags
-        ? data.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((tag) => tag.length > 0)
-        : [];
-
-      const tagsToAdd = newTagNames.filter(
-        (tagName) => !currentTagNames.includes(tagName)
-      );
-      const tagsToRemove = currentTagNames.filter(
-        (tagName): tagName is string =>
-          typeof tagName === "string" && !newTagNames.includes(tagName)
-      );
-
-      if (tagsToAdd.length > 0) {
-        addTagsToPostMutation.mutate({
-          postID: Number(id),
-          data: { tag_names: tagsToAdd },
-        });
-      }
-      if (tagsToRemove.length > 0) {
-        removeTagsFromPostMutation.mutate({
-          postID: Number(id),
-          data: { tag_names: tagsToRemove },
-        });
-      }
-
-      toast.success("更新しました！", { duration: 1500 });
-      setTimeout(() => {
-        router.push("/dashboard/blog/page/1");
-        router.refresh();
-      }, 2000);
-    } catch (error: any) {
-      toast.error("更新に失敗しました。");
+    }
+    if (tagsToRemove.length > 0) {
+      removeTagsFromPostMutation.mutate({
+        postID: Number(id),
+        data: { tag_names: tagsToRemove },
+      });
     }
   };
 
   const handleDelete = async () => {
-    try {
-      await deleteBlog({ id: Number(id) });
-      toast.success("削除しました！");
-      setTimeout(() => {
-        router.push("/dashboard/blog/page/1");
-        router.refresh();
-      }, 2000);
-    } catch (error: any) {
-      toast.error("削除に失敗しました。");
-    }
+    deletePost(
+      { id: Number(id) },
+      {
+        onSuccess: () => {
+          toast.success("削除しました。");
+          setTimeout(() => {
+            router.push("/dashboard/blog/page/1");
+            router.refresh();
+          }, 2000);
+        },
+        onError: (error: any) => {
+          console.error("Delete error:", error);
+          toast.error("削除に失敗しました。");
+        },
+      }
+    );
   };
 
   if (isPending) return <div>Loading...</div>;

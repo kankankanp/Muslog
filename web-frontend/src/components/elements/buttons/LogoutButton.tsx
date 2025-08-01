@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { usePostLogout } from "@/app/libs/api/generated/orval/auth/auth";
-import { logout } from "@/app/libs/store/authSlice";
-import { AppDispatch } from "@/app/libs/store/store";
+import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
+import { logout } from "@/libs/store/authSlice";
+import { AppDispatch } from "@/libs/store/store";
 
 const LogoutButton = () => {
   const dispatch: AppDispatch = useDispatch();

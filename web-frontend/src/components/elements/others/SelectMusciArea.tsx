@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Track } from "@/app/libs/api/generated/orval/model/track";
-import { useGetSpotifySearch } from "@/app/libs/api/generated/orval/spotify/spotify";
+import { Track } from "@/libs/api/generated/orval/model/track";
+import { useGetSpotifySearch } from "@/libs/api/generated/orval/spotify/spotify";
 
 type SelectMusicAreaProps = {
   onSelect: (track: Track) => void;

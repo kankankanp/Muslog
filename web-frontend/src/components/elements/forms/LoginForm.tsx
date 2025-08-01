@@ -7,9 +7,9 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
-import { GUEST_EMAIL, GUEST_PASSWORD } from "@/app/constants/guestUser";
-import { usePostAuthLogin } from "@/app/libs/api/generated/orval/auth/auth";
-import { login } from "@/app/libs/store/authSlice";
+import { GUEST_EMAIL, GUEST_PASSWORD } from "@/constants/guestUser";
+import { usePostAuthLogin } from "@/libs/api/generated/orval/auth/auth";
+import { login } from "@/libs/store/authSlice";
 
 const loginSchema = z.object({
   email: z

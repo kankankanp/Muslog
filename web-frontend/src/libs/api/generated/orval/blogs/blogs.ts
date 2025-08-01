@@ -19,7 +19,7 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
-
+import { customInstance } from "../../../custom-instance";
 import type {
   DeleteBlogsId200,
   GetBlogs200,
@@ -28,9 +28,7 @@ import type {
   PostBlogsBody,
   PutBlogsId200,
   PutBlogsIdBody,
-} from ".././model";
-
-import { customInstance } from "../../../custom-instance";
+} from "../model";
 
 /**
  * Get all post posts
@@ -89,7 +87,7 @@ export function useGetBlogs<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -110,7 +108,7 @@ export function useGetBlogs<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -123,7 +121,7 @@ export function useGetBlogs<
       UseQueryOptions<Awaited<ReturnType<typeof getBlogs>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -140,7 +138,7 @@ export function useGetBlogs<
       UseQueryOptions<Awaited<ReturnType<typeof getBlogs>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
@@ -162,7 +160,7 @@ export function useGetBlogs<
  */
 export const postBlogs = (
   postBlogsBody: PostBlogsBody,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) => {
   return customInstance<PostBlogs201>({
     url: `/blogs`,
@@ -228,7 +226,7 @@ export const usePostBlogs = <TError = unknown, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof postBlogs>>,
   TError,
@@ -264,7 +262,7 @@ export const getGetBlogsIdQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getBlogsId>>, TError, TData>
     >;
-  },
+  }
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -309,7 +307,7 @@ export function useGetBlogsId<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -331,7 +329,7 @@ export function useGetBlogsId<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -345,7 +343,7 @@ export function useGetBlogsId<
       UseQueryOptions<Awaited<ReturnType<typeof getBlogsId>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -363,7 +361,7 @@ export function useGetBlogsId<
       UseQueryOptions<Awaited<ReturnType<typeof getBlogsId>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
@@ -447,7 +445,7 @@ export const usePutBlogsId = <TError = void, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof putBlogsId>>,
   TError,
@@ -524,7 +522,7 @@ export const useDeleteBlogsId = <TError = unknown, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteBlogsId>>,
   TError,

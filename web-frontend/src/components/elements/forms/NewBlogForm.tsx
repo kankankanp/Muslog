@@ -13,9 +13,9 @@ const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
 });
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
-import { Track } from "@/app/libs/api/generated/orval/model/track";
-import { usePostPosts } from "@/app/libs/api/generated/orval/posts/posts";
-import { usePostTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
+import { Track } from "@/libs/api/generated/orval/model/track";
+import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
+import { usePostTagsPostsPostID } from "@/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),

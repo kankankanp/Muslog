@@ -2,14 +2,14 @@
 
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
-import BlogCard from "@/app/components/elements/cards/BlogCard";
+import BlogCard from "@/components/elements/cards/BlogCard";
 import {
   useGetPostsPostIDLiked,
   usePostPostsPostIDLike,
   useDeletePostsPostIDUnlike,
-} from "@/app/libs/api/generated/orval/likes/likes";
-import { useGetPostsId } from "@/app/libs/api/generated/orval/posts/posts";
-import { RootState } from "@/app/libs/store/store";
+} from "@/libs/api/generated/orval/likes/likes";
+import { useGetPostsId } from "@/libs/api/generated/orval/posts/posts";
+import { RootState } from "@/libs/store/store";
 
 export default function Page() {
   const params = useParams();

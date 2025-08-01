@@ -1,10 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import AddButton from "@/app/components/elements/buttons/AddButton";
-import BlogCard from "@/app/components/elements/cards/BlogCard";
-import Pagination from "@/app/components/elements/others/Pagination";
-import { useGetPostsPagePage } from "@/app/libs/api/generated/orval/posts/posts";
+import AddButton from "@/components/elements/buttons/AddButton";
+import BlogCard from "@/components/elements/cards/BlogCard";
+import Pagination from "@/components/elements/others/Pagination";
+import { useGetPostsPagePage } from "@/libs/api/generated/orval/posts/posts";
 
 export default function Page() {
   const params = useParams();
