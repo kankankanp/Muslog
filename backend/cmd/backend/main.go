@@ -104,7 +104,7 @@ func main() {
 
 	protected.GET("/posts", postHandler.GetAllPosts)
 	protected.GET("/posts/:id", postHandler.GetPostByID)
-	protected.GET("/posts/page/:page", postHandler.GetPostsByPage)
+	protected.GET("/blogs/page/:page", postHandler.GetPostsByPage)
 	protected.POST("/blogs", postHandler.CreatePost)
 	protected.PUT("/blogs/:id", postHandler.UpdatePost)
 	protected.DELETE("/blogs/:id", postHandler.DeletePost)

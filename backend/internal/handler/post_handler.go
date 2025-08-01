@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"net/http"
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/service"
-	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -40,6 +41,9 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+
 	type TrackInput struct {
 		SpotifyID     string `json:"spotifyId"`
 		Name          string `json:"name"`
@@ -49,7 +53,6 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	var req struct {
 		Title       string       `json:"title"`
 		Description string      `json:"description"`
-		UserID      string      `json:"userId"`
 		Tracks      []TrackInput `json:"tracks"`
 	}
 	if err := c.Bind(&req); err != nil {
@@ -58,7 +61,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	post := model.Post{
 		Title:       req.Title,
 		Description: req.Description,
-		UserID:      req.UserID,
+		UserID:      userID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}

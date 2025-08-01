@@ -3,7 +3,7 @@ info:
   title: Muslog API
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8080/api/v1
 
 security:
   - cookieAuth: []
@@ -294,7 +294,7 @@ paths:
           description: Bad request, missing search term.
         "500":
           description: Internal server error.
-  /register:
+  /auth/register:
     post:
       summary: User registration
       description: Register a new user.

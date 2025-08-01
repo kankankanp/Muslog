@@ -58,6 +58,19 @@ func (h *UserHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to register user"})
 	}
 
+	accessToken, err := createToken(user.ID, time.Hour*24) // 有効期限は24時間
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
+	}
+
+	refreshToken, err := createToken(user.ID, time.Hour*24*7) // 有効期限は7日間
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create refresh token"})
+	}
+
+	setTokenCookie(c, "access_token", accessToken)
+	setTokenCookie(c, "refresh_token", refreshToken)
+
 	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": user})
 }
 
@@ -83,9 +96,9 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Invalid token claims"})
 	}
 
-	userID := uint(claims["user_id"].(float64))
+	userID := claims["user_id"].(string)
 
-	accessToken, err := createToken(fmt.Sprintf("%d", userID), time.Hour*24) // 24 hours
+	accessToken, err := createToken(userID, time.Hour*24) // 24 hours
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
@@ -103,9 +116,9 @@ func (h *UserHandler) Logout(c echo.Context) error {
 
 func (h *UserHandler) GetMe(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
-	userID := uint(userContext["user_id"].(float64))
+	userID := userContext["user_id"].(string)
 
-	user, err := h.Service.GetUserByID(fmt.Sprintf("%d", userID))
+	user, err := h.Service.GetUserByID(userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "User not found"})
 	}

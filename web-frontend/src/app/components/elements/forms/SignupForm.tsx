@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
-import { usePostRegister } from "@/app/libs/api/generated/orval/auth/auth";
+import { usePostAuthRegister } from "@/app/libs/api/generated/orval/auth/auth";
 
 const signupSchema = z.object({
   name: z.string().min(1, "名前を入力してください"),
@@ -22,7 +22,7 @@ type SignupFormInputs = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
   const router = useRouter();
-  const { mutate: signup, isPending } = usePostRegister();
+  const { mutate: signupMutation, isPending } = usePostAuthRegister();
 
   const {
     register,
@@ -33,7 +33,7 @@ export default function SignupForm() {
   });
 
   const onSubmit = (data: SignupFormInputs) => {
-    signup({ data }, {
+    signupMutation({ data }, {
       onSuccess: () => {
         toast.success("登録しました。");
         router.push("/dashboard");

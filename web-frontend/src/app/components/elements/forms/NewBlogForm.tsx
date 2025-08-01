@@ -2,18 +2,19 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import dynamic from "next/dynamic";
-
-const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), { ssr: false });
+const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
-import { Track } from "@/app/libs/api/generated/orval/model/track";
 import { usePostBlogs } from "@/app/libs/api/generated/orval/blogs/blogs";
+import { Track } from "@/app/libs/api/generated/orval/model/track";
 import { usePostTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
@@ -68,9 +69,8 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   const addTagsToPostMutation = usePostTagsPostsPostID();
 
   const onSubmit = async (data: FormData) => {
-    const userId = "dummy-user-id"; // ここを適切なユーザーIDに置き換える
     createBlogMutation.mutate(
-      { data: { ...data, userId } },
+      { data },
       {
         onSuccess: (response) => {
           toast.success("ブログが作成されました");

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -24,14 +23,12 @@ func AuthMiddleware(config AuthMiddlewareConfig) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			authHeader := c.Request().Header.Get("Authorization")
-			if authHeader == "" {
+			cookie, err := c.Cookie("access_token")
+			if err != nil {
 				return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Missing or invalid token"})
 			}
 
-			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, echo.NewHTTPError(http.StatusUnauthorized, "Unexpected signing method")
 				}

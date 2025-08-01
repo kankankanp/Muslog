@@ -38,4 +38,12 @@ func (r *UserRepository) FindPosts(userID string) ([]model.Post, error) {
 	var posts []model.Post
 	err := r.DB.Where("user_id = ?", userID).Preload("Tracks").Order("created_at desc").Find(&posts).Error
 	return posts, err
+}
+
+func (r *UserRepository) Create(user *model.User) (*model.User, error) {
+	err := r.DB.Create(user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 } 

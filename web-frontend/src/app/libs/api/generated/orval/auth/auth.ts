@@ -23,9 +23,9 @@ import type {
 import type {
   LoginRequest,
   PostAuthLogin200,
+  PostAuthRegister201,
   PostLogout200,
   PostRefresh200,
-  PostRegister201,
   RegisterRequest,
   User,
 } from ".././model";
@@ -36,12 +36,12 @@ import { customInstance } from "../../../custom-instance";
  * Register a new user.
  * @summary User registration
  */
-export const postRegister = (
+export const postAuthRegister = (
   registerRequest: RegisterRequest,
   signal?: AbortSignal,
 ) => {
-  return customInstance<PostRegister201>({
-    url: `/register`,
+  return customInstance<PostAuthRegister201>({
+    url: `/auth/register`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     data: registerRequest,
@@ -49,23 +49,23 @@ export const postRegister = (
   });
 };
 
-export const getPostRegisterMutationOptions = <
+export const getPostAuthRegisterMutationOptions = <
   TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postRegister>>,
+    Awaited<ReturnType<typeof postAuthRegister>>,
     TError,
     { data: RegisterRequest },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postRegister>>,
+  Awaited<ReturnType<typeof postAuthRegister>>,
   TError,
   { data: RegisterRequest },
   TContext
 > => {
-  const mutationKey = ["postRegister"];
+  const mutationKey = ["postAuthRegister"];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -75,30 +75,30 @@ export const getPostRegisterMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postRegister>>,
+    Awaited<ReturnType<typeof postAuthRegister>>,
     { data: RegisterRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return postRegister(data);
+    return postAuthRegister(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postRegister>>
+export type PostAuthRegisterMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAuthRegister>>
 >;
-export type PostRegisterMutationBody = RegisterRequest;
-export type PostRegisterMutationError = void;
+export type PostAuthRegisterMutationBody = RegisterRequest;
+export type PostAuthRegisterMutationError = void;
 
 /**
  * @summary User registration
  */
-export const usePostRegister = <TError = void, TContext = unknown>(
+export const usePostAuthRegister = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postRegister>>,
+      Awaited<ReturnType<typeof postAuthRegister>>,
       TError,
       { data: RegisterRequest },
       TContext
@@ -106,12 +106,12 @@ export const usePostRegister = <TError = void, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postRegister>>,
+  Awaited<ReturnType<typeof postAuthRegister>>,
   TError,
   { data: RegisterRequest },
   TContext
 > => {
-  const mutationOptions = getPostRegisterMutationOptions(options);
+  const mutationOptions = getPostAuthRegisterMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
