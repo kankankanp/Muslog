@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
+import { GUEST_EMAIL, GUEST_PASSWORD } from "@/app/constants/guestUser";
 import { usePostAuthLogin } from "@/app/libs/api/generated/orval/auth/auth";
 import { login } from "@/app/libs/store/authSlice";
 
@@ -18,7 +19,6 @@ const loginSchema = z.object({
     .string()
     .min(6, { message: "パスワードは6文字以上で入力してください。" }),
 });
-
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
@@ -29,25 +29,32 @@ export default function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInputs>({
-    resolver: zodResolver(loginSchema),
-  });
+    setValue,
+  } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema) });
 
   const { mutate: loginMutation, isPending } = usePostAuthLogin();
 
   const onSubmit = (data: LoginFormInputs) => {
-    loginMutation({ data }, {
-      onSuccess: (user) => {
-        if (user.user) {
-          dispatch(login(user.user));
-        }
-        toast.success("ログインに成功しました");
-        router.push("/dashboard");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "ログインに失敗しました");
-      },
-    });
+    loginMutation(
+      { data },
+      {
+        onSuccess: (user: any) => {
+          if (user?.user) dispatch(login(user.user));
+          toast.success("ログインに成功しました");
+          router.push("/dashboard");
+        },
+        onError: (error: any) => {
+          console.error("login error:", error);
+          toast.error("ログインに失敗しました");
+        },
+      }
+    );
+  };
+
+  const handleGuestLogin = () => {
+    setValue("email", GUEST_EMAIL, { shouldValidate: true });
+    setValue("password", GUEST_PASSWORD, { shouldValidate: true });
+    handleSubmit(onSubmit)();
   };
 
   return (
@@ -94,47 +101,22 @@ export default function LoginForm() {
           />
         </div>
 
-        <div className="bg-blue-200 rounded-md p-4 text-gray-700 dark:text-gray-300 flex flex-col gap-2">
-          <p className="text-center text-md font-medium">
-            ポートフォリオを閲覧の方は
-            <span className="inline-block">
-              下記を入力してログインしてください。
-            </span>
-          </p>
-          <div className="flex justify-between items-center bg-white rounded-md p-2">
-            <div className="flex flex-col">
-              <p className="text-sm">メールアドレス:</p>
-              <p className="font-mono">EygQJpu@NillQOs.net</p>
-            </div>
-            <button
-              type="button"
-              className="ml-2 px-2 py-1 text-sm border-gray-400 border rounded hover:bg-blue-500 hover:text-white transition"
-              onClick={() => navigator.clipboard.writeText("EygQJpu@NillQOs.net")}
-            >
-              コピー
-            </button>
-          </div>
-
-          <div className="flex justify-between items-center bg-white rounded-md p-2">
-            <div className="flex flex-col">
-              <p className="text-sm">パスワード:</p>
-              <p className="font-mono">password</p>
-            </div>
-            <button
-              type="button"
-              className="ml-2 px-2 py-1 text-sm border-gray-400 border rounded hover:bg-blue-500 hover:text-white transition"
-              onClick={() => navigator.clipboard.writeText("password")}
-            >
-              コピー
-            </button>
-          </div>
+        <div className="flex flex-col gap-2">
+          <LoadingButton
+            label={"ログイン"}
+            color={"blue"}
+            isPending={isPending}
+          />
+          <button
+            type="button"
+            onClick={handleGuestLogin}
+            disabled={isPending}
+            className="px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-blue-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 text-center"
+            aria-label="ゲストログイン"
+          >
+            ゲストログイン
+          </button>
         </div>
-
-        <LoadingButton
-          label={"ログイン"}
-          color={"blue"}
-          isPending={isPending}
-        />
       </form>
     </div>
   );
