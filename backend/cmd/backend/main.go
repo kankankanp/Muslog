@@ -102,23 +102,25 @@ func main() {
 	protected.POST("/auth/refresh", userHandler.RefreshToken)
 	protected.GET("/auth/me", userHandler.GetMe)
 
-	protected.GET("/posts", postHandler.GetAllPosts)
-	protected.GET("/posts/:id", postHandler.GetPostByID)
-	protected.GET("/blogs/page/:page", postHandler.GetPostsByPage)
-	protected.POST("/blogs", postHandler.CreatePost)
-	protected.PUT("/blogs/:id", postHandler.UpdatePost)
-	protected.DELETE("/blogs/:id", postHandler.DeletePost)
+	// posts
+	postGroup := protected.Group("/posts")
+	postGroup.GET("", postHandler.GetAllPosts)
+	postGroup.GET("/:id", postHandler.GetPostByID)
+	postGroup.GET("/page/:page", postHandler.GetPostsByPage)
+	postGroup.POST("", postHandler.CreatePost)
+	postGroup.PUT("/:id", postHandler.UpdatePost)
+	postGroup.DELETE("/:id", postHandler.DeletePost)
+
+	// likes
+	postGroup.POST("/:postID/like", likeHandler.LikePost)
+	postGroup.DELETE("/:postID/unlike", likeHandler.UnlikePost)
+	postGroup.GET("/:postID/liked", likeHandler.IsPostLikedByUser)
 
 	// users
-	protUsers := protected.Group("/users")
-	protUsers.GET("", userHandler.GetAllUsers)
-	protUsers.GET("/:id", userHandler.GetUserByID)
-	protUsers.GET("/:id/posts", userHandler.GetUserPosts)
-
-	// like
-	protected.POST("/posts/:postID/like", likeHandler.LikePost)
-	protected.DELETE("/posts/:postID/unlike", likeHandler.UnlikePost)
-	protected.GET("/posts/:postID/liked", likeHandler.IsPostLikedByUser)
+	userGroup := protected.Group("/users")
+	userGroup.GET("", userHandler.GetAllUsers)
+	userGroup.GET("/:id", userHandler.GetUserByID)
+	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 
 	// spotify
 	protected.GET("/spotify/search", spotifyHandler.SearchTracks)

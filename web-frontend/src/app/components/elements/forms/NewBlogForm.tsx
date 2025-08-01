@@ -13,8 +13,8 @@ const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
 });
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
-import { usePostBlogs } from "@/app/libs/api/generated/orval/blogs/blogs";
 import { Track } from "@/app/libs/api/generated/orval/model/track";
+import { usePostPosts } from "@/app/libs/api/generated/orval/posts/posts";
 import { usePostTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
@@ -65,11 +65,11 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
     setValue("track", selectedTrack);
   }, [selectedTrack, setValue]);
 
-  const createBlogMutation = usePostBlogs();
+  const createPostMutation = usePostPosts();
   const addTagsToPostMutation = usePostTagsPostsPostID();
 
   const onSubmit = async (data: FormData) => {
-    createBlogMutation.mutate(
+    createPostMutation.mutate(
       { data },
       {
         onSuccess: (response) => {

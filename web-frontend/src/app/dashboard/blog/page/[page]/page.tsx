@@ -4,17 +4,17 @@ import { useParams } from "next/navigation";
 import AddButton from "@/app/components/elements/buttons/AddButton";
 import BlogCard from "@/app/components/elements/cards/BlogCard";
 import Pagination from "@/app/components/elements/others/Pagination";
-import { useGetBlogsPagePage } from "@/app/libs/api/generated/orval/blogs/blogs";
+import { useGetPostsPagePage } from "@/app/libs/api/generated/orval/posts/posts";
 
 export default function Page() {
   const params = useParams();
   const { page } = params as { page: string };
   const pageIndex = Number(page);
 
-  const { data: blogsData, isPending, error } = useGetBlogsPagePage(pageIndex);
+  const { data: postsData, isPending, error } = useGetPostsPagePage(pageIndex);
 
-  const posts = blogsData?.posts || [];
-  const totalCount = blogsData?.totalCount || 0;
+  const posts = postsData?.posts || [];
+  const totalCount = postsData?.totalCount || 0;
 
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {(error as any).message}</div>;

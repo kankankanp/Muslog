@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/blogs": {
+    "/posts": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,8 +12,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all blogs
-         * @description Get all post posts
+         * Get all posts
+         * @description Get all posts
          */
         get: {
             parameters: {
@@ -41,7 +41,7 @@ export interface paths {
         put?: never;
         /**
          * Create a new post
-         * @description Create a new post post
+         * @description Create a new post
          */
         post: {
             parameters: {
@@ -81,7 +81,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/blogs/{id}": {
+    "/posts/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -204,7 +204,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/blogs/page/{page}": {
+    "/posts/page/{page}": {
         parameters: {
             query?: never;
             header?: never;
@@ -212,7 +212,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get blogs by page
+         * Get posts by page
          * @description Get posts paginated
          */
         get: {
@@ -497,7 +497,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/register": {
+    "/auth/register": {
         parameters: {
             query?: never;
             header?: never;

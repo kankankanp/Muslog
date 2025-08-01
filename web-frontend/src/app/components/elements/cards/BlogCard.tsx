@@ -19,12 +19,12 @@ const BlogCard = ({
   onLikeClick,
 }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
-  const truncateText = (text: string, length: number) => {
-    if (text.length <= length) {
-      return text;
-    }
-    return text.substring(0, length) + "...";
-  };
+  // const truncateText = (text: string, length: number) => {
+  //   if (text.length <= length) {
+  //     return text;
+  //   }
+  //   return text.substring(0, length) + "...";
+  // };
 
   return (
     <div
@@ -52,9 +52,7 @@ const BlogCard = ({
               {post.title}
             </h3>
             <p className="text-base sm:text-lg mt-2 text-gray-700 dark:text-gray-300">
-              {isDetailPage
-                ? post.description
-                : truncateText(post.description, 40)}
+              {post.description}
             </p>
 
             {post.tags && post.tags.length > 0 && (

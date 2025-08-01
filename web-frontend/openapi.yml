@@ -9,12 +9,12 @@ security:
   - cookieAuth: []
 
 paths:
-  /blogs:
+  /posts:
     get:
-      summary: Get all blogs
-      description: Get all post posts
+      summary: Get all posts
+      description: Get all posts
       tags:
-        - blogs
+        - posts
       responses:
         "200":
           description: Successful response
@@ -31,9 +31,9 @@ paths:
                       $ref: "#/components/schemas/Post"
     post:
       summary: Create a new post
-      description: Create a new post post
+      description: Create a new post
       tags:
-        - blogs
+        - posts
       requestBody:
         required: true
         content:
@@ -63,12 +63,12 @@ paths:
                     type: string
                   post:
                     $ref: "#/components/schemas/Post"
-  /blogs/{id}:
+  /posts/{id}:
     get:
       summary: Get a post by ID
       description: Get a single post by its ID
       tags:
-        - blogs
+        - posts
       parameters:
         - in: path
           name: id
@@ -94,7 +94,7 @@ paths:
       summary: Update a post
       description: Update an existing post
       tags:
-        - blogs
+        - posts
       parameters:
         - in: path
           name: id
@@ -131,7 +131,7 @@ paths:
       summary: Delete a post
       description: Delete a post by its ID
       tags:
-        - blogs
+        - posts
       parameters:
         - in: path
           name: id
@@ -149,12 +149,12 @@ paths:
                 properties:
                   message:
                     type: string
-  /blogs/page/{page}:
+  /posts/page/{page}:
     get:
-      summary: Get blogs by page
+      summary: Get posts by page
       description: Get posts paginated
       tags:
-        - blogs
+        - posts
       parameters:
         - in: path
           name: page

@@ -9,9 +9,17 @@ import toast, { Toaster } from "react-hot-toast";
 import SimpleMDEEditor from "react-simplemde-editor";
 import { z } from "zod";
 import { CommonButton } from "@/app/components/elements/buttons/CommonButton";
+import {
+  useGetBlogsId,
+  usePutBlogsId,
+} from "@/app/libs/api/generated/orval/blogs/blogs";
 import { Tag } from "@/app/libs/api/generated/orval/model/tag";
-import { useDeleteBlogsId, useGetBlogsId, usePutBlogsId } from "@/app/libs/api/generated/orval/blogs/blogs";
-import { useGetTagsPostsPostID, usePostTagsPostsPostID, useDeleteTagsPostsPostID } from "@/app/libs/api/generated/orval/tags/tags";
+import { useDeletePostsId } from "@/app/libs/api/generated/orval/posts/posts";
+import {
+  useGetTagsPostsPostID,
+  usePostTagsPostsPostID,
+  useDeleteTagsPostsPostID,
+} from "@/app/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
@@ -26,7 +34,7 @@ export default function Page() {
   const { data: post, isPending, error } = useGetBlogsId(Number(id));
   const { data: tagsData } = useGetTagsPostsPostID(Number(id));
   const { mutate: updateBlog } = usePutBlogsId();
-  const { mutate: deleteBlog } = useDeleteBlogsId();
+  const { mutate: deletePost } = useDeletePostsId();
   const addTagsToPostMutation = usePostTagsPostsPostID();
   const removeTagsFromPostMutation = useDeleteTagsPostsPostID();
 
@@ -50,18 +58,19 @@ export default function Page() {
     }
   }, [post, tagsData, reset, setValue]);
 
-  
-
   const onSubmit = async (data: {
     title: string;
     description: string;
     tags?: string;
   }) => {
     try {
-      await updateBlog({ id: Number(id), data: {
-        title: data.title,
-        description: data.description,
-      } });
+      await updateBlog({
+        id: Number(id),
+        data: {
+          title: data.title,
+          description: data.description,
+        },
+      });
 
       // タグの更新処理
       const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
