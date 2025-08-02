@@ -126,7 +126,7 @@ export default function PostEditPage() {
         onSuccess: () => {
           toast.success("投稿を削除しました。");
           setTimeout(() => {
-            router.push("/dashboard/blog/page/1");
+            router.push("/dashboard");
             router.refresh();
           }, 2000);
         },

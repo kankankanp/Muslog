@@ -17,8 +17,8 @@ func (s PostService) GetAllPosts(userID string) ([]model.Post, error) {
 	return s.Repo.FindAll(userID)
 }
 
-func (s PostService) GetPostByID(id uint) (*model.Post, error) {
-	return s.Repo.FindByID(id)
+func (s PostService) GetPostByID(id uint, userID string) (*model.Post, error) {
+	return s.Repo.FindByIDWithUserID(id, userID)
 }
 
 func (s PostService) CreatePost(post *model.Post) error {

@@ -31,8 +31,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: "Muslog - 記事が見つかりません",
-    description: "指定された記事は見つかりませんでした。",
+    title: "Muslog - 記事の詳細ページ",
+    description: "記事の詳細ページ",
   };
 }
 

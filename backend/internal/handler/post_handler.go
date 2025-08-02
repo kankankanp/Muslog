@@ -35,11 +35,13 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	post, err := h.Service.GetPostByID(uint(id))
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post, "likesCount": post.LikesCount})
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {
