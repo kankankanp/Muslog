@@ -11,4 +11,5 @@ export type PostPostsBody = {
   description?: string;
   userId?: string;
   tracks?: Track[];
+  tags?: string[];
 };

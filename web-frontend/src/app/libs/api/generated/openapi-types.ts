@@ -57,6 +57,7 @@ export interface paths {
                         description?: string;
                         userId?: string;
                         tracks?: components["schemas"]["Track"][];
+                        tags?: string[];
                     };
                 };
             };
@@ -1238,6 +1239,7 @@ export interface components {
             tags?: components["schemas"]["Tag"][];
             /** Format: int32 */
             likesCount?: number;
+            isLiked?: boolean;
         };
         Tag: {
             /** Format: uint */

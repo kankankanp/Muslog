@@ -15,8 +15,9 @@ const notoJp = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Muslog",
-  description: "Music for your everyday blog.",
+  title: "Muslog - あなたの音楽の物語をシェアしよう",
+  description:
+    "好きな曲と共に、あなたの想いを綴る。新しい音楽との出会いの場へ。",
   icons: {
     icon: "/favicon.ico",
   },

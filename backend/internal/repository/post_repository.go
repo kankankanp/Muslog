@@ -40,7 +40,7 @@ func (r *postRepository) UpdatePost(post *model.Post) error {
 
 func (r *postRepository) FindAll(userID string) ([]model.Post, error) {
 	var posts []model.Post
-	err := r.DB.Preload("Tracks").
+	err := r.DB.Preload("Tracks").Preload("Tags").
 		Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
 		Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID).
 		Order("created_at desc").
@@ -50,7 +50,7 @@ func (r *postRepository) FindAll(userID string) ([]model.Post, error) {
 
 func (r *postRepository) FindByID(id uint) (*model.Post, error) {
 	var post model.Post
-	err := r.DB.Preload("Tracks").First(&post, id).Error
+	err := r.DB.Preload("Tracks").Preload("Tags").First(&post, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (r *postRepository) FindByPage(page, perPage int, userID string) ([]model.P
 	var posts []model.Post
 	var totalCount int64
 	r.DB.Model(&model.Post{}).Count(&totalCount)
-	err := r.DB.Preload("Tracks").
+	err := r.DB.Preload("Tracks").Preload("Tags").
 		Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
 		Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID).
 		Order("created_at desc").

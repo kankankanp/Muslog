@@ -1,13 +1,18 @@
 "use client";
 
-import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
-import { logout } from "@/libs/store/authSlice";
-import { faHome, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHome,
+  faSignOutAlt,
+  faUser,
+  faPlusSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
+import { logout } from "@/libs/store/authSlice";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -36,7 +41,7 @@ export default function Sidebar() {
       <div className="p-4 text-2xl font-bold border-b border-gray-700">
         <Link href="/dashboard">Muslog</Link>
       </div>
-      <nav className="flex-grow p-4">
+      <nav className="flex-grow p-4 space-y-2">
         <Link
           href="/dashboard"
           className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
@@ -44,7 +49,20 @@ export default function Sidebar() {
           <FontAwesomeIcon icon={faHome} className="mr-3" />
           ホーム
         </Link>
-        {/* 他のナビゲーションリンクをここに追加できます */}
+        <Link
+          href="/dashboard/me"
+          className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+        >
+          <FontAwesomeIcon icon={faUser} className="mr-3" />
+          マイページ
+        </Link>
+        <Link
+          href="/dashboard/post/add"
+          className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+        >
+          <FontAwesomeIcon icon={faPlusSquare} className="mr-3" />
+          新規作成
+        </Link>
       </nav>
       <div className="p-4 border-t border-gray-700">
         <button

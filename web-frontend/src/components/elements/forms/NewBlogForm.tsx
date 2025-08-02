@@ -11,16 +11,20 @@ import toast from "react-hot-toast";
 const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
 });
+import Select from "react-select";
 import { z } from "zod";
 import { CommonButton } from "../buttons/CommonButton";
 import { Track } from "@/libs/api/generated/orval/model/track";
 import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
-import { usePostTagsPostsPostID } from "@/libs/api/generated/orval/tags/tags";
+import {
+  usePostTagsPostsPostID,
+  useGetTags,
+} from "@/libs/api/generated/orval/tags/tags";
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),
   description: z.string().min(1, "内容を入力してください"),
-  tags: z.string().optional(),
+  tags: z.array(z.string()).optional(), // tagsを文字列の配列に変更
   track: z
     .object({
       spotifyId: z.string().optional(),
@@ -35,7 +39,7 @@ type FormData = {
   title: string;
   description: string;
   track: Track | null;
-  tags?: string;
+  tags?: string[]; // tagsの型を文字列の配列に変更
 };
 
 type NewBlogFormProps = {
@@ -57,7 +61,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
       title: "",
       description: "",
       track: null,
-      tags: "",
+      tags: [], // デフォルト値を空の配列に
     },
   });
 
@@ -67,27 +71,28 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
 
   const createPostMutation = usePostPosts();
   const addTagsToPostMutation = usePostTagsPostsPostID();
+  const { data: allTagsData } = useGetTags(); // 全てのタグを取得
+
+  const tagOptions =
+    allTagsData?.tags?.map((tag) => ({
+      value: tag.name || "",
+      label: tag.name || "",
+    })) || [];
 
   const onSubmit = async (data: FormData) => {
     createPostMutation.mutate(
-      { data },
+      { data: { ...data, tags: undefined } }, // tagsは別途処理するためundefinedにする
       {
         onSuccess: (response) => {
           toast.success("ブログが作成されました");
           reset();
           router.push("/dashboard");
 
-          if (data.tags) {
-            const tagNames = data.tags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter((tag) => tag.length > 0);
-            if (tagNames.length > 0 && response.post?.id) {
-              addTagsToPostMutation.mutate({
-                postID: response.post.id,
-                data: { tag_names: tagNames },
-              });
-            }
+          if (data.tags && data.tags.length > 0 && response.post?.id) {
+            addTagsToPostMutation.mutate({
+              postID: response.post.id,
+              data: { tag_names: data.tags },
+            });
           }
         },
         onError: (error: any) => {
@@ -157,13 +162,31 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           htmlFor="tags"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          タグ (カンマ区切り)
+          タグ
         </label>
-        <input
-          type="text"
-          {...register("tags")}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          placeholder="例: プログラミング, 日常, 音楽"
+        <Controller
+          name="tags"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              options={tagOptions}
+              isMulti
+              isClearable
+              placeholder="タグを選択または検索..."
+              classNamePrefix="react-select"
+              onChange={(selectedOptions) =>
+                field.onChange(
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : []
+                )
+              }
+              value={tagOptions.filter((option) =>
+                (field.value || []).includes(option.value)
+              )}
+            />
+          )}
         />
         {errors.tags && (
           <p className="mt-1 text-sm text-red-500">{errors.tags.message}</p>

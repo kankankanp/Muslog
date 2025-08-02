@@ -256,7 +256,7 @@ export default function PostEditPage() {
           >
             削除
           </button>
-          <CommonButton href="/dashboard/blog/page/1">キャンセル</CommonButton>
+          <CommonButton href="/dashboard">キャンセル</CommonButton>
         </div>
       </form>
     </div>

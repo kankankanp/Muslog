@@ -118,7 +118,7 @@ const BlogCard = ({
                   Back
                 </CommonButton>
               ) : (
-                <CommonButton href={`/dashboard/blog/${post.id}`}>
+                <CommonButton href={`/dashboard/post/${post.id}`}>
                   Show more
                 </CommonButton>
               )}

@@ -89,13 +89,31 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts?.map((post) => (
-            <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div
+              key={post.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+            >
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {post.title}
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
                 {post.description}
               </p>
+              <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-4">
+                <span>❤️ {post.likesCount || 0} Likes</span>
+              </div>
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {post.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
                 <a
                   href={`/dashboard/post/${post.id}/edit`}

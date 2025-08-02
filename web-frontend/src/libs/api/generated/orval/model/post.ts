@@ -17,4 +17,5 @@ export interface Post {
   tracks: Track[];
   tags?: Tag[];
   likesCount?: number;
+  isLiked?: boolean;
 }
