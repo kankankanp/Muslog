@@ -99,8 +99,9 @@ func main() {
 		},
 	}))
 
-	protected.POST("/auth/refresh", userHandler.RefreshToken)
-	protected.GET("/auth/me", userHandler.GetMe)
+	protected.POST("/refresh", userHandler.RefreshToken)
+	protected.POST("/logout", userHandler.Logout)
+	protected.GET("/me", userHandler.GetMe)
 
 	// posts
 	postGroup := protected.Group("/posts")

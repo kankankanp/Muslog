@@ -15,6 +15,24 @@ type UserHandler struct {
 	Service *service.UserService
 }
 
+type UserResponse struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+func toUserResponse(user *model.User) UserResponse {
+	return UserResponse{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+}
+
 func (h *UserHandler) Login(c echo.Context) error {
 	fmt.Println("Login handler called")
 	u := new(model.User)
@@ -40,7 +58,7 @@ func (h *UserHandler) Login(c echo.Context) error {
 	setTokenCookie(c, "access_token", accessToken)
 	setTokenCookie(c, "refresh_token", refreshToken)
 
-	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": user})
+	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": toUserResponse(user)})
 }
 
 func (h *UserHandler) Register(c echo.Context) error {
@@ -71,7 +89,7 @@ func (h *UserHandler) Register(c echo.Context) error {
 	setTokenCookie(c, "access_token", accessToken)
 	setTokenCookie(c, "refresh_token", refreshToken)
 
-	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": user})
+	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": toUserResponse(user)})
 }
 
 func (h *UserHandler) RefreshToken(c echo.Context) error {
@@ -123,7 +141,7 @@ func (h *UserHandler) GetMe(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "User not found"})
 	}
 
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, toUserResponse(user))
 }
 
 func (h *UserHandler) GetAllUsers(c echo.Context) error {
@@ -131,7 +149,14 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "users": users})
+
+	// パスワードを除外したユーザー一覧を作成
+	var userResponses []UserResponse
+	for _, user := range users {
+		userResponses = append(userResponses, toUserResponse(&user))
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "users": userResponses})
 }
 
 func (h *UserHandler) GetUserByID(c echo.Context) error {
@@ -140,7 +165,8 @@ func (h *UserHandler) GetUserByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "user": user})
+
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "user": toUserResponse(user)})
 }
 
 func (h *UserHandler) GetUserPosts(c echo.Context) error {

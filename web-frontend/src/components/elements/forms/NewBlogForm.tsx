@@ -75,7 +75,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
         onSuccess: (response) => {
           toast.success("ブログが作成されました");
           reset();
-          router.push("/dashboard/blog/page/1");
+          router.push("/dashboard");
 
           if (data.tags) {
             const tagNames = data.tags

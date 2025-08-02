@@ -26,6 +26,8 @@ const BlogCard = ({
   //   return text.substring(0, length) + "...";
   // };
 
+  console.log("aaa1", safePosts);
+
   return (
     <div
       className={`py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
