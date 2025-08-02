@@ -10,6 +10,7 @@ type Post struct {
     Tracks      []Track   `json:"tracks"`
     Tags        []Tag     `gorm:"many2many:post_tags;" json:"tags"`
     LikesCount  int       `gorm:"default:0" json:"likesCount"`
+    IsLiked     bool      `gorm:"-" json:"isLiked"`
     CreatedAt   time.Time `json:"createdAt"`
     UpdatedAt   time.Time `json:"updatedAt"`
 }

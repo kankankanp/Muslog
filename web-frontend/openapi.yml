@@ -346,6 +346,22 @@ paths:
                     $ref: "#/components/schemas/AuthResponse"
         "401":
           description: Unauthorized
+  /auth/google:
+    get:
+      summary: Get Google OAuth URL
+      description: Get the URL to redirect to for Google OAuth authentication.
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authURL:
+                    type: string
   /refresh:
     post:
       summary: Refresh JWT token

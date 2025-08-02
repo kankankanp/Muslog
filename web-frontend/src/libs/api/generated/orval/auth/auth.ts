@@ -21,6 +21,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  GetAuthGoogle200,
   LoginRequest,
   PostAuthLogin200,
   PostAuthRegister201,
@@ -198,6 +199,134 @@ export const usePostAuthLogin = <TError = void, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * Get the URL to redirect to for Google OAuth authentication.
+ * @summary Get Google OAuth URL
+ */
+export const getAuthGoogle = (signal?: AbortSignal) => {
+  return customInstance<GetAuthGoogle200>({
+    url: `/auth/google`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetAuthGoogleQueryKey = () => {
+  return [`/auth/google`] as const;
+};
+
+export const getGetAuthGoogleQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
+  >;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAuthGoogleQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthGoogle>>> = ({
+    signal,
+  }) => getAuthGoogle(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthGoogle>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetAuthGoogleQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuthGoogle>>
+>;
+export type GetAuthGoogleQueryError = unknown;
+
+export function useGetAuthGoogle<
+  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAuthGoogle>>,
+          TError,
+          Awaited<ReturnType<typeof getAuthGoogle>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAuthGoogle<
+  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAuthGoogle>>,
+          TError,
+          Awaited<ReturnType<typeof getAuthGoogle>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetAuthGoogle<
+  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get Google OAuth URL
+ */
+
+export function useGetAuthGoogle<
+  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetAuthGoogleQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * Refresh the JWT access token using the refresh token.
  * @summary Refresh JWT token

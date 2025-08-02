@@ -20,7 +20,9 @@ func NewPostHandler(service *service.PostService) *PostHandler {
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
-	posts, err := h.Service.GetAllPosts()
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, err := h.Service.GetAllPosts(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -124,7 +126,9 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
 	}
 	const PerPage = 4
-	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage)
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}

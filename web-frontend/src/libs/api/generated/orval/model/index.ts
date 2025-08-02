@@ -11,6 +11,7 @@ export * from "./deletePostsId200";
 export * from "./deletePostsPostIDUnlike200";
 export * from "./deleteTagsId200";
 export * from "./deleteTagsPostsPostIDBody";
+export * from "./getAuthGoogle200";
 export * from "./getBlogs200";
 export * from "./getBlogsId200";
 export * from "./getBlogsPagePage200";

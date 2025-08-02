@@ -52,7 +52,7 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 	if err := seeder.Seed(db); err != nil {
@@ -78,6 +78,9 @@ func main() {
 	likeService := service.NewLikeService(likeRepo, postRepo)
 	likeHandler := handler.NewLikeHandler(likeService)
 
+	oauthService := service.NewOAuthService(userRepo)
+	oauthHandler := handler.NewOAuthHandler(oauthService)
+
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
@@ -91,6 +94,9 @@ func main() {
 	public := e.Group("/api/v1")
 	public.POST("/auth/login", userHandler.Login)
 	public.POST("/auth/register", userHandler.Register)
+	public.GET("/auth/google", oauthHandler.GetGoogleAuthURL)
+	public.GET("/auth/google/callback", oauthHandler.GoogleCallback)
+	public.GET("/spotify/search", spotifyHandler.SearchTracks)
 
 	protected := e.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
@@ -115,7 +121,6 @@ func main() {
 	// likes
 	postGroup.POST("/:postID/like", likeHandler.LikePost)
 	postGroup.DELETE("/:postID/unlike", likeHandler.UnlikePost)
-	postGroup.GET("/:postID/liked", likeHandler.IsPostLikedByUser)
 
 	// users
 	userGroup := protected.Group("/users")
@@ -123,8 +128,7 @@ func main() {
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 
-	// spotify
-	protected.GET("/spotify/search", spotifyHandler.SearchTracks)
+	// spotify endpoint moved to public group above
 
 	// tags
 	tagGroup := protected.Group("/tags")

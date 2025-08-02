@@ -10,6 +10,7 @@ type BlogCardProps = {
   posts: Post[];
   isLiked?: boolean;
   onLikeClick?: () => void;
+  onLikeToggle?: (postId: number, isCurrentlyLiked: boolean) => void;
 };
 
 const BlogCard = ({
@@ -17,16 +18,9 @@ const BlogCard = ({
   posts,
   isLiked,
   onLikeClick,
+  onLikeToggle,
 }: BlogCardProps) => {
   const safePosts = Array.isArray(posts) ? posts : [];
-  // const truncateText = (text: string, length: number) => {
-  //   if (text.length <= length) {
-  //     return text;
-  //   }
-  //   return text.substring(0, length) + "...";
-  // };
-
-  console.log("aaa1", safePosts);
 
   return (
     <div
@@ -37,19 +31,11 @@ const BlogCard = ({
       }`}
     >
       {safePosts.map((post: Post) => {
-        // const date = new Date(post.date);
-        // const year = date.getFullYear();
-        // const month = date.getMonth() + 1;
-        // const day = date.getDate();
-        // const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        // const dayOfWeek = daysOfWeek[date.getDay()];
-
         return (
           <div
             key={post.id}
             className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
           >
-            {/* <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{`${year}/${month}/${day}(${dayOfWeek})`}</h3> */}
             <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
               {post.title}
             </h3>
@@ -105,9 +91,15 @@ const BlogCard = ({
                 <FontAwesomeIcon
                   icon={faHeart}
                   className={`cursor-pointer mr-1 ${
-                    isLiked ? "text-red-500" : "text-gray-400"
+                    isDetailPage
+                      ? (isLiked ? "text-red-500" : "text-gray-400")
+                      : (post.isLiked ? "text-red-500" : "text-gray-400")
                   }`}
-                  onClick={onLikeClick}
+                  onClick={
+                    isDetailPage
+                      ? onLikeClick
+                      : () => onLikeToggle?.(post.id, post.isLiked ?? false)
+                  }
                 />
                 <span className="text-gray-700 dark:text-gray-300">
                   {post.likesCount}
@@ -115,7 +107,7 @@ const BlogCard = ({
               </div>
               {!isDetailPage && (
                 <Link
-                  href={`/dashboard/blog/edit/${post.id}`}
+                  href={`/dashboard/post/${post.id}/edit`}
                   className="text-black dark:text-gray-300 text-base sm:text-lg transition-transform transform hover:scale-125"
                 >
                   <FontAwesomeIcon icon={faPen} />

@@ -178,35 +178,3 @@ func (h *UserHandler) GetUserPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
 
-func createToken(userID string, expiry time.Duration) (string, error) {
-	claims := jwt.MapClaims{
-		"user_id": userID,
-		"exp":     time.Now().Add(expiry).Unix(),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("secret"))
-}
-
-func setTokenCookie(c echo.Context, name, token string) {
-	cookie := new(http.Cookie)
-	cookie.Name = name
-	cookie.Value = token
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	// cookie.Secure = true // 本番環境ではtrueにする
-	c.SetCookie(cookie)
-}
-
-func clearTokenCookie(c echo.Context, name string) {
-	cookie := new(http.Cookie)
-	cookie.Name = name
-	cookie.Value = ""
-	cookie.Expires = time.Unix(0, 0)
-	cookie.Path = "/"
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	// cookie.Secure = true // 本番環境ではtrueにする
-	c.SetCookie(cookie)
-}

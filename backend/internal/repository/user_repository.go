@@ -46,4 +46,12 @@ func (r *UserRepository) Create(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *UserRepository) Update(user *model.User) (*model.User, error) {
+	err := r.DB.Save(user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 } 

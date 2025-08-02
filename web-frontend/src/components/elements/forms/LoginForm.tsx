@@ -8,7 +8,10 @@ import { useDispatch } from "react-redux";
 import { z } from "zod";
 import LoadingButton from "../buttons/LoadingButton";
 import { GUEST_EMAIL, GUEST_PASSWORD } from "@/constants/guestUser";
-import { usePostAuthLogin } from "@/libs/api/generated/orval/auth/auth";
+import {
+  useGetAuthGoogle,
+  usePostAuthLogin,
+} from "@/libs/api/generated/orval/auth/auth";
 import { login } from "@/libs/store/authSlice";
 
 const loginSchema = z.object({
@@ -25,7 +28,7 @@ export default function LoginForm() {
   const dispatch = useDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get('returnUrl');
+  const returnUrl = searchParams.get("returnUrl");
 
   const {
     register,
@@ -35,6 +38,12 @@ export default function LoginForm() {
   } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema) });
 
   const { mutate: loginMutation, isPending } = usePostAuthLogin();
+  const { refetch: getAuthGoogle, isFetching: isGoogleLoginPending } =
+    useGetAuthGoogle({
+      query: {
+        enabled: false, // Initially disable the query
+      },
+    });
 
   const onSubmit = (data: LoginFormInputs) => {
     loginMutation(
@@ -44,7 +53,9 @@ export default function LoginForm() {
           if (user?.user) dispatch(login(user.user));
           toast.success("ログインに成功しました");
           // returnUrlがある場合はそこに、なければ/dashboardに遷移
-          const redirectTo = returnUrl ? decodeURIComponent(returnUrl) : "/dashboard";
+          const redirectTo = returnUrl
+            ? decodeURIComponent(returnUrl)
+            : "/dashboard";
           router.push(redirectTo);
         },
         onError: (error: any) => {
@@ -59,6 +70,18 @@ export default function LoginForm() {
     setValue("email", GUEST_EMAIL, { shouldValidate: true });
     setValue("password", GUEST_PASSWORD, { shouldValidate: true });
     handleSubmit(onSubmit)();
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { data } = await getAuthGoogle();
+      if (data?.authURL) {
+        window.location.href = data.authURL;
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Googleログインに失敗しました。");
+    }
   };
 
   return (
@@ -119,6 +142,15 @@ export default function LoginForm() {
             aria-label="ゲストログイン"
           >
             ゲストログイン
+          </button>
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={isPending || isGoogleLoginPending}
+            className="px-4 py-2 rounded-md border border-red-500 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700 text-center"
+            aria-label="Googleでログイン"
+          >
+            Googleでログイン
           </button>
         </div>
       </form>

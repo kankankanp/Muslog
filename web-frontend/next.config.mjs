@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/registration/login',
+        permanent: true,
+      },
+    ]
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -13,7 +22,7 @@ const nextConfig = {
   },
   serverExternalPackages: ["bcrypt"],
   images: {
-    domains: ["i.scdn.co"],
+    domains: ["i.scdn.co", "picsum.photos"],
   },
 };
 

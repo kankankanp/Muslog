@@ -87,13 +87,29 @@ export default function ProfilePage() {
           </h2>
         </div>
 
-        <div className="text-center py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts?.map((post) => (
-            <div key={post.id} className="py-2">
-              <h3 className="text-lg font-semibold">{post.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300">
+            <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {post.title}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
                 {post.description}
               </p>
+              <div className="flex gap-2">
+                <a
+                  href={`/dashboard/post/${post.id}/edit`}
+                  className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                >
+                  編集
+                </a>
+                <a
+                  href={`/dashboard/post/${post.id}`}
+                  className="inline-block bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200"
+                >
+                  表示
+                </a>
+              </div>
             </div>
           ))}
         </div>

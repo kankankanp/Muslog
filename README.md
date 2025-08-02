@@ -164,6 +164,8 @@ VSCodeの拡張機能を検索し、
 npx https://github.com/google-gemini/gemini-cli
 gemini -m "gemini-2.5-flash" --yolo
 
+### Claude codeの実行
+claude --dangerously-skip-permissions
 
 ### DBのマイグレーション・シーディング
 ```

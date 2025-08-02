@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Track } from "@/libs/api/generated/orval/model/track";
 import { useGetSpotifySearch } from "@/libs/api/generated/orval/spotify/spotify";
@@ -12,19 +12,33 @@ type SelectMusicAreaProps = {
 
 const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
   const [query, setQuery] = useState<string>("");
-  const { data, isPending, error, refetch } = useGetSpotifySearch(
-    { q: query },
-    { query: { enabled: false } }
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { data, isPending, error } = useGetSpotifySearch(
+    { q: searchQuery },
+    { query: { enabled: !!searchQuery } }
   );
 
   const handleSearch = async () => {
-    if (!query) return toast.error("検索ワードを入力してください");
-    await refetch();
+    if (!query.trim()) {
+      toast.error("検索ワードを入力してください");
+      return;
+    }
+    setSearchQuery(query.trim());
   };
 
   const tracks = data?.tracks || [];
 
-  if (error) toast.error((error as any).message || "通信エラーが発生しました");
+  // エラーの監視と表示
+  React.useEffect(() => {
+    if (error) {
+      console.error("Spotify search error:", error);
+      toast.error(
+        (error as any)?.response?.data?.message ||
+          (error as any)?.message ||
+          "検索中にエラーが発生しました"
+      );
+    }
+  }, [error]);
 
   return (
     <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
@@ -34,6 +48,7 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
           placeholder="曲名を入力"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           className="flex-1 px-4 py-2 border dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200"
         />
         <button

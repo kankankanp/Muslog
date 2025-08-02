@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import BlogCard from "@/components/elements/cards/BlogCard";
@@ -15,6 +16,7 @@ export default function Page() {
   const params = useParams();
   const { id } = params as { id: string };
   const user = useSelector((state: RootState) => state.auth.user);
+  const queryClient = useQueryClient();
 
   const {
     data: post,
@@ -27,8 +29,31 @@ export default function Page() {
     error: likeStatusError,
   } = useGetPostsPostIDLiked(Number(id), { query: { enabled: !!user } });
 
-  const { mutate: likePost } = usePostPostsPostIDLike();
-  const { mutate: unlikePost } = useDeletePostsPostIDUnlike();
+  const { mutate: likePost } = usePostPostsPostIDLike({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`/posts/${id}/liked`] });
+        queryClient.invalidateQueries({ queryKey: [`/posts/${id}`] });
+      },
+      onError: (error) => {
+        console.error("Failed to like post:", error);
+        alert("いいねに失敗しました");
+      },
+    },
+  });
+
+  const { mutate: unlikePost } = useDeletePostsPostIDUnlike({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`/posts/${id}/liked`] });
+        queryClient.invalidateQueries({ queryKey: [`/posts/${id}`] });
+      },
+      onError: (error) => {
+        console.error("Failed to unlike post:", error);
+        alert("いいね解除に失敗しました");
+      },
+    },
+  });
 
   const handleLikeClick = async () => {
     if (!user) {
@@ -36,14 +61,10 @@ export default function Page() {
       return;
     }
 
-    try {
-      if (likeStatusData?.isLiked) {
-        unlikePost({ postID: Number(id) });
-      } else {
-        likePost({ postID: Number(id) });
-      }
-    } catch (error: any) {
-      console.error("Failed to update like status:", error);
+    if (likeStatusData?.isLiked) {
+      unlikePost({ postID: Number(id) });
+    } else {
+      likePost({ postID: Number(id) });
     }
   };
 
