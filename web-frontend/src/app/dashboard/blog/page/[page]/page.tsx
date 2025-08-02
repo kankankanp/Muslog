@@ -12,6 +12,7 @@ export default function Page() {
   const pageIndex = Number(page);
 
   const { data: postsData, isPending, error } = useGetPostsPagePage(pageIndex);
+  console.log(postsData);
 
   const posts = postsData?.posts || [];
   const totalCount = postsData?.totalCount || 0;

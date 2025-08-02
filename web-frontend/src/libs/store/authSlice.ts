@@ -4,11 +4,13 @@ import { AuthResponse } from "../api/generated/orval/model/authResponse";
 interface AuthState {
   accessToken: any;
   user: AuthResponse | null;
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  accessToken: undefined
+  accessToken: undefined,
+  isAuthenticated: false
 };
 
 const authSlice = createSlice({
@@ -17,9 +19,11 @@ const authSlice = createSlice({
   reducers: {
     login(state, action: PayloadAction<AuthResponse>) {
       state.user = action.payload;
+      state.isAuthenticated = true;
     },
     logout(state) {
       state.user = null;
+      state.isAuthenticated = false;
     },
   },
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -24,6 +24,8 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 export default function LoginForm() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl');
 
   const {
     register,
@@ -41,7 +43,9 @@ export default function LoginForm() {
         onSuccess: (user: any) => {
           if (user?.user) dispatch(login(user.user));
           toast.success("ログインに成功しました");
-          router.push("/dashboard");
+          // returnUrlがある場合はそこに、なければ/dashboardに遷移
+          const redirectTo = returnUrl ? decodeURIComponent(returnUrl) : "/dashboard";
+          router.push(redirectTo);
         },
         onError: (error: any) => {
           console.error("login error:", error);

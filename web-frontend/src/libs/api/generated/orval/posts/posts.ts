@@ -19,7 +19,6 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
-
 import type {
   DeletePostsId200,
   GetPosts200,
@@ -30,7 +29,6 @@ import type {
   PutPostsId200,
   PutPostsIdBody,
 } from ".././model";
-
 import { customInstance } from "../../../custom-instance";
 
 /**
@@ -90,7 +88,7 @@ export function useGetPosts<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -111,7 +109,7 @@ export function useGetPosts<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -124,7 +122,7 @@ export function useGetPosts<
       UseQueryOptions<Awaited<ReturnType<typeof getPosts>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -141,7 +139,7 @@ export function useGetPosts<
       UseQueryOptions<Awaited<ReturnType<typeof getPosts>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
@@ -163,7 +161,7 @@ export function useGetPosts<
  */
 export const postPosts = (
   postPostsBody: PostPostsBody,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) => {
   return customInstance<PostPosts201>({
     url: `/posts`,
@@ -229,7 +227,7 @@ export const usePostPosts = <TError = unknown, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof postPosts>>,
   TError,
@@ -265,7 +263,7 @@ export const getGetPostsIdQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getPostsId>>, TError, TData>
     >;
-  },
+  }
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -310,7 +308,7 @@ export function useGetPostsId<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -332,7 +330,7 @@ export function useGetPostsId<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -346,7 +344,7 @@ export function useGetPostsId<
       UseQueryOptions<Awaited<ReturnType<typeof getPostsId>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -364,7 +362,7 @@ export function useGetPostsId<
       UseQueryOptions<Awaited<ReturnType<typeof getPostsId>>, TError, TData>
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
@@ -448,7 +446,7 @@ export const usePutPostsId = <TError = void, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof putPostsId>>,
   TError,
@@ -525,7 +523,7 @@ export const useDeletePostsId = <TError = unknown, TContext = unknown>(
       TContext
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof deletePostsId>>,
   TError,
@@ -565,7 +563,7 @@ export const getGetPostsPagePageQueryOptions = <
         TData
       >
     >;
-  },
+  }
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -578,7 +576,7 @@ export const getGetPostsPagePageQueryOptions = <
   return {
     queryKey,
     queryFn,
-    enabled: !!page,
+    enabled: page >= 1,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getPostsPagePage>>,
@@ -614,7 +612,7 @@ export function useGetPostsPagePage<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -640,7 +638,7 @@ export function useGetPostsPagePage<
         "initialData"
       >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -658,7 +656,7 @@ export function useGetPostsPagePage<
       >
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
@@ -680,7 +678,7 @@ export function useGetPostsPagePage<
       >
     >;
   },
-  queryClient?: QueryClient,
+  queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
