@@ -42,16 +42,17 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
         }
 
         // セキュリティチェック3: 必要なデータの存在確認
-        if (!authData.user || !authData.isAuthenticated) {
+        if (!authData.user || !authData.isAuthenticated || !authData.accessToken) { // accessTokenの存在チェックを追加
           localStorage.removeItem('auth');
           dispatch(initializeAuth({ user: null }));
           return;
         }
 
         // 有効な認証情報として復元
-        dispatch(initializeAuth({ 
-          user: authData.user, 
-          tokenExpiry: authData.tokenExpiry 
+        dispatch(initializeAuth({
+          user: authData.user,
+          tokenExpiry: authData.tokenExpiry,
+          accessToken: authData.accessToken // accessTokenを渡す
         }));
       } catch (error) {
         console.error('認証情報の復元エラー:', error);

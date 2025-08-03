@@ -96,7 +96,9 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
-	post, err := h.Service.GetPostByID(uint(id))
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}

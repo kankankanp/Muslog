@@ -6,6 +6,25 @@ const instance = Axios.create({
   withCredentials: true,
 });
 
+// リクエストインターセプターを設定
+instance.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined') {
+      const savedAuth = localStorage.getItem('auth');
+      if (savedAuth) {
+        const authData = JSON.parse(savedAuth);
+        if (authData.accessToken) {
+          config.headers.Authorization = `Bearer ${authData.accessToken}`;
+        }
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // レスポンスインターセプターを設定
 instance.interceptors.response.use(
   (response) => response,
