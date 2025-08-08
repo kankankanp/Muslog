@@ -50,23 +50,7 @@ export default function LoginForm() {
       { data },
       {
         onSuccess: (user: any) => {
-          // クッキーからaccess_tokenを抽出
-          const getCookie = (name: string) => {
-            if (typeof document === 'undefined') return undefined;
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for(let i=0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0)===' ') c = c.substring(1,c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
-            }
-            return undefined;
-          };
-          const accessToken = getCookie('access_token');
-
-          if (user?.user && accessToken) {
-            dispatch(login({ ...user.user, accessToken })); // accessTokenを渡す
-          }
+          if (user?.user) dispatch(login(user.user));
           toast.success("ログインに成功しました");
           // returnUrlがある場合はそこに、なければ/dashboardに遷移
           const redirectTo = returnUrl

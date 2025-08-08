@@ -26,7 +26,7 @@ func NewLikeService(likeRepository repository.LikeRepository, postRepository rep
 
 func (s *likeService) LikePost(postID uint, userID string) error {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.GetPostByID(postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -54,12 +54,12 @@ func (s *likeService) LikePost(postID uint, userID string) error {
 
 	// Increment likes count in post
 	post.LikesCount++
-	return s.postRepository.Update(post)
+	return s.postRepository.UpdatePost(post)
 }
 
 func (s *likeService) UnlikePost(postID uint, userID string) error {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.GetPostByID(postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -83,12 +83,12 @@ func (s *likeService) UnlikePost(postID uint, userID string) error {
 
 	// Decrement likes count in post
 	post.LikesCount--
-	return s.postRepository.Update(post)
+	return s.postRepository.UpdatePost(post)
 }
 
 func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.GetPostByID(postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, errors.New("post not found")
@@ -108,7 +108,7 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 			return false, err
 		}
 		post.LikesCount--
-		if err := s.postRepository.Update(post); err != nil {
+		if err := s.postRepository.UpdatePost(post); err != nil {
 			return false, err
 		}
 		return false, nil // Unliked
@@ -122,7 +122,7 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 			return false, err
 		}
 		post.LikesCount++
-		if err := s.postRepository.Update(post); err != nil {
+		if err := s.postRepository.UpdatePost(post); err != nil {
 			return false, err
 		}
 		return true, nil // Liked
