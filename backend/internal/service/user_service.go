@@ -11,8 +11,24 @@ type UserService struct {
 	Repo *repository.UserRepository
 }
 
+<<<<<<< HEAD
 func (s *UserService) CreateUser(name string, email string, password string) (any, any) {
 	panic("unimplemented")
+=======
+func (s *UserService) CreateUser(name string, email string, password string) (*model.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &model.User{
+		Name:     name,
+		Email:    email,
+		Password: string(hashedPassword),
+	}
+
+	return s.Repo.Create(user)
+>>>>>>> develop
 }
 
 func (s *UserService) AuthenticateUser(email, password string) (*model.User, error) {

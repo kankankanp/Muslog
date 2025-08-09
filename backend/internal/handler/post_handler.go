@@ -1,25 +1,48 @@
 package handler
 
 import (
+<<<<<<< HEAD
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/service"
 	"net/http"
 	"strconv"
 	"time"
 
+=======
+	"net/http"
+	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/service"
+	"strconv"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+>>>>>>> develop
 	"github.com/labstack/echo/v4"
 )
 
 type PostHandler struct {
+<<<<<<< HEAD
 	Service service.PostService
 }
 
 func NewPostHandler(service service.PostService) *PostHandler {
+=======
+	Service *service.PostService
+}
+
+func NewPostHandler(service *service.PostService) *PostHandler {
+>>>>>>> develop
 	return &PostHandler{Service: service}
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
+<<<<<<< HEAD
 	posts, err := h.Service.GetAllPosts()
+=======
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, err := h.Service.GetAllPosts(userID)
+>>>>>>> develop
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -32,6 +55,7 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
+<<<<<<< HEAD
 	post, err := h.Service.GetPostByID(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
@@ -40,6 +64,21 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {
+=======
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
+}
+
+func (h *PostHandler) CreatePost(c echo.Context) error {
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+
+>>>>>>> develop
 	type TrackInput struct {
 		SpotifyID     string `json:"spotifyId"`
 		Name          string `json:"name"`
@@ -49,7 +88,10 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	var req struct {
 		Title       string       `json:"title"`
 		Description string      `json:"description"`
+<<<<<<< HEAD
 		UserID      string      `json:"userId"`
+=======
+>>>>>>> develop
 		Tracks      []TrackInput `json:"tracks"`
 	}
 	if err := c.Bind(&req); err != nil {
@@ -58,7 +100,11 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	post := model.Post{
 		Title:       req.Title,
 		Description: req.Description,
+<<<<<<< HEAD
 		UserID:      req.UserID,
+=======
+		UserID:      userID,
+>>>>>>> develop
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -89,7 +135,13 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
+<<<<<<< HEAD
 	post, err := h.Service.GetPostByID(uint(id))
+=======
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
+>>>>>>> develop
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
@@ -121,7 +173,13 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
 	}
 	const PerPage = 4
+<<<<<<< HEAD
 	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage)
+=======
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
+>>>>>>> develop
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}

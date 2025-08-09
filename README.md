@@ -31,66 +31,6 @@ graph TD
     B -- CRUD --> C
 ```
 
-## インフラ構成図 (AWS with Terraform)
-
-このプロジェクトのインフラはAWS上にTerraformを用いて構築されています。主要なサービスは以下の通りです。
-
-- **VPC**: ネットワークの論理的な分離
-- **Public Subnet**: インターネットからのアクセスを許可するリソース（EC2インスタンス）
-- **Private Subnet**: 内部からのアクセスのみを許可するリソース（RDSデータベース）
-- **EC2**: Goバックエンドアプリケーションのホスティング
-- **RDS (PostgreSQL)**: データベースサービス
-- **S3 (Frontend)**: Next.jsフロントエンドの静的ファイルホスティング
-- **S3 (Uploads)**: ユーザーがアップロードするファイルの保存
-- **CloudFront**: フロントエンドコンテンツのCDN
-
-```mermaid
-graph TD
-    subgraph User
-        User[User]
-    end
-
-    subgraph AWS Cloud
-        subgraph Global Services
-            CloudFront[CloudFront]
-            S3Frontend[S3 Bucket (Frontend)]
-            S3Uploads[S3 Bucket (Uploads)]
-        end
-
-        subgraph VPC
-            subgraph Public Subnet
-                EC2[EC2 Instance (Go Backend)]
-            end
-
-            subgraph Private Subnet
-                RDS[RDS (PostgreSQL)]
-            end
-
-            EC2 -- DB Connection --> RDS
-        end
-
-        User -- HTTPS --> CloudFront
-        CloudFront -- Get Objects --> S3Frontend
-        CloudFront -- API Requests --> EC2
-        EC2 -- Read/Write --> S3Uploads
-    end
-
-    classDef default fill:#fff,stroke:#333,stroke-width:2px;
-    classDef user fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef cdn fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef s3 fill:#ccf,stroke:#333,stroke-width:2px;
-    classDef ec2 fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef rds fill:#bfb,stroke:#333,stroke-width:2px;
-    classDef vpc fill:#eee,stroke:#333,stroke-width:1px;
-    classDef subnet fill:#ddd,stroke:#333,stroke-width:1px;
-
-    class User user;
-    class CloudFront cdn;
-    class S3Frontend,S3Uploads s3;
-    class EC2 ec2;
-    class RDS rds;
-```
-
 ## ブランチ管理
 - main
   - 本番用のソースコードを管理するブランチ
@@ -209,6 +149,9 @@ VSCodeの拡張機能を検索し、
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
 ```
@@ -219,9 +162,10 @@ VSCodeの拡張機能を検索し、
 
 ### Gemini CLIの実行
 npx https://github.com/google-gemini/gemini-cli
-gemini -m "gemini-2.5-flash"
+gemini -m "gemini-2.5-flash" --yolo
 
-
+### Claude codeの実行
+claude --dangerously-skip-permissions
 
 ### DBのマイグレーション・シーディング
 ```
@@ -249,3 +193,4 @@ TRUNCATE TABLE <テーブル名> CASCADE;
 
 ### ゲストログイン
 NbekDfg@QNqqGvl.info
+

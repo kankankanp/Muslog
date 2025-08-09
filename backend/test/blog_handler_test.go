@@ -1,6 +1,7 @@
 package test
 
 import (
+<<<<<<< HEAD
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -55,11 +56,25 @@ func TestGetAllPosts(t *testing.T) {
 	mockPostService := new(MockPostService)
 	mockPostService.On("GetAllPosts").Return([]model.Post{}, nil) // Mock empty posts, no error
 	h := handler.NewPostHandler(mockPostService)
+=======
+	"net/http"
+	"net/http/httptest"
+	"simple-blog/backend/internal/handler"
+	"testing"
+
+	"github.com/labstack/echo/v4"
+)
+
+func TestGetAllPosts(t *testing.T) {
+	e := echo.New()
+	h := &handler.PostHandler{} // Serviceはモック化推奨
+>>>>>>> develop
 
 	req := httptest.NewRequest(http.MethodGet, "/api/posts", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
+<<<<<<< HEAD
 	err := h.GetAllPosts(c)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, rec.Code)
@@ -95,3 +110,15 @@ func TestCreatePostUnauthorized(t *testing.T) {
 	assert.NoError(t, err) // Middleware should not return an error directly, but set the response code
 	assert.Equal(t, http.StatusUnauthorized, rec.Code)
 }
+=======
+	// 実行
+	err := h.GetAllPosts(c)
+	if err != nil {
+		t.Fatalf("handler returned error: %v", err)
+	}
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status 200, got %d", rec.Code)
+	}
+}
+>>>>>>> develop

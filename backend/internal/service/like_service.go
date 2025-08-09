@@ -12,6 +12,10 @@ type LikeService interface {
 	LikePost(postID uint, userID string) error
 	UnlikePost(postID uint, userID string) error
 	IsPostLikedByUser(postID uint, userID string) (bool, error)
+<<<<<<< HEAD
+=======
+	ToggleLike(postID uint, userID string) (bool, error) // Returns true if liked, false if unliked
+>>>>>>> develop
 }
 
 type likeService struct {
@@ -25,7 +29,11 @@ func NewLikeService(likeRepository repository.LikeRepository, postRepository rep
 
 func (s *likeService) LikePost(postID uint, userID string) error {
 	// Check if the post exists
+<<<<<<< HEAD
 	post, err := s.postRepository.GetPostByID(postID)
+=======
+	post, err := s.postRepository.FindByID(postID)
+>>>>>>> develop
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -53,12 +61,20 @@ func (s *likeService) LikePost(postID uint, userID string) error {
 
 	// Increment likes count in post
 	post.LikesCount++
+<<<<<<< HEAD
 	return s.postRepository.UpdatePost(post)
+=======
+	return s.postRepository.Update(post)
+>>>>>>> develop
 }
 
 func (s *likeService) UnlikePost(postID uint, userID string) error {
 	// Check if the post exists
+<<<<<<< HEAD
 	post, err := s.postRepository.GetPostByID(postID)
+=======
+	post, err := s.postRepository.FindByID(postID)
+>>>>>>> develop
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -82,7 +98,54 @@ func (s *likeService) UnlikePost(postID uint, userID string) error {
 
 	// Decrement likes count in post
 	post.LikesCount--
+<<<<<<< HEAD
 	return s.postRepository.UpdatePost(post)
+=======
+	return s.postRepository.Update(post)
+}
+
+func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
+	// Check if the post exists
+	post, err := s.postRepository.FindByID(postID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("post not found")
+		}
+		return false, err
+	}
+
+	// Check if already liked
+	like, err := s.likeRepository.GetLike(postID, userID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, err
+	}
+
+	if like != nil {
+		// Post is already liked, so unlike it
+		if err := s.likeRepository.DeleteLike(postID, userID); err != nil {
+			return false, err
+		}
+		post.LikesCount--
+		if err := s.postRepository.Update(post); err != nil {
+			return false, err
+		}
+		return false, nil // Unliked
+	} else {
+		// Post is not liked, so like it
+		newLike := &model.Like{
+			PostID: postID,
+			UserID: userID,
+		}
+		if err := s.likeRepository.CreateLike(newLike); err != nil {
+			return false, err
+		}
+		post.LikesCount++
+		if err := s.postRepository.Update(post); err != nil {
+			return false, err
+		}
+		return true, nil // Liked
+	}
+>>>>>>> develop
 }
 
 func (s *likeService) IsPostLikedByUser(postID uint, userID string) (bool, error) {

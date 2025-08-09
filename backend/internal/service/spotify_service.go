@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+<<<<<<< HEAD
+=======
+	"strings"
+>>>>>>> develop
 	"time"
 )
 
@@ -55,15 +59,25 @@ func (s *SpotifyService) getAccessToken() (string, error) {
 		return s.accessToken, nil
 	}
 
+<<<<<<< HEAD
 	url := "https://accounts.spotify.com/api/token"
 	data := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", s.clientID, s.clientSecret)
 
 	req, err := http.NewRequest("POST", url, nil)
+=======
+	tokenURL := "https://accounts.spotify.com/api/token"
+	data := fmt.Sprintf("grant_type=client_credentials&client_id=%s&client_secret=%s", s.clientID, s.clientSecret)
+
+	req, err := http.NewRequest("POST", tokenURL, strings.NewReader(data))
+>>>>>>> develop
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+<<<<<<< HEAD
 	req.URL.RawQuery = data
+=======
+>>>>>>> develop
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

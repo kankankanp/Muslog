@@ -32,3 +32,5 @@ pg_log/
 *.dump
 *.pid
 *.sock
+./cookies.txt
+.env

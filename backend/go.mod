@@ -8,12 +8,16 @@ require (
 	github.com/bxcodec/faker/v4 v4.0.0-beta.3
 	github.com/golang-jwt/jwt/v5 v5.2.3
 	github.com/labstack/echo/v4 v4.13.4
+<<<<<<< HEAD
 	github.com/stretchr/testify v1.10.0
+=======
+>>>>>>> develop
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.30.0
 )
 
 require (
+<<<<<<< HEAD
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -23,6 +27,14 @@ require (
 )
 
 require (
+=======
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
+)
+
+require (
+	github.com/brianvoe/gofakeit/v7 v7.3.0
+>>>>>>> develop
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
