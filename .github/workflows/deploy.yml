@@ -1,35 +1,112 @@
 name: Deploy to AWS
 
-on:  push:    branches:      - main  workflow_dispatch:
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
 
-permissions:  id-token: write  contents: read
+permissions:
+  id-token: write
+  contents: read
 
-env:  AWS_REGION: ap-northeast-1  ECR_REPOSITORY: production/backend  ECS_CLUSTER_NAME: production-cluster  ECS_SERVICE_NAME: production-backend-service  ECS_TASK_DEFINITION: terraform/environments/production/task-definition.json  FRONTEND_S3_BUCKET: muslog-frontend-production  CLOUDFRONT_DISTRIBUTION_ID: E2YFD76QWKVXAV
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REPOSITORY: production/backend
+  ECS_CLUSTER_NAME: production-cluster
+  ECS_SERVICE_NAME: production-backend-service
+  ECS_TASK_DEFINITION: terraform/environments/production/task-definition.json
+  FRONTEND_S3_BUCKET: muslog-frontend-production
+  CLOUDFRONT_DISTRIBUTION_ID: E2YFD76QWKVXAV
 
-jobs:  deploy-backend:    name: Deploy Backend    runs-on: ubuntu-latest    steps:      - name: Checkout        uses: actions/checkout@v4
+jobs:
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Configure AWS credentials        uses: aws-actions/configure-aws-credentials@v4        with:          role-to-assume: arn:aws:iam::135808923918:role/muslog          aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::135808923918:role/muslog
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR        id: login-ecr        uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR        id: build-image        working-directory: ./backend        env:          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}          IMAGE_TAG: ${{ github.sha }}        run: |          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        working-directory: ./backend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition        run: |          aws ecs describe-task-definition --task-definition production-backend \            --query taskDefinition > task-definition.json
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition production-backend \
+            --query taskDefinition > task-definition.json
 
-      - name: Fill in the new image ID in the Amazon ECS task definition        id: task-def        uses: aws-actions/amazon-ecs-render-task-definition@v1        with:          task-definition: task-definition.json          container-name: backend          image: ${{ steps.build-image.outputs.image }}
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: backend
+          image: ${{ steps.build-image.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition        uses: aws-actions/amazon-ecs-deploy-task-definition@v1        with:          task-definition: ${{ steps.task-def.outputs.task-definition }}          service: ${{ env.ECS_SERVICE_NAME }}          cluster: ${{ env.ECS_CLUSTER_NAME }}          wait-for-service-stability: true
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
 
-  deploy-frontend:    name: Deploy Frontend    runs-on: ubuntu-latest    needs: deploy-backend    steps:      - name: Checkout        uses: actions/checkout@v4
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js        uses: actions/setup-node@v4        with:          node-version: '22.6.0'          cache: 'npm'          cache-dependency-path: frontend/package-lock.json
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.6.0"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies        working-directory: ./frontend        run: npm ci
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
 
-      - name: Build Next.js app        working-directory: ./frontend        run: npm run build
+      - name: Build Next.js app
+        working-directory: ./frontend
+        run: npm run build
 
-      - name: Configure AWS credentials        uses: aws-actions/configure-aws-credentials@v4        with:          role-to-assume: arn:aws:iam::135808923918:role/muslog          aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::135808923918:role/muslog
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy to S3        working-directory: ./frontend        run: |          aws s3 sync ./out s3://${{ env.FRONTEND_S3_BUCKET }} --delete
+      - name: Deploy to S3
+        working-directory: ./frontend
+        run: |
+          aws s3 sync ./out s3://${{ env.FRONTEND_S3_BUCKET }} --delete
 
-      - name: Invalidate CloudFront cache        run: |          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
