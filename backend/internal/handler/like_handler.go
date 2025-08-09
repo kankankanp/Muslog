@@ -12,6 +12,7 @@ import (
 type LikeHandler interface {
 	LikePost(c echo.Context) error
 	UnlikePost(c echo.Context) error
+	IsPostLikedByUser(c echo.Context) error
 }
 
 type likeHandler struct {
@@ -57,4 +58,20 @@ func (h *likeHandler) UnlikePost(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "Post unliked successfully"})
+}
+
+func (h *likeHandler) IsPostLikedByUser(c echo.Context) error {
+	postID, err := utils.ParseID(c, "postID")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	}
+
+	userID := c.Get("userID").(string) // From auth middleware
+
+	isLiked, err := h.likeService.IsPostLikedByUser(postID, userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"isLiked": isLiked})
 }

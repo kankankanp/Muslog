@@ -5,10 +5,9 @@ RUN apk add --no-cache git curl bash
 WORKDIR /app
 COPY go.mod .
 COPY go.sum .
-RUN go mod download
+RUN go clean --modcache && go mod download && go get -d ./...
 
 COPY . .
-
 
 WORKDIR /app/cmd/backend
 RUN go build -o main .

@@ -56,7 +56,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	}
 	var req struct {
 		Title       string       `json:"title"`
-		Description string      `json:"description"`
+		Description string       `json:"description"`
 		Tracks      []TrackInput `json:"tracks"`
 	}
 	if err := c.Bind(&req); err != nil {

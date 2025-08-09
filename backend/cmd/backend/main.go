@@ -16,10 +16,16 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+// @title Simple Blog API
+// @version 1.0
+// @description This is a simple blog API.
+// @host localhost:8080
+// @BasePath /
 func main() {
 	log.SetOutput(os.Stdout)
 	if _, err := os.Stat(".env"); err == nil {
@@ -39,15 +45,17 @@ func main() {
 
 	var db *gorm.DB
 	var err error
-	for i := 0; i < 10; i++ {
+	maxRetries := 10
+	for i := 0; i < maxRetries; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
 			fmt.Println("DB接続に成功しました")
 			break
 		}
-		fmt.Printf("DB接続リトライ中... (%d/10): %v\n", i+1, err)
+		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
 		time.Sleep(3 * time.Second)
 	}
+
 	if err != nil {
 		panic("データベース接続失敗: " + err.Error())
 	}
@@ -55,6 +63,7 @@ func main() {
 	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
+
 	if err := seeder.Seed(db); err != nil {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
@@ -97,6 +106,9 @@ func main() {
 	public.GET("/auth/google", oauthHandler.GetGoogleAuthURL)
 	public.GET("/auth/google/callback", oauthHandler.GoogleCallback)
 	public.GET("/spotify/search", spotifyHandler.SearchTracks)
+	public.GET("/health", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
 
 	protected := e.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
@@ -127,8 +139,6 @@ func main() {
 	userGroup.GET("", userHandler.GetAllUsers)
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
-
-	// spotify endpoint moved to public group above
 
 	// tags
 	tagGroup := protected.Group("/tags")

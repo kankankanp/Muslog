@@ -45,7 +45,7 @@ export default function NotFound() {
           className="text-2xl font-semibold text-emerald-700 dark:text-emerald-200 mb-4"
           variants={fadeInUp}
         >
-          ページが見つかりません
+          ページが見つかりません。
         </motion.h2>
 
         <motion.p
