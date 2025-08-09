@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -6,14 +6,33 @@ on:
   pull_request:
     branches: [main, development]
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY_BACKEND: simple-blog-backend
+  ECR_REPOSITORY_FRONTEND: simple-blog-frontend
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDCで必須
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }} # 例: arn:aws:iam::<acct>:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ---------- Frontend ----------
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -21,24 +40,24 @@ jobs:
 
       - name: Install dependencies (frontend)
         run: |
-          cd web-frontend
+          cd frontend
           npm ci
-
-      - name: Format (frontend)
-        run: |
-          cd web-frontend
-          npm run format
-
-      - name: Lint (frontend)
-        run: |
-          cd web-frontend
-          npm run lint
 
       - name: Build (frontend)
         run: |
-          cd web-frontend
+          cd frontend
           npm run build
 
+      - name: Build and push frontend Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          cd frontend
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
+
+      # ---------- Backend ----------
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -49,18 +68,18 @@ jobs:
           cd backend
           go mod tidy
 
-      - name: Format (backend)
+      - name: Build and push backend Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd backend
-          go fmt ./...
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
 
-      - name: Staticcheck (backend)
+      # ---------- Deploy ----------
+      - name: Deploy to ECS (only on push)
+        if: github.event_name == 'push'
         run: |
-          cd backend
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          staticcheck ./...
-
-      - name: Build (backend)
-        run: |
-          cd backend/cmd/backend
-          go build .
+          aws ecs update-service --cluster simple-blog-cluster-${{ github.ref_name }} --service simple-blog-backend-service-${{ github.ref_name }} --force-new-deployment
+          aws ecs update-service --cluster simple-blog-cluster-${{ github.ref_name }} --service simple-blog-frontend-service-${{ github.ref_name }} --force-new-deployment

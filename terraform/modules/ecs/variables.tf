@@ -33,17 +33,39 @@ variable "alb_sg_id" {
   type        = string
 }
 
-variable "posts_table_name" {
-  description = "The name of the DynamoDB posts table"
+variable "db_host" {
+  description = "The hostname of the RDS database."
   type        = string
 }
 
-variable "users_table_name" {
-  description = "The name of the DynamoDB users table"
+variable "db_port" {
+  description = "The port of the RDS database."
   type        = string
 }
 
-variable "aws_account_id" {
-  description = "AWS Account ID"
+variable "db_username" {
+  description = "The username for the RDS database."
   type        = string
 }
+
+variable "db_password" {
+  description = "The password for the RDS database."
+  type        = string
+  sensitive   = true
+}
+
+variable "db_name" {
+  description = "The name of the RDS database."
+  type        = string
+}
+
+variable "db_security_group_id" {
+  description = "The ID of the security group for the RDS database."
+  type        = string
+}
+
+variable "backend_target_group_arn" {
+  description = "The ARN of the backend ALB target group."
+  type        = string
+}
+

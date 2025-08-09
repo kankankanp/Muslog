@@ -9,3 +9,33 @@ variable "environment" {
   type        = string
   default     = "develop"
 }
+
+variable "project_name" {
+  description = "The name of the project."
+  type        = string
+  default     = "simple-blog"
+}
+
+variable "domain_name" {
+  description = "The domain name for the application."
+  type        = string
+  default     = "example.com" # Replace with your actual domain
+}
+
+variable "db_name" {
+  description = "The name of the database."
+  type        = string
+  default     = "simpleblogdb"
+}
+
+variable "db_username" {
+  description = "The master username for the database."
+  type        = string
+  default     = "admin"
+}
+
+variable "db_password" {
+  description = "The master password for the database."
+  type        = string
+  sensitive   = true
+}

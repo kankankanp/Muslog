@@ -3,9 +3,7 @@ resource "aws_ecr_repository" "backend" {
   name = "${var.environment}/backend"
 }
 
-resource "aws_ecr_repository" "frontend" {
-  name = "${var.environment}/frontend"
-}
+
 
 # IAM Roles
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -45,90 +43,10 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-resource "aws_iam_policy" "dynamodb_access" {
-  name        = "${var.environment}-dynamodb-access-policy"
-  description = "Allow access to DynamoDB tables"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "dynamodb:*",
-        ],
-        Effect   = "Allow",
-        Resource = [
-          "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${var.posts_table_name}",
-          "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${var.users_table_name}"
-        ]
-      }
-    ]
-  })
-}
 
-resource "aws_iam_role_policy_attachment" "ecs_task_dynamodb_access" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = aws_iam_policy.dynamodb_access.arn
-}
 
 # ALB
-resource "aws_lb" "main" {
-  name               = "${var.environment}-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [var.alb_sg_id]
-  subnets            = var.public_subnet_ids
-}
 
-resource "aws_lb_target_group" "backend" {
-  name        = "${var.environment}-backend-tg"
-  port        = 8080
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-
-  health_check {
-    path = "/healthz"
-  }
-}
-
-resource "aws_lb_target_group" "frontend" {
-  name        = "${var.environment}-frontend-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-
-  health_check {
-    path = "/"
-  }
-}
-
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.frontend.arn
-  }
-}
-
-resource "aws_lb_listener_rule" "backend" {
-  listener_arn = aws_lb_listener.http.arn
-  priority     = 100
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/api/*"]
-    }
-  }
-}
 
 # ECS
 resource "aws_ecs_cluster" "main" {
@@ -176,8 +94,11 @@ resource "aws_ecs_task_definition" "backend" {
         }
       ],
       environment = [
-        { name = "POSTS_TABLE_NAME", value = var.posts_table_name },
-        { name = "USERS_TABLE_NAME", value = var.users_table_name }
+        { name = "DB_HOST", value = var.db_host },
+        { name = "DB_PORT", value = var.db_port },
+        { name = "DB_USER", value = var.db_username },
+        { name = "DB_PASSWORD", value = var.db_password },
+        { name = "DB_NAME", value = var.db_name }
       ]
     }
   ])
@@ -192,58 +113,16 @@ resource "aws_ecs_service" "backend" {
 
   network_configuration {
     subnets         = var.private_subnet_ids
-    security_groups = [aws_security_group.ecs_tasks.id]
+    security_groups = [aws_security_group.ecs_tasks.id, var.db_security_group_id]
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.backend.arn
+    target_group_arn = var.backend_target_group_arn
     container_name   = "backend"
     container_port   = 8080
   }
-
-  depends_on = [aws_lb_listener_rule.backend]
 }
 
-# Frontend Task Definition and Service
-resource "aws_ecs_task_definition" "frontend" {
-  family                   = "${var.environment}-frontend"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = jsonencode([
-    {
-      name      = "frontend",
-      image     = "${aws_ecr_repository.frontend.repository_url}:latest",
-      portMappings = [
-        {
-          containerPort = 3000,
-          hostPort      = 3000
-        }
-      ]
-    }
-  ])
-}
 
-resource "aws_ecs_service" "frontend" {
-  name            = "${var.environment}-frontend-service"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.frontend.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
 
-  network_configuration {
-    subnets         = var.private_subnet_ids
-    security_groups = [aws_security_group.ecs_tasks.id]
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.frontend.arn
-    container_name   = "frontend"
-    container_port   = 3000
-  }
-
-  depends_on = [aws_lb_listener.http]
-}
