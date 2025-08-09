@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"simple-blog/backend/internal/handler"
 	"simple-blog/backend/internal/middleware"
@@ -15,16 +16,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-// @title Simple Blog API
-// @version 1.0
-// @description This is a simple blog API.
-// @host localhost:8080
-// @BasePath /
 func main() {
 	log.SetOutput(os.Stdout)
 	if _, err := os.Stat(".env"); err == nil {
@@ -44,26 +39,22 @@ func main() {
 
 	var db *gorm.DB
 	var err error
-	maxRetries := 10
-
-	for i := 0; i < maxRetries; i++ {
+	for i := 0; i < 10; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
 			fmt.Println("DB接続に成功しました")
 			break
 		}
-		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
+		fmt.Printf("DB接続リトライ中... (%d/10): %v\n", i+1, err)
 		time.Sleep(3 * time.Second)
 	}
-
 	if err != nil {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
-
 	if err := seeder.Seed(db); err != nil {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
@@ -87,46 +78,60 @@ func main() {
 	likeService := service.NewLikeService(likeRepo, postRepo)
 	likeHandler := handler.NewLikeHandler(likeService)
 
+	oauthService := service.NewOAuthService(userRepo)
+	oauthHandler := handler.NewOAuthHandler(oauthService)
+
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
 	e.Use(echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{echo.GET, echo.PUT, echo.POST, echo.PATCH, echo.DELETE},
+		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowCredentials: true,
 	}))
 
-	e.POST("/auth/login", userHandler.Login)
-	e.POST("/auth/register", userHandler.Register)
+	public := e.Group("/api/v1")
+	public.POST("/auth/login", userHandler.Login)
+	public.POST("/auth/register", userHandler.Register)
+	public.GET("/auth/google", oauthHandler.GetGoogleAuthURL)
+	public.GET("/auth/google/callback", oauthHandler.GoogleCallback)
+	public.GET("/spotify/search", spotifyHandler.SearchTracks)
 
-	authGroup := e.Group("")
-	authGroup.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{}))
+	protected := e.Group("/api/v1")
+	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
+		Skipper: func(c echo.Context) bool {
+			return c.Request().Method == http.MethodOptions
+		},
+	}))
 
-	authGroup.POST("/auth/refresh", userHandler.RefreshToken)
-	authGroup.GET("/auth/me", userHandler.GetMe)
+	protected.POST("/refresh", userHandler.RefreshToken)
+	protected.POST("/logout", userHandler.Logout)
+	protected.GET("/me", userHandler.GetMe)
 
-	authGroup.GET("/posts", postHandler.GetAllPosts)
-	authGroup.GET("/posts/:id", postHandler.GetPostByID)
-	authGroup.GET("/posts/page/:page", postHandler.GetPostsByPage)
-	authGroup.POST("/blogs", postHandler.CreatePost)
-	authGroup.PUT("/blogs/:id", postHandler.UpdatePost)
-	authGroup.DELETE("/blogs/:id", postHandler.DeletePost)
+	// posts
+	postGroup := protected.Group("/posts")
+	postGroup.GET("", postHandler.GetAllPosts)
+	postGroup.GET("/:id", postHandler.GetPostByID)
+	postGroup.GET("/page/:page", postHandler.GetPostsByPage)
+	postGroup.POST("", postHandler.CreatePost)
+	postGroup.PUT("/:id", postHandler.UpdatePost)
+	postGroup.DELETE("/:id", postHandler.DeletePost)
 
-	// User routes (authentication required)
-	authGroup.GET("/users", userHandler.GetAllUsers)
-	authGroup.GET("/users/:id", userHandler.GetUserByID)
-	authGroup.GET("/users/:id/posts", userHandler.GetUserPosts)
+	// likes
+	postGroup.POST("/:postID/like", likeHandler.LikePost)
+	postGroup.DELETE("/:postID/unlike", likeHandler.UnlikePost)
 
-	// Like routes (authentication required)
-	authGroup.POST("/posts/:postID/like", likeHandler.LikePost)
-	authGroup.DELETE("/posts/:postID/unlike", likeHandler.UnlikePost)
-	authGroup.GET("/posts/:postID/liked", likeHandler.IsPostLikedByUser)
+	// users
+	userGroup := protected.Group("/users")
+	userGroup.GET("", userHandler.GetAllUsers)
+	userGroup.GET("/:id", userHandler.GetUserByID)
+	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 
-	// Spotify routes (authentication required)
-	authGroup.GET("/spotify/search", spotifyHandler.SearchTracks)
+	// spotify endpoint moved to public group above
 
-	// Tag routes (authentication required)
-	tagGroup := authGroup.Group("/tags")
+	// tags
+	tagGroup := protected.Group("/tags")
 	tagGroup.POST("", tagHandler.CreateTag)
 	tagGroup.GET("", tagHandler.GetAllTags)
 	tagGroup.GET("/:id", tagHandler.GetTagByID)

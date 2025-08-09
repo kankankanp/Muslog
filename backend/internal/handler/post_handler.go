@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"net/http"
 	"simple-blog/backend/internal/model"
 	"simple-blog/backend/internal/service"
-	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,7 +20,9 @@ func NewPostHandler(service *service.PostService) *PostHandler {
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
-	posts, err := h.Service.GetAllPosts()
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, err := h.Service.GetAllPosts(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -32,14 +35,19 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	post, err := h.Service.GetPostByID(uint(id))
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post, "likesCount": post.LikesCount})
+	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+
 	type TrackInput struct {
 		SpotifyID     string `json:"spotifyId"`
 		Name          string `json:"name"`
@@ -49,7 +57,6 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	var req struct {
 		Title       string       `json:"title"`
 		Description string      `json:"description"`
-		UserID      string      `json:"userId"`
 		Tracks      []TrackInput `json:"tracks"`
 	}
 	if err := c.Bind(&req); err != nil {
@@ -58,7 +65,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	post := model.Post{
 		Title:       req.Title,
 		Description: req.Description,
-		UserID:      req.UserID,
+		UserID:      userID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -89,7 +96,9 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
-	post, err := h.Service.GetPostByID(uint(id))
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	post, err := h.Service.GetPostByID(uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
@@ -121,7 +130,9 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
 	}
 	const PerPage = 4
-	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage)
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}

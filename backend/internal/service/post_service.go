@@ -13,12 +13,12 @@ func NewPostService(repo repository.PostRepository) *PostService {
 	return &PostService{Repo: repo}
 }
 
-func (s PostService) GetAllPosts() ([]model.Post, error) {
-	return s.Repo.FindAll()
+func (s PostService) GetAllPosts(userID string) ([]model.Post, error) {
+	return s.Repo.FindAll(userID)
 }
 
-func (s PostService) GetPostByID(id uint) (*model.Post, error) {
-	return s.Repo.FindByID(id)
+func (s PostService) GetPostByID(id uint, userID string) (*model.Post, error) {
+	return s.Repo.FindByIDWithUserID(id, userID)
 }
 
 func (s PostService) CreatePost(post *model.Post) error {
@@ -33,6 +33,6 @@ func (s PostService) DeletePost(id uint) error {
 	return s.Repo.Delete(id)
 }
 
-func (s PostService) GetPostsByPage(page, perPage int) ([]model.Post, int64, error) {
-	return s.Repo.FindByPage(page, perPage)
+func (s PostService) GetPostsByPage(page, perPage int, userID string) ([]model.Post, int64, error) {
+	return s.Repo.FindByPage(page, perPage, userID)
 }
