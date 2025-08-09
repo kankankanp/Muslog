@@ -4,14 +4,14 @@ resource "aws_cloudfront_distribution" "main" {
   comment             = "Main CloudFront distribution for ${var.domain_name}"
   default_root_object = "index.html"
 
-  aliases = [var.domain_name, "www.${var.domain_name}"]
+  aliases = var.enable_custom_domain ? [var.domain_name, "www.${var.domain_name}"] : []
 
   origin {
     domain_name = var.s3_bucket_regional_domain_name
     origin_id   = "s3-origin"
 
     s3_origin_config {
-      origin_access_identity = var.s3_origin_access_identity_arn
+      origin_access_identity = var.s3_origin_access_identity_path
     }
   }
 
@@ -22,12 +22,11 @@ resource "aws_cloudfront_distribution" "main" {
     custom_origin_config {
       http_port              = 80
       https_port             = 443
-      origin_protocol_policy = "http-only" # ALB側でHTTPSにリダイレクトするため
+      origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
-  # Default behavior: Route to S3 for frontend assets
   default_cache_behavior {
     target_origin_id       = "s3-origin"
     viewer_protocol_policy = "redirect-to-https"
@@ -42,14 +41,12 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  # API behavior: Route /api/* to ALB
   ordered_cache_behavior {
     path_pattern     = "/api/*"
     target_origin_id = "alb-origin"
-
-    viewer_protocol_policy = "redirect-to-https"
+    viewer_protocol_policy = "allow-all" # Allow HTTP for initial setup
     allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-    cached_methods         = ["GET", "HEAD", "OPTIONS"] # OPTIONSをキャッシュするとCORSのプリフライトで問題が起きることがあるので注意
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
 
     forwarded_values {
       query_string = true
@@ -66,11 +63,10 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  # TODO: Replace with a proper certificate later
   viewer_certificate {
-    cloudfront_default_certificate = true
-    # acm_certificate_arn = var.acm_certificate_arn
-    # ssl_support_method  = "sni-only"
+    acm_certificate_arn      = var.enable_custom_domain ? var.acm_certificate_arn : null
+    cloudfront_default_certificate = var.enable_custom_domain ? false : true
+    ssl_support_method       = var.enable_custom_domain ? "sni-only" : null
   }
 
   custom_error_response {

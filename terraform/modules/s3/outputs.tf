@@ -8,9 +8,9 @@ output "frontend_bucket_regional_domain_name" {
   value       = aws_s3_bucket.frontend_bucket.bucket_regional_domain_name
 }
 
-output "s3_origin_access_identity_arn" {
-  description = "The ARN of the S3 Origin Access Identity."
-  value       = aws_cloudfront_origin_access_identity.s3_oai.iam_arn
+output "s3_origin_access_identity_path" {
+  description = "The path for the S3 Origin Access Identity."
+  value       = aws_cloudfront_origin_access_identity.s3_oai.cloudfront_access_identity_path
 }
 
 output "media_bucket_name" {

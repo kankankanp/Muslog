@@ -3,7 +3,15 @@ resource "aws_ecr_repository" "backend" {
   name = "${var.environment}/backend"
 }
 
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "backend" {
+  name              = "/ecs/${var.environment}/backend"
+  retention_in_days = 7
 
+  tags = {
+    Environment = var.environment
+  }
+}
 
 # IAM Roles
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -43,11 +51,6 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-
-
-# ALB
-
-
 # ECS
 resource "aws_ecs_cluster" "main" {
   name = "${var.environment}-cluster"
@@ -78,8 +81,8 @@ resource "aws_ecs_task_definition" "backend" {
   family                   = "${var.environment}-backend"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 512
+  memory                   = 1024
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
@@ -99,7 +102,15 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "DB_USER", value = var.db_username },
         { name = "DB_PASSWORD", value = var.db_password },
         { name = "DB_NAME", value = var.db_name }
-      ]
+      ],
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.backend.name,
+          "awslogs-region"        = var.aws_region,
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
     }
   ])
 }
@@ -122,7 +133,3 @@ resource "aws_ecs_service" "backend" {
     container_port   = 8080
   }
 }
-
-
-
-

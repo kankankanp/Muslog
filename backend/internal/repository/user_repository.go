@@ -27,13 +27,9 @@ func (r *UserRepository) FindAll() ([]model.User, error) {
 
 func (r *UserRepository) FindByID(id string) (*model.User, error) {
 	var user model.User
-<<<<<<< HEAD
-	err := r.DB.First(&user, "id = ?", id).Error
-=======
 	err := r.DB.Preload("Posts", func(db *gorm.DB) *gorm.DB {
 		return db.Order("posts.created_at DESC")
 	}).Preload("Posts.Tracks").Preload("Posts.Tags").First(&user, "id = ?", id).Error
->>>>>>> develop
 	if err != nil {
 		return nil, err
 	}
@@ -42,11 +38,6 @@ func (r *UserRepository) FindByID(id string) (*model.User, error) {
 
 func (r *UserRepository) FindPosts(userID string) ([]model.Post, error) {
 	var posts []model.Post
-<<<<<<< HEAD
-	err := r.DB.Where("user_id = ?", userID).Preload("Tracks").Order("created_at desc").Find(&posts).Error
-	return posts, err
-} 
-=======
 	err := r.DB.Where("user_id = ?", userID).Preload("Tracks").Preload("Tags").Order("created_at desc").Find(&posts).Error
 	return posts, err
 }
@@ -66,4 +57,3 @@ func (r *UserRepository) Update(user *model.User) (*model.User, error) {
 	}
 	return user, nil
 } 
->>>>>>> develop
