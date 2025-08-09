@@ -16,11 +16,7 @@ variable "project_name" {
   default     = "muslog"
 }
 
-variable "domain_name" {
-  description = "The domain name for the application."
-  type        = string
-  default     = "muslog.net" # This will only be used if enable_custom_domain is true
-}
+
 
 variable "db_name" {
   description = "The name of the database."
@@ -40,8 +36,3 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "enable_custom_domain" {
-  description = "Controls the creation of Route53, ACM, and other resources for custom domain names."
-  type        = bool
-  default     = false
-}

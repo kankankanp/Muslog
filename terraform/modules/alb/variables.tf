@@ -14,23 +14,12 @@ variable "vpc_id" {
 }
 
 variable "public_subnet_ids" {
-  description = "List of public subnet IDs."
+  description = "A list of public subnet IDs."
   type        = list(string)
 }
 
 variable "alb_security_group_id" {
-  description = "The ID of the ALB security group."
+  description = "The ID of the security group for the ALB."
   type        = string
 }
 
-variable "enable_https" {
-  description = "Flag to enable HTTPS listener and related resources."
-  type        = bool
-  default     = false
-}
-
-variable "acm_certificate_arn" {
-  description = "The ARN of the ACM certificate for the HTTPS listener."
-  type        = string
-  default     = null
-}

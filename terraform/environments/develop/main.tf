@@ -2,36 +2,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_acm_certificate" "main" {
-  domain_name       = var.domain_name
-  validation_method = "DNS"
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_route53_record" "cert_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.main.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = module.route53.route53_zone_id
-}
-
-resource "aws_acm_certificate_validation" "main" {
-  certificate_arn         = aws_acm_certificate.main.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
-}
 
 module "network" {
   source      = "../../modules/network"
@@ -54,7 +25,6 @@ module "alb" {
   vpc_id                = module.network.vpc_id
   public_subnet_ids     = module.network.public_subnet_ids
   alb_security_group_id = module.network.alb_sg_id
-  acm_certificate_arn   = aws_acm_certificate.main.arn
 }
 
 module "rds" {
@@ -92,17 +62,9 @@ module "cloudfront" {
   s3_bucket_regional_domain_name      = module.s3.frontend_bucket_regional_domain_name
   s3_origin_access_identity_arn       = module.s3.s3_origin_access_identity_arn
   alb_dns_name                        = module.alb.alb_dns_name
-  domain_name                         = var.domain_name
   environment                         = var.environment
 }
 
-module "route53" {
-  source                               = "../../modules/route53"
-  domain_name                          = var.domain_name
-  cloudfront_distribution_domain_name  = module.cloudfront.cloudfront_s3_distribution_domain_name
-  cloudfront_distribution_hosted_zone_id = module.cloudfront.cloudfront_s3_distribution_hosted_zone_id
-  alb_dns_name                         = module.alb.alb_dns_name
-  alb_zone_id                          = module.alb.alb_zone_id
-}
+
 
 data "aws_caller_identity" "current" {}

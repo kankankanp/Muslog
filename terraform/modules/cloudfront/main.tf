@@ -1,10 +1,8 @@
 resource "aws_cloudfront_distribution" "main" {
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "Main CloudFront distribution for ${var.domain_name}"
+  comment             = "CloudFront distribution for ${var.environment}"
   default_root_object = "index.html"
-
-  aliases = var.enable_custom_domain ? [var.domain_name, "www.${var.domain_name}"] : []
 
   origin {
     domain_name = var.s3_bucket_regional_domain_name
@@ -64,9 +62,7 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = var.enable_custom_domain ? var.acm_certificate_arn : null
-    cloudfront_default_certificate = var.enable_custom_domain ? false : true
-    ssl_support_method       = var.enable_custom_domain ? "sni-only" : null
+    cloudfront_default_certificate = true
   }
 
   custom_error_response {

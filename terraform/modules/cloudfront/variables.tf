@@ -18,20 +18,4 @@ variable "alb_dns_name" {
   type        = string
 }
 
-variable "enable_custom_domain" {
-  description = "Flag to enable custom domain aliases and ACM certificate."
-  type        = bool
-  default     = false
-}
 
-variable "domain_name" {
-  description = "The custom domain name."
-  type        = string
-  default     = ""
-}
-
-variable "acm_certificate_arn" {
-  description = "The ARN of the ACM certificate."
-  type        = string
-  default     = null
-}

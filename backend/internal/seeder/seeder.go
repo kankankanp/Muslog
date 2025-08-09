@@ -16,7 +16,7 @@ import (
 const SeedValue int64 = 20240801
 
 func Seed(db *gorm.DB) error {
-	log.Println("🌱 Clearing existing data...")
+	log.Println("Clearing existing data...")
 
 	if err := db.Exec("TRUNCATE TABLE tracks, posts, users, post_tags, tags RESTART IDENTITY CASCADE").Error; err != nil {
 		return err
@@ -25,7 +25,7 @@ func Seed(db *gorm.DB) error {
 	r := rand.New(rand.NewSource(SeedValue))
 	gf := gofakeit.New(uint64(SeedValue))
 
-	log.Println("🌱 Running deterministic seeding...")
+	log.Println("Running deterministic seeding...")
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)

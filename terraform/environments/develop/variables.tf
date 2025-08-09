@@ -16,11 +16,7 @@ variable "project_name" {
   default     = "simple-blog"
 }
 
-variable "domain_name" {
-  description = "The domain name for the application."
-  type        = string
-  default     = "example.com" # Replace with your actual domain
-}
+
 
 variable "db_name" {
   description = "The name of the database."
