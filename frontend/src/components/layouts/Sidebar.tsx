@@ -20,9 +20,7 @@ export default function Sidebar() {
   const { mutate: logoutMutation, isPending } = usePostLogout();
 
   const handleLogout = () => {
-    logoutMutation(
-      {},
-      {
+    logoutMutation(undefined, {
         onSuccess: () => {
           dispatch(logout());
           toast.success("ログアウトしました");

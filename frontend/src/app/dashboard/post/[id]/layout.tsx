@@ -14,9 +14,10 @@ const getPostsIdServer = (id: number, signal?: AbortSignal) => {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const id = Number(params.id);
+  const { id: idString } = await params;
+  const id = Number(idString);
   try {
     const response = await getPostsIdServer(id);
     const post = response.post;
@@ -36,12 +37,13 @@ export async function generateMetadata({
   };
 }
 
+type PostLayoutParams = {
+  params: Promise<{ id: string }>;
+};
+
 export default function PostLayout({
   children,
   params,
-}: {
-  children: React.ReactNode;
-  params: { id: string };
-}) {
+}: React.PropsWithChildren<PostLayoutParams>) {
   return <>{children}</>;
 }
