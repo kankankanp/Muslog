@@ -17,7 +17,6 @@ RUN apk add --no-cache bash
 
 WORKDIR /app
 COPY --from=builder /app/cmd/backend/main .
-COPY --from=builder /app/.env .
 
 EXPOSE 8080
 

@@ -4,8 +4,6 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-
-
 module "network" {
   source      = "../../modules/network"
   aws_region  = var.aws_region
@@ -26,9 +24,6 @@ module "alb" {
   vpc_id                = module.network.vpc_id
   public_subnet_ids     = module.network.public_subnet_ids
   alb_security_group_id = module.network.alb_sg_id
-  
-  
-  
 }
 
 module "rds" {
@@ -58,6 +53,7 @@ module "ecs" {
   db_name                 = var.db_name
   db_security_group_id    = module.network.db_sg_id
   backend_target_group_arn  = module.alb.alb_target_group_arn
+  app_secrets_secret_arn    = aws_secretsmanager_secret.app_secrets.arn
   depends_on = [module.alb]
 }
 
@@ -69,3 +65,11 @@ module "cloudfront" {
   environment                         = var.environment
 }
 
+resource "aws_secretsmanager_secret" "db_password" {
+  name = "production/db_password"
+}
+
+resource "aws_secretsmanager_secret_version" "db_password_version" {
+  secret_id     = aws_secretsmanager_secret.db_password.id
+  secret_string = var.db_password
+}

@@ -33,4 +33,11 @@ pg_log/
 *.pid
 *.sock
 ./cookies.txt
-.env
+.env.local
+
+# Terraform variables files
+*.tfvars
+*.tfvars.json
+terraform.tfstate
+terraform.tfstate*
+

@@ -36,3 +36,15 @@ variable "db_password" {
   sensitive   = true
 }
 
+variable "spotify_client_secret" {
+  description = "Spotify client secret."
+  type        = string
+  sensitive   = true
+}
+
+variable "google_client_secret" {
+  description = "Google client secret."
+  type        = string
+  sensitive   = true
+}
+

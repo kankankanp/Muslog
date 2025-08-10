@@ -69,3 +69,11 @@ variable "backend_target_group_arn" {
   type        = string
 }
 
+variable "app_secrets_secret_arn" {
+  description = "The ARN of the secret containing application secrets."
+  type        = string
+  default     = ""
+}
+
+
+

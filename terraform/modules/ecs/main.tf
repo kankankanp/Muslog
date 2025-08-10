@@ -51,6 +51,29 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
+resource "aws_iam_policy" "ecs_secrets_policy" {
+  name        = "${var.environment}-ecs-secrets-policy"
+  description = "Allow ECS tasks to read secrets from Secrets Manager"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt"
+        ],
+        Resource = "*" # In production, you should restrict this to specific secret ARNs
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_secrets_policy_attachment" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_secrets_policy.arn
+}
+
 # ECS
 resource "aws_ecs_cluster" "main" {
   name = "${var.environment}-cluster"
@@ -100,8 +123,15 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "DB_HOST", value = var.db_host },
         { name = "DB_PORT", value = var.db_port },
         { name = "DB_USER", value = var.db_username },
-        { name = "DB_PASSWORD", value = var.db_password },
-        { name = "DB_NAME", value = var.db_name }
+        { name = "DB_NAME", value = var.db_name },
+        { name = "SPOTIFY_CLIENT_ID", value = "test_client_id" },
+        { name = "GOOGLE_CLIENT_ID", value = "382076678399-adv6874p59ipbhiipgs7mmvipnvp4lec.apps.googleusercontent.com" },
+        { name = "GOOGLE_REDIRECT_URL", value = "http://localhost:8080/api/v1/auth/google/callback" }
+      ],
+      secrets = [
+        { name = "DB_PASSWORD", valueFrom = "${var.app_secrets_secret_arn}:DB_PASSWORD::" },
+        { name = "SPOTIFY_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:SPOTIFY_CLIENT_SECRET::" },
+        { name = "GOOGLE_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:GOOGLE_CLIENT_SECRET::" }
       ],
       logConfiguration = {
         logDriver = "awslogs",
