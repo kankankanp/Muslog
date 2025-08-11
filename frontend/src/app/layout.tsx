@@ -31,13 +31,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoJp.variable} antialiased`}>
-        {/* <NextAuthProvider>
-          <Providers>
-            <Header /> */}
         <Providers>{children}</Providers>
-        {/* <Footer />
-          </Providers>
-        </NextAuthProvider> */}
       </body>
     </html>
   );

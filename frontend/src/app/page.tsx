@@ -103,6 +103,7 @@ export default function Page() {
               新しい音楽との出会いの場へ。
             </motion.p>
             <motion.div
+              className="flex flex-wrap gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
@@ -113,6 +114,12 @@ export default function Page() {
               >
                 はじめる
                 <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+              <Link
+                href="/registration/login"
+                className="inline-flex items-center px-8 py-4 bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-300 rounded-full text-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-emerald-600 dark:border-emerald-300"
+              >
+                ログイン
               </Link>
             </motion.div>
           </motion.div>
