@@ -8,7 +8,7 @@ output "alb_zone_id" {
   value       = aws_lb.main.zone_id
 }
 
-output "alb_target_group_arn" {
-  description = "The ARN of the ALB target group."
+output "backend_target_group_arn" {
+  description = "The ARN of the backend ALB target group."
   value       = aws_lb_target_group.main.arn
 }

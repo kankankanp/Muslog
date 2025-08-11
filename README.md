@@ -3,7 +3,6 @@
 Muslog は、総合的音楽プラットフォーム
 
 ## 主な使用技術
-
 - フロントエンド
   - 言語：TypeScript
   - フレームワーク：Next.js(App Router)
@@ -16,9 +15,7 @@ Muslog は、総合的音楽プラットフォーム
   - ORM：GORM
 - データベース：PostgreSQL (Docker Compose 経由)
 - API 仕様：Swagger (Swag)
-
 ## システム構成図
-
 ```
                  ┌──────────────────────────────┐
                  │          CloudFront          │
@@ -219,8 +216,6 @@ terraform apply
 ```
 
 ## インフラ構成詳細
-
-- **Route 53**: ドメイン名の DNS 管理 (example.com)
 - **CloudFront**: CDN によるキャッシュ・HTTPS 配信
 - **ALB**: API 用ロードバランサー (/api/\* へのリクエストルーティング)
 - **S3**: 静的ファイル配信 (HTML/CSS/JS) + 画像・音源保存
@@ -246,6 +241,52 @@ gemini -m "gemini-2.5-flash" --yolo
 ### Claude code の実行
 
 claude --dangerously-skip-permissions
+
+## AWS リソースの停止・開始
+
+本番環境のコストを抑えるために、ECS と RDS を手動で停止・開始できます。
+
+### 停止
+
+```bash
+# 手動でリソースを停止（ECSとRDS両方）
+aws ssm start-automation-execution \
+    --document-name "production-run-scheduler-task" \
+    --parameters "Action=stop"
+```
+
+### 開始
+
+```bash
+# 手動でリソースを開始（ECSとRDS両方）
+aws ssm start-automation-execution \
+    --document-name "production-run-scheduler-task" \
+    --parameters "Action=start"
+```
+
+### 実行状況の確認
+
+```bash
+# 実行状況を確認
+aws ssm describe-automation-executions \
+    --filters "Key=DocumentName,Values=production-run-scheduler-task" \
+    --max-results 3
+
+# ECSサービスの状態確認
+aws ecs describe-services \
+    --cluster "production-cluster" \
+    --services "production-backend-service" \
+    --query "services[0].{ServiceName:serviceName,DesiredCount:desiredCount,RunningCount:runningCount}"
+
+# RDSクラスターの状態確認
+aws rds describe-db-clusters \
+    --query "DBClusters[?contains(DBClusterIdentifier, 'production')].{Identifier:DBClusterIdentifier,Status:Status}"
+```
+
+**注意事項:**
+- 停止: ECS の desired count が 0 になり、RDS が stopping → stopped 状態になります
+- 開始: RDS が starting → available 状態になり、ECS の desired count が 2 に戻ります  
+- RDS の停止・開始は数分かかることがあります
 
 ### DB のマイグレーション・シーディング
 

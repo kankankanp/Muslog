@@ -39,22 +39,35 @@ module "rds" {
 }
 
 module "ecs" {
-  source                  = "../../modules/ecs"
-  environment             = var.environment
-  aws_region              = var.aws_region
-  aws_account_id          = data.aws_caller_identity.current.account_id
-  vpc_id                  = module.network.vpc_id
-  public_subnet_ids       = module.network.public_subnet_ids
-  private_subnet_ids      = module.network.private_subnet_ids
-  alb_sg_id               = module.network.alb_sg_id
-  db_host                 = module.rds.db_cluster_endpoint
-  db_port                 = module.rds.db_cluster_port
-  db_username             = var.db_username
-  db_password             = var.db_password
-  db_name                 = var.db_name
-  db_security_group_id    = module.network.db_sg_id
-  backend_target_group_arn  = module.alb.alb_target_group_arn
-  frontend_target_group_arn = module.alb.alb_target_group_arn
+  source                   = "../../modules/ecs"
+  environment              = var.environment
+  aws_region               = var.aws_region
+  aws_account_id           = data.aws_caller_identity.current.account_id
+  vpc_id                   = module.network.vpc_id
+  public_subnet_ids        = module.network.public_subnet_ids
+  private_subnet_ids       = module.network.private_subnet_ids
+  alb_sg_id                = module.network.alb_sg_id
+  db_host                  = module.rds.db_cluster_endpoint
+  db_port                  = module.rds.db_cluster_port
+  db_username              = var.db_username
+  db_name                  = var.db_name
+  db_security_group_id     = module.network.db_sg_id
+  backend_target_group_arn = module.alb.backend_target_group_arn
+  google_redirect_url      = var.google_redirect_url
+  frontend_url             = var.frontend_url
+  db_cluster_arn           = module.rds.db_cluster_arn
+  db_cluster_identifier    = module.rds.db_cluster_identifier
+}
+
+module "ecs-scheduler" {
+  source                        = "../../modules/ecs-scheduler"
+  environment                   = var.environment
+  ecs_cluster_arn               = module.ecs.ecs_cluster_arn
+  scheduler_task_definition_arn = module.ecs.scheduler_task_definition_arn
+  ecs_task_execution_role_arn   = module.ecs.ecs_task_execution_role_arn
+  ecs_task_role_arn             = module.ecs.ecs_task_role_arn
+  private_subnet_ids            = module.network.private_subnet_ids
+  ecs_tasks_sg_id               = module.ecs.ecs_tasks_sg_id
 }
 
 module "cloudfront" {

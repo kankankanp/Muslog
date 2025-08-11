@@ -51,11 +51,27 @@ module "ecs" {
   db_username              = var.db_username
   db_name                  = var.db_name
   db_security_group_id     = module.network.db_sg_id
-  backend_target_group_arn = module.alb.alb_target_group_arn
+  backend_target_group_arn = module.alb.backend_target_group_arn
   app_secrets_secret_arn   = aws_secretsmanager_secret.app_secrets.arn
   frontend_url             = "https://${module.cloudfront.cloudfront_distribution_domain_name}"
   google_redirect_url      = "https://${module.cloudfront.cloudfront_distribution_domain_name}/api/v1/auth/google/callback"
+  google_client_id         = var.google_client_id
+  spotify_client_id        = var.spotify_client_id
+  db_cluster_arn           = module.rds.db_cluster_arn
+  db_cluster_identifier    = module.rds.db_cluster_identifier
   depends_on               = [module.alb]
+}
+
+module "ecs-scheduler" {
+  source                        = "../../modules/ecs-scheduler"
+  environment                   = var.environment
+  ecs_cluster_arn               = module.ecs.ecs_cluster_arn
+  scheduler_task_definition_arn = module.ecs.scheduler_task_definition_arn
+  ecs_task_execution_role_arn   = module.ecs.ecs_task_execution_role_arn
+  ecs_task_role_arn             = module.ecs.ecs_task_role_arn
+  private_subnet_ids            = module.network.private_subnet_ids
+  ecs_tasks_sg_id               = module.ecs.ecs_tasks_sg_id
+  scheduler_execution_role_arn  = module.ecs-scheduler.scheduler_execution_role_arn
 }
 
 module "cloudfront" {

@@ -81,5 +81,27 @@ variable "frontend_url" {
   type        = string
 }
 
+variable "db_cluster_arn" {
+  description = "The ARN of the RDS cluster"
+  type        = string
+}
+
+variable "db_cluster_identifier" {
+  description = "The identifier of the RDS cluster"
+  type        = string
+}
+
+variable "spotify_client_id" {
+  description = "Spotify client ID"
+  type        = string
+  default     = ""
+}
+
+variable "google_client_id" {
+  description = "Google client ID"
+  type        = string
+  default     = ""
+}
+
 
 
