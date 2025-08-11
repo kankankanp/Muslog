@@ -92,6 +92,8 @@ jobs:
 
       - name: Build Next.js app
         working-directory: ./frontend
+        env:
+          NEXT_PUBLIC_API_URL: https://dchwwtola5wmp.cloudfront.net/api/v1
         run: npm run build
 
       - name: Configure AWS credentials
