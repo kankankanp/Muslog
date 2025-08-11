@@ -20,8 +20,15 @@ func NewPostHandler(service *service.PostService) *PostHandler {
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
-	userContext := c.Get("user").(jwt.MapClaims)
-	userID := userContext["user_id"].(string)
+	var userID string
+	userContext := c.Get("user")
+	if userContext != nil {
+		claims, ok := userContext.(jwt.MapClaims)
+		if ok {
+			userID, _ = claims["user_id"].(string)
+		}
+	}
+
 	posts, err := h.Service.GetAllPosts(userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
@@ -35,8 +42,16 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	userContext := c.Get("user").(jwt.MapClaims)
-	userID := userContext["user_id"].(string)
+
+	var userID string
+	userContext := c.Get("user")
+	if userContext != nil {
+		claims, ok := userContext.(jwt.MapClaims)
+		if ok {
+			userID, _ = claims["user_id"].(string)
+		}
+	}
+
 	post, err := h.Service.GetPostByID(uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
@@ -130,8 +145,16 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
 	}
 	const PerPage = 4
-	userContext := c.Get("user").(jwt.MapClaims)
-	userID := userContext["user_id"].(string)
+
+	var userID string
+	userContext := c.Get("user")
+	if userContext != nil {
+		claims, ok := userContext.(jwt.MapClaims)
+		if ok {
+			userID, _ = claims["user_id"].(string)
+		}
+	}
+
 	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})

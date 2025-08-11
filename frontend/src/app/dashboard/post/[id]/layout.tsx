@@ -1,6 +1,32 @@
 import type { Metadata } from "next";
-import type { GetPostsId200 } from "@/libs/api/generated/orval/model";
+import type {
+  GetPosts200,
+  GetPostsId200,
+} from "@/libs/api/generated/orval/model";
 import { serverInstance } from "@/libs/api/server-instance";
+
+// サーバーサイド用のgetPosts関数
+const getPostsServer = (signal?: AbortSignal) => {
+  return serverInstance<GetPosts200>({ url: `/posts`, method: "GET", signal });
+};
+
+export async function generateStaticParams() {
+  try {
+    const res = await getPostsServer();
+    const posts = res.posts ?? [];
+
+    if (posts.length === 0) {
+      return [];
+    }
+
+    return posts.map((post) => ({
+      id: post.id.toString(),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch posts for generateStaticParams:", error);
+    return [];
+  }
+}
 
 // サーバーサイド用のgetPostsId関数
 const getPostsIdServer = (id: number, signal?: AbortSignal) => {

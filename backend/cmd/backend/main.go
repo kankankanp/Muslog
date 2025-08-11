@@ -109,6 +109,9 @@ func main() {
 	public.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")
 	})
+	public.GET("/posts", postHandler.GetAllPosts)
+	public.GET("/posts/:id", postHandler.GetPostByID)
+	public.GET("/posts/page/:page", postHandler.GetPostsByPage)
 
 	protected := e.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
@@ -123,9 +126,6 @@ func main() {
 
 	// posts
 	postGroup := protected.Group("/posts")
-	postGroup.GET("", postHandler.GetAllPosts)
-	postGroup.GET("/:id", postHandler.GetPostByID)
-	postGroup.GET("/page/:page", postHandler.GetPostsByPage)
 	postGroup.POST("", postHandler.CreatePost)
 	postGroup.PUT("/:id", postHandler.UpdatePost)
 	postGroup.DELETE("/:id", postHandler.DeletePost)

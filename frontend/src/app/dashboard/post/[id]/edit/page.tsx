@@ -2,11 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import SimpleMDEEditor from "react-simplemde-editor";
 import { z } from "zod";
 import { CommonButton } from "@/components/elements/buttons/CommonButton";
 import { Tag } from "@/libs/api/generated/orval/model/tag";
@@ -20,6 +20,10 @@ import {
   usePostTagsPostsPostID,
   useDeleteTagsPostsPostID,
 } from "@/libs/api/generated/orval/tags/tags";
+
+const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 const schema = z.object({
   title: z.string().min(1, "タイトルを入力してください"),

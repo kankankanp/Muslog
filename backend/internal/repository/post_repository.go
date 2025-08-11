@@ -35,10 +35,15 @@ func (r *postRepository) FindByID(id uint) (*model.Post, error) {
 
 func (r *postRepository) FindByIDWithUserID(id uint, userID string) (*model.Post, error) {
 	var post model.Post
-	err := r.DB.Preload("Tracks").Preload("Tags").
-		Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-		Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID).
-		First(&post, id).Error
+	query := r.DB.Preload("Tracks").Preload("Tags")
+
+	if userID != "" {
+		query = query.
+			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
+	}
+
+	err := query.First(&post, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -47,11 +52,15 @@ func (r *postRepository) FindByIDWithUserID(id uint, userID string) (*model.Post
 
 func (r *postRepository) FindAll(userID string) ([]model.Post, error) {
 	var posts []model.Post
-	err := r.DB.Preload("Tracks").Preload("Tags").
-		Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-		Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID).
-		Order("created_at desc").
-		Find(&posts).Error
+	query := r.DB.Preload("Tracks").Preload("Tags")
+
+	if userID != "" {
+		query = query.
+			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
+	}
+
+	err := query.Order("created_at desc").Find(&posts).Error
 	return posts, err
 }
 
@@ -76,10 +85,16 @@ func (r *postRepository) FindByPage(page, perPage int, userID string) ([]model.P
 	var posts []model.Post
 	var totalCount int64
 	r.DB.Model(&model.Post{}).Count(&totalCount)
-	err := r.DB.Preload("Tracks").Preload("Tags").
-		Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-		Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID).
-		Order("created_at desc").
+
+	query := r.DB.Preload("Tracks").Preload("Tags")
+
+	if userID != "" {
+		query = query.
+			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
+	}
+
+	err := query.Order("created_at desc").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
 		Find(&posts).Error

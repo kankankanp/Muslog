@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   async redirects() {
     return [
       {
@@ -20,8 +21,8 @@ const nextConfig = {
 
     return config;
   },
-  serverExternalPackages: ["bcrypt"],
   images: {
+    unoptimized: true,
     domains: ["i.scdn.co", "picsum.photos"],
   },
 };
