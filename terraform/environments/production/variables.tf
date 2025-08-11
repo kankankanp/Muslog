@@ -48,3 +48,15 @@ variable "google_client_secret" {
   sensitive   = true
 }
 
+variable "google_client_id" {
+  description = "Google client ID."
+  type        = string
+  sensitive   = true
+}
+
+variable "spotify_client_id" {
+  description = "Spotify client ID."
+  type        = string
+  sensitive   = true
+}
+

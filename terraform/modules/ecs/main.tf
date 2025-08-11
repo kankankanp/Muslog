@@ -125,12 +125,13 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "DB_USER", value = var.db_username },
         { name = "DB_NAME", value = var.db_name },
         { name = "SPOTIFY_CLIENT_ID", value = "test_client_id" },
-        { name = "GOOGLE_CLIENT_ID", value = "382076678399-adv6874p59ipbhiipgs7mmvipnvp4lec.apps.googleusercontent.com" },
-        { name = "GOOGLE_REDIRECT_URL", value = "http://localhost:8080/api/v1/auth/google/callback" }
+        { name = "GOOGLE_REDIRECT_URL", value = var.google_redirect_url },
+        { name = "FRONTEND_URL", value = var.frontend_url }
       ],
       secrets = [
         { name = "DB_PASSWORD", valueFrom = "${var.app_secrets_secret_arn}:DB_PASSWORD::" },
         { name = "SPOTIFY_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:SPOTIFY_CLIENT_SECRET::" },
+        { name = "GOOGLE_CLIENT_ID", valueFrom = "${var.app_secrets_secret_arn}:GOOGLE_CLIENT_ID::" },
         { name = "GOOGLE_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:GOOGLE_CLIENT_SECRET::" }
       ],
       logConfiguration = {

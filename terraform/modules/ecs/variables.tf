@@ -48,11 +48,7 @@ variable "db_username" {
   type        = string
 }
 
-variable "db_password" {
-  description = "The password for the RDS database."
-  type        = string
-  sensitive   = true
-}
+
 
 variable "db_name" {
   description = "The name of the RDS database."
@@ -73,6 +69,16 @@ variable "app_secrets_secret_arn" {
   description = "The ARN of the secret containing application secrets."
   type        = string
   default     = ""
+}
+
+variable "google_redirect_url" {
+  description = "The redirect URL for Google OAuth"
+  type        = string
+}
+
+variable "frontend_url" {
+  description = "The base URL of the frontend"
+  type        = string
 }
 
 

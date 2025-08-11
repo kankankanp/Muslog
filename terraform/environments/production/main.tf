@@ -38,23 +38,24 @@ module "rds" {
 }
 
 module "ecs" {
-  source                  = "../../modules/ecs"
-  environment             = var.environment
-  aws_region              = var.aws_region
-  aws_account_id          = data.aws_caller_identity.current.account_id
-  vpc_id                  = module.network.vpc_id
-  public_subnet_ids       = module.network.public_subnet_ids
-  private_subnet_ids      = module.network.private_subnet_ids
-  alb_sg_id               = module.network.alb_sg_id
-  db_host                 = module.rds.db_cluster_endpoint
-  db_port                 = module.rds.db_cluster_port
-  db_username             = var.db_username
-  db_password             = var.db_password
-  db_name                 = var.db_name
-  db_security_group_id    = module.network.db_sg_id
-  backend_target_group_arn  = module.alb.alb_target_group_arn
-  app_secrets_secret_arn    = aws_secretsmanager_secret.app_secrets.arn
-  depends_on = [module.alb]
+  source                   = "../../modules/ecs"
+  environment              = var.environment
+  aws_region               = var.aws_region
+  aws_account_id           = data.aws_caller_identity.current.account_id
+  vpc_id                   = module.network.vpc_id
+  public_subnet_ids        = module.network.public_subnet_ids
+  private_subnet_ids       = module.network.private_subnet_ids
+  alb_sg_id                = module.network.alb_sg_id
+  db_host                  = module.rds.db_cluster_endpoint
+  db_port                  = module.rds.db_cluster_port
+  db_username              = var.db_username
+  db_name                  = var.db_name
+  db_security_group_id     = module.network.db_sg_id
+  backend_target_group_arn = module.alb.alb_target_group_arn
+  app_secrets_secret_arn   = aws_secretsmanager_secret.app_secrets.arn
+  frontend_url             = "https://${module.cloudfront.cloudfront_distribution_domain_name}"
+  google_redirect_url      = "https://${module.cloudfront.cloudfront_distribution_domain_name}/api/v1/auth/google/callback"
+  depends_on               = [module.alb]
 }
 
 module "cloudfront" {
@@ -65,11 +66,4 @@ module "cloudfront" {
   environment                         = var.environment
 }
 
-resource "aws_secretsmanager_secret" "db_password" {
-  name = "production/db_password"
-}
 
-resource "aws_secretsmanager_secret_version" "db_password_version" {
-  secret_id     = aws_secretsmanager_secret.db_password.id
-  secret_string = var.db_password
-}

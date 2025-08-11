@@ -6,7 +6,9 @@ resource "aws_secretsmanager_secret_version" "app_secrets_version" {
   secret_id = aws_secretsmanager_secret.app_secrets.id
   secret_string = jsonencode({
     DB_PASSWORD           = var.db_password
+    SPOTIFY_CLIENT_ID     = var.spotify_client_id
     SPOTIFY_CLIENT_SECRET = var.spotify_client_secret
+    GOOGLE_CLIENT_ID      = var.google_client_id
     GOOGLE_CLIENT_SECRET  = var.google_client_secret
   })
 }

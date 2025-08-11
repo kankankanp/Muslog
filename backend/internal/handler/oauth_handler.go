@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"net/http"
+	"os"
 	"simple-blog/backend/internal/service"
 	"time"
 
@@ -74,7 +75,12 @@ func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 	setTokenCookie(c, "access_token", accessToken)
 	setTokenCookie(c, "refresh_token", refreshToken)
 	
-	return c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/dashboard")
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:3000" // デフォルト値
+	}
+
+	return c.Redirect(http.StatusTemporaryRedirect, frontendURL+"/dashboard")
 }
 
 func generateRandomState() string {
