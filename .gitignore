@@ -38,6 +38,7 @@ pg_log/
 # Terraform variables files
 *.tfvars
 *.tfvars.json
-terraform.tfstate
-terraform.tfstate*
-
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+.terraform/
