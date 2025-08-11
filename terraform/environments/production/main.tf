@@ -64,6 +64,7 @@ module "cloudfront" {
   s3_origin_access_identity_path      = module.s3.s3_origin_access_identity_path
   alb_dns_name                        = module.alb.alb_dns_name
   environment                         = var.environment
+  url_rewrite_function_path           = "../../../frontend/url-rewrite-function.js"
 }
 
 

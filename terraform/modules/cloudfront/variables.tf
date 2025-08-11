@@ -18,4 +18,9 @@ variable "alb_dns_name" {
   type        = string
 }
 
+variable "url_rewrite_function_path" {
+  description = "The path to the URL rewrite function code."
+  type        = string
+}
+
 

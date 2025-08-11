@@ -1,3 +1,11 @@
+resource "aws_cloudfront_function" "url_rewrite" {
+  name    = "${var.environment}-url-rewrite"
+  runtime = "cloudfront-js-1.0"
+  comment = "Rewrites URLs for the single page application"
+  publish = true
+  code    = file(var.url_rewrite_function_path)
+}
+
 resource "aws_cloudfront_distribution" "main" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -36,6 +44,11 @@ resource "aws_cloudfront_distribution" "main" {
       cookies {
         forward = "none"
       }
+    }
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.url_rewrite.arn
     }
   }
 
