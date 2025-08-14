@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"simple-blog/backend/internal/handler"
-	"simple-blog/backend/internal/middleware"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
-	"simple-blog/backend/internal/seeder"
-	"simple-blog/backend/internal/service"
+	"backend/internal/handler"
+	"backend/internal/middleware"
+	"backend/internal/model"
+	"backend/internal/repository"
+	"backend/internal/seeder"
+	"backend/internal/service"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -53,6 +53,7 @@ func main() {
 			break
 		}
 		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
+
 		time.Sleep(3 * time.Second)
 	}
 

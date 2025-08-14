@@ -1,22 +1,22 @@
-package handler
+package controllers
 
 import (
-	"simple-blog/backend/internal/service"
+	"backend/internal/usecases"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-type TagHandler struct {
-	tagService service.TagService
+type TagController struct {
+	tagService usecases.TagService
 }
 
-func NewTagHandler(tagService service.TagService) *TagHandler {
-	return &TagHandler{tagService: tagService}
+func NewTagController(tagService usecases.TagService) *TagController {
+	return &TagController{tagService: tagService}
 }
 
-func (h *TagHandler) CreateTag(c echo.Context) error {
+func (h *TagController) CreateTag(c echo.Context) error {
 	var req struct {
 		Name string `json:"name"`
 	}
@@ -32,7 +32,7 @@ func (h *TagHandler) CreateTag(c echo.Context) error {
 	return c.JSON(http.StatusCreated, tag)
 }
 
-func (h *TagHandler) GetTagByID(c echo.Context) error {
+func (h *TagController) GetTagByID(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag ID")
@@ -46,7 +46,7 @@ func (h *TagHandler) GetTagByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, tag)
 }
 
-func (h *TagHandler) GetAllTags(c echo.Context) error {
+func (h *TagController) GetAllTags(c echo.Context) error {
 	tags, err := h.tagService.GetAllTags()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -55,7 +55,7 @@ func (h *TagHandler) GetAllTags(c echo.Context) error {
 	return c.JSON(http.StatusOK, tags)
 }
 
-func (h *TagHandler) UpdateTag(c echo.Context) error {
+func (h *TagController) UpdateTag(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag ID")
@@ -76,7 +76,7 @@ func (h *TagHandler) UpdateTag(c echo.Context) error {
 	return c.JSON(http.StatusOK, tag)
 }
 
-func (h *TagHandler) DeleteTag(c echo.Context) error {
+func (h *TagController) DeleteTag(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag ID")
@@ -89,7 +89,7 @@ func (h *TagHandler) DeleteTag(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-func (h *TagHandler) AddTagsToPost(c echo.Context) error {
+func (h *TagController) AddTagsToPost(c echo.Context) error {
 	postID, err := strconv.ParseUint(c.Param("postID"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid post ID")
@@ -109,7 +109,7 @@ func (h *TagHandler) AddTagsToPost(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-func (h *TagHandler) RemoveTagsFromPost(c echo.Context) error {
+func (h *TagController) RemoveTagsFromPost(c echo.Context) error {
 	postID, err := strconv.ParseUint(c.Param("postID"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid post ID")
@@ -129,7 +129,7 @@ func (h *TagHandler) RemoveTagsFromPost(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-func (h *TagHandler) GetTagsByPostID(c echo.Context) error {
+func (h *TagController) GetTagsByPostID(c echo.Context) error {
 	postID, err := strconv.ParseUint(c.Param("postID"), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid post ID")

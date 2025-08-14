@@ -1,25 +1,25 @@
-package handler
+package controllers
 
 import (
 	"crypto/rand"
 	"encoding/base64"
 	"net/http"
 	"os"
-	"simple-blog/backend/internal/service"
+	"backend/internal/usecases"
 	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
-type OAuthHandler struct {
-	Service *service.OAuthService
+type OAuthController struct {
+	Service *usecases.OAuthService
 }
 
-func NewOAuthHandler(service *service.OAuthService) *OAuthHandler {
-	return &OAuthHandler{Service: service}
+func NewOAuthController(service *usecases.OAuthService) *OAuthController {
+	return &OAuthController{Service: service}
 }
 
-func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
+func (h *OAuthController) GetGoogleAuthURL(c echo.Context) error {
 	state := generateRandomState()
 	
 	setStateCookie(c, state)
@@ -31,7 +31,7 @@ func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
 	})
 }
 
-func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
+func (h *OAuthController) GoogleCallback(c echo.Context) error {
 	code := c.QueryParam("code")
 	state := c.QueryParam("state")
 	

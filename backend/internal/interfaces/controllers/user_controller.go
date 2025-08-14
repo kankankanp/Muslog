@@ -1,18 +1,18 @@
-package handler
+package controllers
 
 import (
 	"fmt"
 	"net/http"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/service"
+	"backend/internal/domain/entities"
+	"backend/internal/usecases"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
-type UserHandler struct {
-	Service *service.UserService
+type UserController struct {
+	Service *usecases.UserService
 }
 
 type UserResponse struct {
@@ -23,7 +23,7 @@ type UserResponse struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func toUserResponse(user *model.User) UserResponse {
+func toUserResponse(user *entities.User) UserResponse {
 	return UserResponse{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -33,9 +33,9 @@ func toUserResponse(user *model.User) UserResponse {
 	}
 }
 
-func (h *UserHandler) Login(c echo.Context) error {
+func (h *UserController) Login(c echo.Context) error {
 	fmt.Println("Login handler called")
-	u := new(model.User)
+	u := new(entities.User)
 	if err := c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
@@ -61,7 +61,7 @@ func (h *UserHandler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": toUserResponse(user)})
 }
 
-func (h *UserHandler) Register(c echo.Context) error {
+func (h *UserController) Register(c echo.Context) error {
 	var req struct {
 		Name     string `json:"name"`
 		Email    string `json:"email"`
@@ -92,7 +92,7 @@ func (h *UserHandler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": toUserResponse(user)})
 }
 
-func (h *UserHandler) RefreshToken(c echo.Context) error {
+func (h *UserController) RefreshToken(c echo.Context) error {
 	cookie, err := c.Cookie("refresh_token")
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Refresh token not found"})
@@ -126,13 +126,13 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed", "accessToken": accessToken})
 }
 
-func (h *UserHandler) Logout(c echo.Context) error {
+func (h *UserController) Logout(c echo.Context) error {
 	clearTokenCookie(c, "access_token")
 	clearTokenCookie(c, "refresh_token")
 	return c.JSON(http.StatusOK, echo.Map{"message": "Logout successful"})
 }
 
-func (h *UserHandler) GetMe(c echo.Context) error {
+func (h *UserController) GetMe(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
@@ -144,7 +144,7 @@ func (h *UserHandler) GetMe(c echo.Context) error {
 	return c.JSON(http.StatusOK, toUserResponse(user))
 }
 
-func (h *UserHandler) GetAllUsers(c echo.Context) error {
+func (h *UserController) GetAllUsers(c echo.Context) error {
 	users, err := h.Service.GetAllUsers()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
@@ -159,7 +159,7 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "users": userResponses})
 }
 
-func (h *UserHandler) GetUserByID(c echo.Context) error {
+func (h *UserController) GetUserByID(c echo.Context) error {
 	id := c.Param("id")
 	user, err := h.Service.GetUserByID(id)
 	if err != nil {
@@ -169,7 +169,7 @@ func (h *UserHandler) GetUserByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "user": toUserResponse(user)})
 }
 
-func (h *UserHandler) GetUserPosts(c echo.Context) error {
+func (h *UserController) GetUserPosts(c echo.Context) error {
 	id := c.Param("id")
 	posts, err := h.Service.GetUserPosts(id)
 	if err != nil {

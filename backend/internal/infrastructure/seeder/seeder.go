@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"simple-blog/backend/internal/model"
+	"backend/internal/domain/entities"
 )
 
 const SeedValue int64 = 20240801
@@ -29,7 +29,7 @@ func Seed(db *gorm.DB) error {
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-		demo := model.User{
+		demo := entities.User{
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
 			Password: string(hashed),
@@ -50,7 +50,7 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		user := model.User{
+		user := entities.User{
 			Name:     name,
 			Email:    email,
 			Password: string(hashedPassword),
@@ -59,7 +59,7 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		post := model.Post{
+		post := entities.Post{
 			Title:       gf.Sentence(6),
 			Description: gf.Paragraph(1, 3, 12, " "),
 			UserID:      user.ID,
@@ -73,7 +73,7 @@ func Seed(db *gorm.DB) error {
 			seed := fmt.Sprintf("%d-%d-%d", user.ID, i, j)
 			img := fmt.Sprintf("https://picsum.photos/seed/%s/300/300", url.PathEscape(seed))
 
-			track := model.Track{
+			track := entities.Track{
 				SpotifyID:     gf.UUID(),
 				Name:          gf.Word(),
 				ArtistName:    gf.Name(),

@@ -1,23 +1,23 @@
-package handler
+package controllers
 
 import (
-	"simple-blog/backend/internal/service"
+	"backend/internal/usecases"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-type SpotifyHandler struct {
-	spotifyService *service.SpotifyService
+type SpotifyController struct {
+	spotifyService *usecases.SpotifyService
 }
 
-func NewSpotifyHandler(spotifyService *service.SpotifyService) *SpotifyHandler {
-	return &SpotifyHandler{
+func NewSpotifyController(spotifyService *usecases.SpotifyService) *SpotifyController {
+	return &SpotifyController{
 		spotifyService: spotifyService,
 	}
 }
 
-func (h *SpotifyHandler) SearchTracks(c echo.Context) error {
+func (h *SpotifyController) SearchTracks(c echo.Context) error {
 	query := c.QueryParam("q")
 
 	if query == "" {

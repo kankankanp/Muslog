@@ -1,30 +1,30 @@
-package service
+package usecases
 
 import (
 	"errors"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
+	"backend/internal/domain/entities"
+	"backend/internal/domain/repositories"
 
 	gorm "gorm.io/gorm"
 )
 
-type LikeService interface {
+type LikeUsecase interface {
 	LikePost(postID uint, userID string) error
 	UnlikePost(postID uint, userID string) error
 	IsPostLikedByUser(postID uint, userID string) (bool, error)
 	ToggleLike(postID uint, userID string) (bool, error) // Returns true if liked, false if unliked
 }
 
-type likeService struct {
-	likeRepository repository.LikeRepository
-	postRepository repository.PostRepository
+type likeUsecase struct {
+	likeRepository repositories.LikeRepository
+	postRepository repositories.PostRepository
 }
 
-func NewLikeService(likeRepository repository.LikeRepository, postRepository repository.PostRepository) LikeService {
-	return &likeService{likeRepository: likeRepository, postRepository: postRepository}
+func NewLikeUsecase(likeRepository repositories.LikeRepository, postRepository repositories.PostRepository) LikeUsecase {
+	return &likeUsecase{likeRepository: likeRepository, postRepository: postRepository}
 }
 
-func (s *likeService) LikePost(postID uint, userID string) error {
+func (s *likeUsecase) LikePost(postID uint, userID string) error {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(postID)
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *likeService) LikePost(postID uint, userID string) error {
 	}
 
 	// Create like
-	newLike := &model.Like{
+	newLike := &entities.Like{
 		PostID: postID,
 		UserID: userID,
 	}
@@ -57,7 +57,7 @@ func (s *likeService) LikePost(postID uint, userID string) error {
 	return s.postRepository.Update(post)
 }
 
-func (s *likeService) UnlikePost(postID uint, userID string) error {
+func (s *likeUsecase) UnlikePost(postID uint, userID string) error {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(postID)
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *likeService) UnlikePost(postID uint, userID string) error {
 	return s.postRepository.Update(post)
 }
 
-func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
+func (s *likeUsecase) ToggleLike(postID uint, userID string) (bool, error) {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(postID)
 	if err != nil {
@@ -114,7 +114,7 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 		return false, nil // Unliked
 	} else {
 		// Post is not liked, so like it
-		newLike := &model.Like{
+		newLike := &entities.Like{
 			PostID: postID,
 			UserID: userID,
 		}
@@ -129,7 +129,7 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 	}
 }
 
-func (s *likeService) IsPostLikedByUser(postID uint, userID string) (bool, error) {
+func (s *likeUsecase) IsPostLikedByUser(postID uint, userID string) (bool, error) {
 	like, err := s.likeRepository.GetLike(postID, userID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, err

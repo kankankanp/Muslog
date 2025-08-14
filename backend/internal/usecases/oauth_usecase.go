@@ -1,4 +1,4 @@
-package service
+package usecases
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
+	"backend/internal/domain/entities"
+	"backend/internal/domain/repositories"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"
 )
 
-type OAuthService struct {
-	UserRepo *repository.UserRepository
+type OAuthUsecase struct {
+	UserRepo repositories.UserRepository
 	config   *oauth2.Config
 }
 
@@ -29,7 +29,7 @@ type GoogleUserInfo struct {
 	Picture       string `json:"picture"`
 }
 
-func NewOAuthService(userRepo *repository.UserRepository) *OAuthService {
+func NewOAuthUsecase(userRepo repositories.UserRepository) *OAuthUsecase {
 	config := &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
@@ -41,17 +41,17 @@ func NewOAuthService(userRepo *repository.UserRepository) *OAuthService {
 		Endpoint: google.Endpoint,
 	}
 
-	return &OAuthService{
+	return &OAuthUsecase{
 		UserRepo: userRepo,
 		config:   config,
 	}
 }
 
-func (s *OAuthService) GetAuthURL(state string) string {
+func (s *OAuthUsecase) GetAuthURL(state string) string {
 	return s.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
+func (s *OAuthUsecase) HandleCallback(code string) (*entities.User, error) {
 	token, err := s.config.Exchange(context.Background(), code)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %v", err)
@@ -74,7 +74,7 @@ func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 新規ユーザーを作成
-			user := &model.User{
+			user := &entities.User{
 				Name:     userInfo.Name,
 				Email:    userInfo.Email,
 				GoogleID: &userInfo.ID,

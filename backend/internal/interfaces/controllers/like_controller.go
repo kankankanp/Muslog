@@ -1,29 +1,29 @@
-package handler
+package controllers
 
 import (
 	"net/http"
-	"simple-blog/backend/internal/service"
-	"simple-blog/backend/pkg/utils"
+	"backend/internal/usecases"
+	"backend/pkg/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
-type LikeHandler interface {
+type LikeController interface {
 	LikePost(c echo.Context) error
 	UnlikePost(c echo.Context) error
 	IsPostLikedByUser(c echo.Context) error
 }
 
-type likeHandler struct {
-	likeService service.LikeService
+type likeController struct {
+	likeService usecases.LikeService
 }
 
-func NewLikeHandler(likeService service.LikeService) LikeHandler {
-	return &likeHandler{likeService: likeService}
+func NewLikeController(likeService usecases.LikeService) LikeController {
+	return &likeController{likeService: likeService}
 }
 
-func (h *likeHandler) LikePost(c echo.Context) error {
+func (h *likeController) LikePost(c echo.Context) error {
 	postID, err := utils.ParseID(c, "postID")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
@@ -44,7 +44,7 @@ func (h *likeHandler) LikePost(c echo.Context) error {
 	}
 }
 
-func (h *likeHandler) UnlikePost(c echo.Context) error {
+func (h *likeController) UnlikePost(c echo.Context) error {
 	postID, err := utils.ParseID(c, "postID")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
@@ -60,7 +60,7 @@ func (h *likeHandler) UnlikePost(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Post unliked successfully"})
 }
 
-func (h *likeHandler) IsPostLikedByUser(c echo.Context) error {
+func (h *likeController) IsPostLikedByUser(c echo.Context) error {
 	postID, err := utils.ParseID(c, "postID")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})

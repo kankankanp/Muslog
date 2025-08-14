@@ -1,58 +1,58 @@
-package service
+package usecases
 
 import (
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
+	"backend/internal/domain/entities"
+	"backend/internal/domain/repositories"
 	"errors"
 )
 
-type TagService interface {
-	CreateTag(name string) (*model.Tag, error)
-	GetTagByID(id uint) (*model.Tag, error)
-	GetTagByName(name string) (*model.Tag, error)
-	GetAllTags() ([]model.Tag, error)
-	UpdateTag(id uint, name string) (*model.Tag, error)
+type TagUsecase interface {
+	CreateTag(name string) (*entities.Tag, error)
+	GetTagByID(id uint) (*entities.Tag, error)
+	GetTagByName(name string) (*entities.Tag, error)
+	GetAllTags() ([]entities.Tag, error)
+	UpdateTag(id uint, name string) (*entities.Tag, error)
 	DeleteTag(id uint) error
 	AddTagsToPost(postID uint, tagNames []string) error
 	RemoveTagsFromPost(postID uint, tagNames []string) error
-	GetTagsByPostID(postID uint) ([]model.Tag, error)
+	GetTagsByPostID(postID uint) ([]entities.Tag, error)
 }
 
-type tagService struct {
-	tagRepo  repository.TagRepository
-	postRepo repository.PostRepository
+type tagUsecase struct {
+	tagRepo  repositories.TagRepository
+	postRepo repositories.PostRepository
 }
 
-func NewTagService(tagRepo repository.TagRepository, postRepo repository.PostRepository) TagService {
-	return &tagService{tagRepo: tagRepo, postRepo: postRepo}
+func NewTagUsecase(tagRepo repositories.TagRepository, postRepo repositories.PostRepository) TagUsecase {
+	return &tagUsecase{tagRepo: tagRepo, postRepo: postRepo}
 }
 
-func (s *tagService) CreateTag(name string) (*model.Tag, error) {
+func (s *tagUsecase) CreateTag(name string) (*entities.Tag, error) {
 	// Check if tag already exists
 	if _, err := s.tagRepo.GetTagByName(name); err == nil {
 		return nil, errors.New("tag with this name already exists")
 	}
 
-	tag := &model.Tag{Name: name}
+	tag := &entities.Tag{Name: name}
 	if err := s.tagRepo.CreateTag(tag); err != nil {
 		return nil, err
 	}
 	return tag, nil
 }
 
-func (s *tagService) GetTagByID(id uint) (*model.Tag, error) {
+func (s *tagUsecase) GetTagByID(id uint) (*entities.Tag, error) {
 	return s.tagRepo.GetTagByID(id)
 }
 
-func (s *tagService) GetTagByName(name string) (*model.Tag, error) {
+func (s *tagUsecase) GetTagByName(name string) (*entities.Tag, error) {
 	return s.tagRepo.GetTagByName(name)
 }
 
-func (s *tagService) GetAllTags() ([]model.Tag, error) {
+func (s *tagUsecase) GetAllTags() ([]entities.Tag, error) {
 	return s.tagRepo.GetAllTags()
 }
 
-func (s *tagService) UpdateTag(id uint, name string) (*model.Tag, error) {
+func (s *tagUsecase) UpdateTag(id uint, name string) (*entities.Tag, error) {
 	tag, err := s.tagRepo.GetTagByID(id)
 	if err != nil {
 		return nil, err
@@ -68,17 +68,17 @@ func (s *tagService) UpdateTag(id uint, name string) (*model.Tag, error) {
 	return tag, nil
 }
 
-func (s *tagService) DeleteTag(id uint) error {
+func (s *tagUsecase) DeleteTag(id uint) error {
 	return s.tagRepo.DeleteTag(id)
 }
 
-func (s *tagService) AddTagsToPost(postID uint, tagNames []string) error {
+func (s *tagUsecase) AddTagsToPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
 		tag, err := s.tagRepo.GetTagByName(tagName)
 		if err != nil {
 			// Tag does not exist, create it
-			newTag := &model.Tag{Name: tagName}
+			newTag := &entities.Tag{Name: tagName}
 			if err := s.tagRepo.CreateTag(newTag); err != nil {
 				return err
 			}
@@ -90,7 +90,7 @@ func (s *tagService) AddTagsToPost(postID uint, tagNames []string) error {
 	return s.tagRepo.AddTagsToPost(postID, tagIDs)
 }
 
-func (s *tagService) RemoveTagsFromPost(postID uint, tagNames []string) error {
+func (s *tagUsecase) RemoveTagsFromPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
 		tag, err := s.tagRepo.GetTagByName(tagName)
@@ -103,6 +103,6 @@ func (s *tagService) RemoveTagsFromPost(postID uint, tagNames []string) error {
 	return s.tagRepo.RemoveTagsFromPost(postID, tagIDs)
 }
 
-func (s *tagService) GetTagsByPostID(postID uint) ([]model.Tag, error) {
+func (s *tagUsecase) GetTagsByPostID(postID uint) ([]entities.Tag, error) {
 	return s.tagRepo.GetTagsByPostID(postID)
 }

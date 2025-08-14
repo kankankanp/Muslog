@@ -1,9 +1,9 @@
-package handler
+package controllers
 
 import (
 	"net/http"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/service"
+	"backend/internal/domain/entities"
+	"backend/internal/usecases"
 	"strconv"
 	"time"
 
@@ -11,15 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type PostHandler struct {
-	Service *service.PostService
+type PostController struct {
+	Service *usecases.PostService
 }
 
-func NewPostHandler(service *service.PostService) *PostHandler {
-	return &PostHandler{Service: service}
+func NewPostController(service *usecases.PostService) *PostController {
+	return &PostController{Service: service}
 }
 
-func (h *PostHandler) GetAllPosts(c echo.Context) error {
+func (h *PostController) GetAllPosts(c echo.Context) error {
 	var userID string
 	userContext := c.Get("user")
 	if userContext != nil {
@@ -36,7 +36,7 @@ func (h *PostHandler) GetAllPosts(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
 
-func (h *PostHandler) GetPostByID(c echo.Context) error {
+func (h *PostController) GetPostByID(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -59,7 +59,7 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
-func (h *PostHandler) CreatePost(c echo.Context) error {
+func (h *PostController) CreatePost(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
@@ -77,7 +77,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
-	post := model.Post{
+	post := entities.Post{
 		Title:       req.Title,
 		Description: req.Description,
 		UserID:      userID,
@@ -85,7 +85,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		UpdatedAt:   time.Now(),
 	}
 	for _, t := range req.Tracks {
-		post.Tracks = append(post.Tracks, model.Track{
+		post.Tracks = append(post.Tracks, entities.Track{
 			SpotifyID:     t.SpotifyID,
 			Name:          t.Name,
 			ArtistName:    t.ArtistName,
@@ -98,7 +98,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
 }
 
-func (h *PostHandler) UpdatePost(c echo.Context) error {
+func (h *PostController) UpdatePost(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -126,7 +126,7 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
 }
 
-func (h *PostHandler) DeletePost(c echo.Context) error {
+func (h *PostController) DeletePost(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -138,7 +138,7 @@ func (h *PostHandler) DeletePost(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
 }
 
-func (h *PostHandler) GetPostsByPage(c echo.Context) error {
+func (h *PostController) GetPostsByPage(c echo.Context) error {
 	pageStr := c.Param("page")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
