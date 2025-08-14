@@ -45,9 +45,9 @@ func main() {
 	postService := usecases.NewPostUsecase(postRepo)
 	postHandler := controllers.NewPostController(postService)
 
-	userRepo := &repositories.UserRepository{DB: db}
+	userRepo := repositories.NewUserRepository(db)
 	userService := &usecases.UserUsecase{Repo: userRepo}
-	userHandler := &controllers.UserHandler{Service: userService}
+	userHandler := controllers.NewUserController(userService)
 
 	tagRepo := repositories.NewTagRepository(db)
 	tagService := usecases.NewTagUsecase(tagRepo, postRepo)
@@ -64,7 +64,7 @@ func main() {
 	oauthHandler := controllers.NewOAuthController(oauthService)
 
 	e := echo.New()
-	router.InitRouter(e, postHandler, userHandler, tagHandler, spotifyHandler, likeHandler, oauthHandler)
+	router.InitRouter(e, *postHandler, *userHandler, *tagHandler, *spotifyHandler, likeHandler, *oauthHandler)
 
 	server.StartServer(e)
 }
