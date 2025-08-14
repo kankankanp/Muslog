@@ -129,20 +129,111 @@ frontend/
 
 ```
 backend/
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── Dockerfile.local
+├── Dockerfile.scheduler
+├── go.mod
+├── go.sum
+├── README.md
 ├── cmd/
-│   └── backend/
-│       └── main.go         # アプリのエントリーポイント
-├── config/                 # 設定ファイル関連
+│   ├── backend/
+│   │   └── main.go         # アプリケーションのエントリーポイント
+│   └── scheduler/
+│       └── main.go         # スケジューラーのエントリーポイント
+├── config/
+│   └── config.go           # アプリケーション設定 (DB接続情報、ポート番号など)
 ├── internal/
-│   ├── handler/            # HTTPリクエストの処理
-│   ├── model/              # データ構造の定義
-│   ├── repository/         # DBとのやり取り
-│   ├── seeder/             # 初期データ投入
-│   └── service/            # ビジネスロジック
-├── go.mod                  # 依存パッケージ管理
-├── Dockerfile              # Dockerイメージ定義
-└── ...
+│   ├── domain/
+│   │   ├── entities/
+│   │   │   └── user.go                         # ドメインエンティティ
+│   │   ├── services/
+│   │   │   └── user_service.go                 # ドメインサービス
+│   │   └── repositories/
+│   │       └── user_repository_interface.go    # リポジトリインターフェース
+│   ├── usecases/
+│   │   ├── input/
+│   │   │   └── update_user_name_input.go       # ユースケース入力DTO
+│   │   ├── output/
+│   │   │   └── update_user_name_output.go      # ユースケース出力DTO
+│   │   └── update_user_name_interactor.go      # ユースケース実装
+│   ├── infrastructure/
+│   │   ├── repositories/
+│   │   │   └── user_repository.go              # リポジトリ実装
+│   │   ├── models/
+│   │   │   └── user_model.go                   # DBモデル
+│   │   ├── database/
+│   │   │   └── db.go                           # DB接続初期化
+│   │   ├── router/
+│   │   │   └── router.go                       # Echoルーター設定
+│   │   └── server/
+│   │       └── server.go                       # Echoサーバー起動
+│   └── interfaces/
+│       ├── controllers/
+│       │   └── user_controller.go              # HTTPハンドラ
+│       ├── presenters/
+│       │   ├── error_presenter.go              # エラーレスポンス整形
+│       │   └── user_presenter.go               # レスポンス整形
+│       └── middlewares/
+│           └── auth_middleware.go              # 認証ミドルウェア
+├── pkg/
+│   └── utils/
+│       └── parser.go                           # 共通ユーティリティ
+├── scripts/
+│   └── wait-for-it.sh                          # スクリプト
+└── test/
+    └── blog_handler_test.go                    # テスト```
 ```
+---
+
+## 各ディレクトリの役割
+
+### 1. `backend/`（プロジェクトルート）
+- `.gitignore`：Gitのバージョン管理から除外するファイルを指定します。  
+- `docker-compose.yml`：Docker Composeの設定ファイル。開発環境のコンテナ定義（DB、バックエンドなど）を記述します。  
+- `Dockerfile`：アプリケーションのDockerイメージをビルドするための定義ファイル。  
+- `Dockerfile.local`：ローカル開発用のDockerイメージ定義。  
+- `Dockerfile.scheduler`：スケジューラー用のDockerイメージ定義。  
+- `go.mod`：Goモジュールファイル。プロジェクトの依存関係（例：`github.com/labstack/echo/v4` など）を管理します。  
+- `go.sum`：`go.mod` に記載されたモジュールのチェックサム情報。  
+- `README.md`：バックエンドに関する説明ドキュメント。  
+- `cmd/`：アプリケーションのエントリーポイントを含む実行可能ファイルを配置します。  
+  - `backend/main.go`：メインアプリケーションのエントリーポイント。依存関係を初期化し、Echoサーバーを起動します。  
+  - `scheduler/main.go`：スケジューラーのエントリーポイント。  
+- `config/`：アプリケーション全体の設定（データベース接続情報、ポート番号、APIキーなど）をロード・管理します。  
+- `pkg/`：プロジェクト全体で再利用可能な共通ユーティリティ関数やヘルパー（例：バリデーション、文字列操作、時間処理など）を配置します。  
+  - `utils/parser.go`：パーサー関連のユーティリティ関数。  
+- `scripts/`：各種スクリプトファイル（例：`wait-for-it.sh`）。  
+- `test/`：テストコードを配置します。  
+  - `blog_handler_test.go`：ブログハンドラのテスト。  
+
+### 2. `internal/`（アプリケーション内部実装）
+このディレクトリ内のコードは、`backend` モジュール内でのみインポートされることを意図しています。外部から内部実装が漏れることを防ぎます。
+
+#### `internal/domain/`（ドメイン層）
+- `entities/`：アプリケーションのビジネスエンティティ（例：`User` 構造体）。ビジネスルールと状態をカプセル化します。  
+- `services/`：複数のエンティティにまたがるビジネスロジックや、特定のエンティティに属さないロジックを扱うドメインサービス。  
+- `repositories/`：ドメイン層が依存するリポジトリインターフェース。データ永続化に関する抽象的な操作を定義します。  
+
+#### `internal/usecases/`（ユースケース層／アプリケーション層）
+- `input/`：ユースケースの入力データ構造（DTO）を定義します。  
+- `output/`：ユースケースの出力データ構造（DTO）を定義します。  
+- `*_interactor.go`：特定のユースケースのビジネスロジックを実装するインターアクター。ドメイン層のサービスやリポジトリを呼び出して処理を実行します。  
+
+#### `internal/infrastructure/`（インフラ層）
+- `repositories/`：`internal/domain/repositories` で定義されたインターフェースの実装。DBや外部APIとのやり取りを担当します。  
+- `models/`：DBのテーブル構造に対応するモデル。リポジトリがDBマッピングで使用します。  
+- `database/`：DB接続の初期化と管理。  
+- `router/`：Echoのルーティング設定。`main.go` から呼び出され、コントローラーをHTTPパスとメソッドにマッピングします。  
+- `server/`：Echoサーバーの起動ロジックをカプセル化します。  
+
+#### `internal/interfaces/`（プレゼンテーション層／アダプター層）
+- `controllers/`：HTTPリクエストを受け取り、ユースケースを呼び出してレスポンスを返すハンドラ。`echo.Context` を使用します。  
+- `presenters/`：  
+  - `error_presenter.go`：発生したエラーをクライアントに返す形式（JSONなど）に整形します。  
+  - `user_presenter.go`：ユースケース出力をHTTPレスポンス形式に変換します。  
+- `middlewares/`：Echoのミドルウェア（例：認証、ロギング、CORSなど）を定義します。  
 
 ## API ドキュメントの確認
 
@@ -237,6 +328,9 @@ terraform apply
 
 npx https://github.com/google-gemini/gemini-cli
 gemini -m "gemini-2.5-flash" --yolo
+gemini -m "gemini-2.5-flash-lite" --yolo
+- 会話履歴の保存
+/chat save my-session
 
 ### Claude code の実行
 
