@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	"backend/internal/domain/entities"
+	"backend/internal/infrastructure/models"
 	"backend/internal/usecases"
 	"strconv"
 	"time"
@@ -12,10 +12,10 @@ import (
 )
 
 type PostController struct {
-	Service *usecases.PostService
+	Service *usecases.PostUsecase
 }
 
-func NewPostController(service *usecases.PostService) *PostController {
+func NewPostController(service *usecases.PostUsecase) *PostController {
 	return &PostController{Service: service}
 }
 
@@ -77,7 +77,7 @@ func (h *PostController) CreatePost(c echo.Context) error {
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
 	}
-	post := entities.Post{
+	post := models.Post{
 		Title:       req.Title,
 		Description: req.Description,
 		UserID:      userID,
@@ -85,7 +85,7 @@ func (h *PostController) CreatePost(c echo.Context) error {
 		UpdatedAt:   time.Now(),
 	}
 	for _, t := range req.Tracks {
-		post.Tracks = append(post.Tracks, entities.Track{
+		post.Tracks = append(post.Tracks, models.Track{
 			SpotifyID:     t.SpotifyID,
 			Name:          t.Name,
 			ArtistName:    t.ArtistName,

@@ -12,10 +12,10 @@ import (
 )
 
 type OAuthController struct {
-	Service *usecases.OAuthService
+	Service *usecases.OAuthUsecase
 }
 
-func NewOAuthController(service *usecases.OAuthService) *OAuthController {
+func NewOAuthController(service *usecases.OAuthUsecase) *OAuthController {
 	return &OAuthController{Service: service}
 }
 

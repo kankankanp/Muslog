@@ -1,9 +1,7 @@
 package repositories
 
 import (
-	"backend/internal/domain/entities"
-	"backend/internal/domain/repositories"
-
+	"backend/internal/infrastructure/models"
 	"gorm.io/gorm"
 )
 
@@ -11,83 +9,69 @@ type postRepository struct {
 	DB *gorm.DB
 }
 
-func NewPostRepository(db *gorm.DB) repositories.PostRepository {
+func NewPostRepository(db *gorm.DB) *postRepository {
 	return &postRepository{DB: db}
 }
 
-func (r *postRepository) FindByID(id uint) (*entities.Post, error) {
-	var post entities.Post
-	err := r.DB.Preload("Tracks").Preload("Tags").First(&post, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return &post, nil
-}
-
-func (r *postRepository) FindByIDWithUserID(id uint, userID string) (*entities.Post, error) {
-	var post entities.Post
-	query := r.DB.Preload("Tracks").Preload("Tags")
-
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
-
-	err := query.First(&post, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return &post, nil
-}
-
-func (r *postRepository) FindAll(userID string) ([]entities.Post, error) {
-	var posts []entities.Post
-	query := r.DB.Preload("Tracks").Preload("Tags")
-
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
-
-	err := query.Order("created_at desc").Find(&posts).Error
-	return posts, err
-}
-
-func (r *postRepository) Create(post *entities.Post) error {
+func (r *postRepository) Create(post *models.Post) error {
 	return r.DB.Create(post).Error
 }
 
-func (r *postRepository) Update(post *entities.Post) error {
+func (r *postRepository) FindAll(userID string) ([]models.Post, error) {
+	var posts []models.Post
+	query := r.DB.Order("created_at desc")
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+	if err := query.Find(&posts).Error; err != nil {
+		return nil, err
+	}
+	return posts, nil
+}
+
+func (r *postRepository) FindByPage(page, perPage int, userID string) ([]models.Post, int64, error) {
+	var posts []models.Post
+	var totalCount int64
+
+	query := r.DB.Model(&models.Post{}).Order("created_at desc")
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	// Count total posts
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Paginate results
+	offset := (page - 1) * perPage
+	if err := query.Limit(perPage).Offset(offset).Find(&posts).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return posts, totalCount, nil
+}
+
+func (r *postRepository) FindByID(id uint) (*models.Post, error) {
+	var post models.Post
+	if err := r.DB.Preload("Tracks").Preload("Tags").First(&post, id).Error; err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
+func (r *postRepository) FindByIDWithUserID(id uint, userID string) (*models.Post, error) {
+	var post models.Post
+	if err := r.DB.Preload("Tracks").Preload("Tags").Where("id = ? AND user_id = ?", id, userID).First(&post).Error; err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
+func (r *postRepository) Update(post *models.Post) error {
 	return r.DB.Save(post).Error
 }
 
 func (r *postRepository) Delete(id uint) error {
-	// 先にtracksを削除
-	err := r.DB.Where("post_id = ?", id).Delete(&entities.Track{}).Error
-	if err != nil {
-		return err
-	}
-	return r.DB.Delete(&entities.Post{}, id).Error
+	return r.DB.Delete(&models.Post{}, id).Error
 }
-
-func (r *postRepository) FindByPage(page, perPage int, userID string) ([]entities.Post, int64, error) {
-	var posts []entities.Post
-	var totalCount int64
-	r.DB.Model(&entities.Post{}).Count(&totalCount)
-
-	query := r.DB.Preload("Tracks").Preload("Tags")
-
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
-
-	err := query.Order("created_at desc").
-		Offset((page - 1) * perPage).
-		Limit(perPage).
-		Find(&posts).Error
-	return posts, totalCount, err
-} 

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"backend/internal/domain/entities"
+	"backend/internal/infrastructure/models"
 	"backend/internal/domain/repositories"
 
 	"golang.org/x/oauth2"
@@ -51,7 +51,7 @@ func (s *OAuthUsecase) GetAuthURL(state string) string {
 	return s.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (s *OAuthUsecase) HandleCallback(code string) (*entities.User, error) {
+func (s *OAuthUsecase) HandleCallback(code string) (*models.User, error) {
 	token, err := s.config.Exchange(context.Background(), code)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %v", err)
@@ -74,13 +74,17 @@ func (s *OAuthUsecase) HandleCallback(code string) (*entities.User, error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 新規ユーザーを作成
-			user := &entities.User{
+			user := &models.User{
 				Name:     userInfo.Name,
 				Email:    userInfo.Email,
 				GoogleID: &userInfo.ID,
 				Password: "", // OAuth認証の場合はパスワードは空
 			}
-			return s.UserRepo.Create(user)
+			createdUser, err := s.UserRepo.Create(user)
+			if err != nil {
+				return nil, err
+			}
+			return createdUser, nil
 		}
 		// その他のDBエラー
 		return nil, err
@@ -89,7 +93,11 @@ func (s *OAuthUsecase) HandleCallback(code string) (*entities.User, error) {
 	// 既存ユーザーのGoogle IDを更新
 	if existingUser.GoogleID == nil || *existingUser.GoogleID != userInfo.ID {
 		existingUser.GoogleID = &userInfo.ID
-		return s.UserRepo.Update(existingUser)
+		updatedUser, err := s.UserRepo.Update(existingUser)
+		if err != nil {
+			return nil, err
+		}
+		return updatedUser, nil
 	}
 
 	return existingUser, nil

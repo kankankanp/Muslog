@@ -1,4 +1,4 @@
-package model
+package entities
 
 import "time"
 
@@ -10,5 +10,4 @@ type User struct {
 	GoogleID  *string   `gorm:"unique;default:null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Posts     []Post
-} 
+	} 

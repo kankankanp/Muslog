@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"backend/internal/domain/entities"
+	"backend/internal/infrastructure/models"
 	"backend/internal/usecases"
 	"time"
 
@@ -11,8 +11,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func NewUserController(service *usecases.UserUsecase) *UserController {
+	return &UserController{Service: service}
+}
+
 type UserController struct {
-	Service *usecases.UserService
+	Service *usecases.UserUsecase
 }
 
 type UserResponse struct {
@@ -23,7 +27,7 @@ type UserResponse struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func toUserResponse(user *entities.User) UserResponse {
+func toUserResponse(user *models.User) UserResponse {
 	return UserResponse{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -35,7 +39,7 @@ func toUserResponse(user *entities.User) UserResponse {
 
 func (h *UserController) Login(c echo.Context) error {
 	fmt.Println("Login handler called")
-	u := new(entities.User)
+	u := new(models.User)
 	if err := c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
@@ -169,12 +173,12 @@ func (h *UserController) GetUserByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "user": toUserResponse(user)})
 }
 
-func (h *UserController) GetUserPosts(c echo.Context) error {
-	id := c.Param("id")
-	posts, err := h.Service.GetUserPosts(id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
-	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
-}
+// func (h *UserController) GetUserPosts(c echo.Context) error {
+// 	id := c.Param("id")
+// 	posts, err := h.Service.GetUserPosts(id)
+// 	if err != nil {
+// 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+// 	}
+// 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
+// }
 

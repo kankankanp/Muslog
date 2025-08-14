@@ -1,9 +1,9 @@
 package usecases
 
 import (
-	"errors"
-	"backend/internal/domain/entities"
 	"backend/internal/domain/repositories"
+	"backend/internal/infrastructure/models"
+	"errors"
 
 	gorm "gorm.io/gorm"
 )
@@ -44,7 +44,7 @@ func (s *likeUsecase) LikePost(postID uint, userID string) error {
 	}
 
 	// Create like
-	newLike := &entities.Like{
+	newLike := &models.Like{
 		PostID: postID,
 		UserID: userID,
 	}
@@ -114,7 +114,7 @@ func (s *likeUsecase) ToggleLike(postID uint, userID string) (bool, error) {
 		return false, nil // Unliked
 	} else {
 		// Post is not liked, so like it
-		newLike := &entities.Like{
+		newLike := &models.Like{
 			PostID: postID,
 			UserID: userID,
 		}

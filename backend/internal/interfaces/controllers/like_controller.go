@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"net/http"
-	"backend/internal/usecases"
 	"backend/pkg/utils"
+	"net/http"
+
+	"backend/internal/usecases"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -16,10 +17,10 @@ type LikeController interface {
 }
 
 type likeController struct {
-	likeService usecases.LikeService
+	likeService usecases.LikeUsecase
 }
 
-func NewLikeController(likeService usecases.LikeService) LikeController {
+func NewLikeController(likeService usecases.LikeUsecase) LikeController {
 	return &likeController{likeService: likeService}
 }
 

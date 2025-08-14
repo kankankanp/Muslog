@@ -9,10 +9,10 @@ import (
 )
 
 type TagController struct {
-	tagService usecases.TagService
+	tagService usecases.TagUsecase
 }
 
-func NewTagController(tagService usecases.TagService) *TagController {
+func NewTagController(tagService usecases.TagUsecase) *TagController {
 	return &TagController{tagService: tagService}
 }
 

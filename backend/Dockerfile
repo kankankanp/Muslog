@@ -9,8 +9,9 @@ RUN go clean --modcache && go mod download && go get -d ./...
 
 COPY . .
 
-WORKDIR /app/cmd/backend
-RUN go build -o main .
+WORKDIR /app
+RUN ls -lR /app
+RUN go build -o main ./cmd/backend
 
 FROM alpine:latest
 RUN apk add --no-cache bash

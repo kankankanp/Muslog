@@ -1,10 +1,10 @@
 package repositories
 
-import "backend/internal/domain/entities"
+import "backend/internal/infrastructure/models"
 
 type LikeRepository interface {
-	CreateLike(like *entities.Like) error
+	CreateLike(like *models.Like) error
 	DeleteLike(postID uint, userID string) error
-	GetLike(postID uint, userID string) (*entities.Like, error)
+	GetLike(postID uint, userID string) (*models.Like, error)
 	GetLikesCountByPostID(postID uint) (int, error)
 }
