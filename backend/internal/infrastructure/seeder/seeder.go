@@ -9,7 +9,9 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"github.com/google/uuid"
 
+	"backend/internal/domain/entities"
 	"backend/internal/infrastructure/models"
 )
 
@@ -29,7 +31,8 @@ func Seed(db *gorm.DB) error {
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-		demo := models.User{
+		demo := entities.User{
+			ID:       uuid.New().String(), // Add this line
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
 			Password: string(hashed),
@@ -50,7 +53,8 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		user := models.User{
+		user := entities.User{
+			ID:       uuid.New().String(), // Explicitly generate UUID
 			Name:     name,
 			Email:    email,
 			Password: string(hashedPassword),
