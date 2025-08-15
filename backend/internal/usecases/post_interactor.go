@@ -18,6 +18,9 @@ func (s PostUsecase) GetAllPosts(userID string) ([]models.Post, error) {
 }
 
 func (s PostUsecase) GetPostByID(id uint, userID string) (*models.Post, error) {
+	if userID == "" {
+		return s.Repo.FindByID(id)
+	}
 	return s.Repo.FindByIDWithUserID(id, userID)
 }
 

@@ -59,3 +59,11 @@ func (s *UserUsecase) GetUserByID(id string) (*models.User, error) {
 // func (s *UserUsecase) GetUserPosts(userID string) ([]models.Post, error) {
 // 	return s.Repo.FindPosts(userID)
 // }
+
+// func (s *UserUsecase) UpdateUser(user *models.User) (*models.User, error) {
+// 	return s.Repo.Update(user)
+// }
+
+// func (s *UserUsecase) DeleteUser(id string) error {
+// 	return s.Repo.Delete(id)
+// }
