@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"simple-blog/backend/internal/handler"
-	"simple-blog/backend/internal/middleware"
-	"simple-blog/backend/internal/model"
+	"backend/internal/handler"
+	"backend/internal/middleware"
+	"backend/internal/model"
 	"testing"
 
 	"github.com/labstack/echo/v4"
