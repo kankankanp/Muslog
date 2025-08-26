@@ -61,7 +61,7 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}, &model.Message{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
@@ -90,6 +90,10 @@ func main() {
 
 	oauthService := service.NewOAuthService(userRepo)
 	oauthHandler := handler.NewOAuthHandler(oauthService)
+
+	// Initialize Message Repository and Usecase for WebSocket
+	messageRepo := repository.NewMessageRepository(db)
+	messageUsecase := service.NewMessageUsecase(messageRepo)
 
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
@@ -151,6 +155,16 @@ func main() {
 	tagGroup.POST("/posts/:postID", tagHandler.AddTagsToPost)
 	tagGroup.DELETE("/posts/:postID", tagHandler.RemoveTagsFromPost)
 	tagGroup.GET("/posts/:postID", tagHandler.GetTagsByPostID)
+
+	// Initialize WebSocket hub
+	hub := handler.NewHub(messageUsecase)
+	go hub.Run()
+
+	// WebSocket route
+	e.GET("/ws/community/:communityId", func(c echo.Context) error {
+		handler.ServeWs(hub, messageUsecase, c.Response(), c.Request())
+		return nil // ServeWs handles the response, so return nil
+	})
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

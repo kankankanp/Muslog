@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"simple-blog/backend/internal/handler"
-	"simple-blog/backend/internal/middleware"
-	"simple-blog/backend/internal/entity"
 	"testing"
 
+	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/handler"
+	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,22 +20,22 @@ type MockPostService struct {
 	mock.Mock
 }
 
-func (m *MockPostService) GetAllPosts() ([]model.Post, error) {
+func (m *MockPostService) GetAllPosts() ([]entity.Post, error) {
 	args := m.Called()
-	return args.Get(0).([]model.Post), args.Error(1)
+	return args.Get(0).([]entity.Post), args.Error(1)
 }
 
-func (m *MockPostService) GetPostByID(id uint) (*model.Post, error) {
+func (m *MockPostService) GetPostByID(id uint) (*entity.Post, error) {
 	args := m.Called(id)
-	return args.Get(0).(*model.Post), args.Error(1)
+	return args.Get(0).(*entity.Post), args.Error(1)
 }
 
-func (m *MockPostService) CreatePost(post *model.Post) error {
+func (m *MockPostService) CreatePost(post *entity.Post) error {
 	args := m.Called(post)
 	return args.Error(0)
 }
 
-func (m *MockPostService) UpdatePost(post *model.Post) error {
+func (m *MockPostService) UpdatePost(post *entity.Post) error {
 	args := m.Called(post)
 	return args.Error(0)
 }
@@ -45,15 +45,15 @@ func (m *MockPostService) DeletePost(id uint) error {
 	return args.Error(0)
 }
 
-func (m *MockPostService) GetPostsByPage(page, pageSize int) ([]model.Post, int64, error) {
+func (m *MockPostService) GetPostsByPage(page, pageSize int) ([]entity.Post, int64, error) {
 	args := m.Called(page, pageSize)
-	return args.Get(0).([]model.Post), args.Get(1).(int64), args.Error(2)
+	return args.Get(0).([]entity.Post), args.Get(1).(int64), args.Error(2)
 }
 
 func TestGetAllPosts(t *testing.T) {
 	e := echo.New()
 	mockPostService := new(MockPostService)
-	mockPostService.On("GetAllPosts").Return([]model.Post{}, nil) // Mock empty posts, no error
+	mockPostService.On("GetAllPosts").Return([]entity.Post{}, nil) // Mock empty posts, no error
 	h := handler.NewPostHandler(mockPostService)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/posts", nil)

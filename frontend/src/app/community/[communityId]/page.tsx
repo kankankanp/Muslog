@@ -1,0 +1,133 @@
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
+import toast from "react-hot-toast";
+import ChatInput from "@/components/community/ChatInput";
+import ChatMessage from "@/components/community/ChatMessage";
+import { useGetCommunitiesCommunityIdMessages } from "@/libs/api/generated/orval/communities/communities";
+import { useWebSocket } from "@/libs/websocket/client";
+
+interface CommunityChatPageProps {
+  params: { communityId: string };
+}
+
+const CommunityChatPage: React.FC<CommunityChatPageProps> = ({ params }) => {
+  const { communityId } = params;
+  interface Message {
+    id: string;
+    communityId: string;
+    senderId: string;
+    content: string;
+    createdAt: string;
+    // Add other fields as needed
+  }
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Fetch historical messages
+  const { data, isLoading, isError, error } =
+    useGetCommunitiesCommunityIdMessages(communityId) as {
+      data?: { messages: Message[] };
+      isLoading: boolean;
+      isError: boolean;
+      error?: { message?: string };
+    };
+
+  useEffect(() => {
+    if (data?.messages) {
+      setMessages(data.messages);
+    }
+  }, [data]);
+
+  // WebSocket connection
+  const wsUrl =
+    process.env.NEXT_PUBLIC_WEBSOCKET_URL ||
+    "ws://localhost:8080/ws/community/";
+  const { isConnected, lastMessage, sendMessage } = useWebSocket(
+    `${wsUrl}${communityId}`,
+    {
+      onMessage: (event) => {
+        try {
+          const newMessage = JSON.parse(event.data);
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        } catch (e) {
+          console.error("Failed to parse WebSocket message:", e);
+        }
+      },
+      onError: (event) => {
+        toast.error("WebSocket error. Please check console.");
+      },
+      onClose: (event) => {
+        toast.error("Disconnected from chat. Please refresh.");
+      },
+    }
+  );
+
+  // Scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSendMessage = (content: string) => {
+    // In a real app, senderId would come from authenticated user context
+    // For now, backend assigns a guest ID.
+    sendMessage(content);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-gray-600 dark:text-gray-300">
+        Loading chat history...
+      </div>
+    );
+  }
+
+  if (isError) {
+    toast.error(
+      `Error loading chat history: ${error?.message || "Unknown error"}`
+    );
+    return (
+      <div className="text-center text-red-600">
+        Error: {error?.message || "Failed to load chat history"}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex-none p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Community: {communityId}
+        </h1>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {isConnected ? "Connected" : "Disconnected"}
+        </p>
+      </div>
+
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 ? (
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No messages yet. Start the conversation!
+          </div>
+        ) : (
+          messages.map((msg) => (
+            // TODO: Replace with actual user ID from context for isOwnMessage check
+            <ChatMessage
+              key={msg.id}
+              message={msg}
+              isOwnMessage={msg.senderId.startsWith("guest_user_")}
+            />
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="flex-none">
+        <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected} />
+      </div>
+    </div>
+  );
+};
+
+export default CommunityChatPage;
