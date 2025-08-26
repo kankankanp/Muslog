@@ -95,6 +95,11 @@ func main() {
 	messageRepo := repository.NewMessageRepository(db)
 	messageUsecase := service.NewMessageUsecase(messageRepo)
 
+	// Initialize Community Repository, Usecase, and Handler
+	communityRepo := repository.NewCommunityRepository(db)
+	communityUsecase := service.NewCommunityUsecase(communityRepo)
+	communityHandler := handler.NewCommunityHandler(communityUsecase)
+
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
@@ -117,6 +122,8 @@ func main() {
 	public.GET("/posts", postHandler.GetAllPosts)
 	public.GET("/posts/:id", postHandler.GetPostByID)
 	public.GET("/posts/page/:page", postHandler.GetPostsByPage)
+
+	
 
 	protected := e.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
@@ -155,6 +162,10 @@ func main() {
 	tagGroup.POST("/posts/:postID", tagHandler.AddTagsToPost)
 	tagGroup.DELETE("/posts/:postID", tagHandler.RemoveTagsFromPost)
 	tagGroup.GET("/posts/:postID", tagHandler.GetTagsByPostID)
+
+	// Community routes
+	public.GET("/communities", communityHandler.GetAllCommunities)
+	public.POST("/communities", communityHandler.CreateCommunity)
 
 	// Initialize WebSocket hub
 	hub := handler.NewHub(messageUsecase)
