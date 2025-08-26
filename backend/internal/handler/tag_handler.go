@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"simple-blog/backend/internal/service"
 	"net/http"
 	"strconv"
 
+	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 

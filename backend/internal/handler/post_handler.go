@@ -2,12 +2,13 @@ package handler
 
 import (
 	"net/http"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/service"
+
 	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	model "github.com/kankankanp/Muslog/internal/entity"
+	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 

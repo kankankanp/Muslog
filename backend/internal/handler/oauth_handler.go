@@ -5,9 +5,10 @@ import (
 	"encoding/base64"
 	"net/http"
 	"os"
-	"simple-blog/backend/internal/service"
+
 	"time"
 
+	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,11 +22,11 @@ func NewOAuthHandler(service *service.OAuthService) *OAuthHandler {
 
 func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
 	state := generateRandomState()
-	
+
 	setStateCookie(c, state)
-	
+
 	authURL := h.Service.GetAuthURL(state)
-	
+
 	return c.JSON(http.StatusOK, echo.Map{
 		"authURL": authURL,
 	})
@@ -34,22 +35,22 @@ func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
 func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 	code := c.QueryParam("code")
 	state := c.QueryParam("state")
-	
+
 	stateCookie, err := c.Cookie("oauth_state")
 	if err != nil || stateCookie.Value != state {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "Invalid state parameter",
 		})
 	}
-	
+
 	clearStateCookie(c)
-	
+
 	if code == "" {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "Authorization code not provided",
 		})
 	}
-	
+
 	user, err := h.Service.HandleCallback(code)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
@@ -57,24 +58,24 @@ func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
-	
+
 	accessToken, err := createToken(user.ID, time.Hour*24)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "Could not create access token",
 		})
 	}
-	
+
 	refreshToken, err := createToken(user.ID, time.Hour*24*7)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "Could not create refresh token",
 		})
 	}
-	
+
 	setTokenCookie(c, "access_token", accessToken)
 	setTokenCookie(c, "refresh_token", refreshToken)
-	
+
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {
 		frontendURL = "http://localhost:3000" // デフォルト値
@@ -112,4 +113,3 @@ func clearStateCookie(c echo.Context) {
 	}
 	c.SetCookie(cookie)
 }
-

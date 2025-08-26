@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"simple-blog/backend/internal/service"
 	"net/http"
 
+	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 

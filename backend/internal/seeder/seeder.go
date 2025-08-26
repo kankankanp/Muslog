@@ -7,10 +7,10 @@ import (
 	"net/url"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/google/uuid"
+	model "github.com/kankankanp/Muslog/internal/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-
-	"simple-blog/backend/internal/model"
 )
 
 const SeedValue int64 = 20240801
@@ -30,6 +30,7 @@ func Seed(db *gorm.DB) error {
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 		demo := model.User{
+			ID:       uuid.NewString(),
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
 			Password: string(hashed),
@@ -51,6 +52,7 @@ func Seed(db *gorm.DB) error {
 		}
 
 		user := model.User{
+			ID: uuid.NewString(),
 			Name:     name,
 			Email:    email,
 			Password: string(hashedPassword),

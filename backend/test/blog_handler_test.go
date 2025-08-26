@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"simple-blog/backend/internal/handler"
 	"simple-blog/backend/internal/middleware"
-	"simple-blog/backend/internal/model"
+	"simple-blog/backend/internal/entity"
 	"testing"
 
 	"github.com/labstack/echo/v4"

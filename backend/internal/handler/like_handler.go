@@ -2,10 +2,10 @@ package handler
 
 import (
 	"net/http"
-	"simple-blog/backend/internal/service"
-	"simple-blog/backend/pkg/utils"
 
 	"github.com/golang-jwt/jwt/v5"
+	service "github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
 

@@ -1,8 +1,7 @@
 package repository
 
 import (
-	"simple-blog/backend/internal/model"
-
+	model "github.com/kankankanp/Muslog/internal/entity"
 	"gorm.io/gorm"
 )
 
@@ -99,4 +98,4 @@ func (r *postRepository) FindByPage(page, perPage int, userID string) ([]model.P
 		Limit(perPage).
 		Find(&posts).Error
 	return posts, totalCount, err
-} 
+}

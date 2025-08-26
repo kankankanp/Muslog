@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
 
+	model "github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/repository"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"

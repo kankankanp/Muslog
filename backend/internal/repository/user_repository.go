@@ -1,8 +1,7 @@
 package repository
 
 import (
-	"simple-blog/backend/internal/model"
-
+	model "github.com/kankankanp/Muslog/internal/entity"
 	"gorm.io/gorm"
 )
 
@@ -56,4 +55,4 @@ func (r *UserRepository) Update(user *model.User) (*model.User, error) {
 		return nil, err
 	}
 	return user, nil
-} 
+}

@@ -1,9 +1,10 @@
 package service
 
 import (
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
 	"errors"
+
+	model "github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/repository"
 )
 
 type TagService interface {

@@ -3,11 +3,12 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/service"
+
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	model "github.com/kankankanp/Muslog/internal/entity"
+	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 
@@ -177,4 +178,3 @@ func (h *UserHandler) GetUserPosts(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
 }
-

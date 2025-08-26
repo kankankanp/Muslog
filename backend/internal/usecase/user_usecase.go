@@ -1,9 +1,8 @@
 package service
 
 import (
-	"simple-blog/backend/internal/model"
-	"simple-blog/backend/internal/repository"
-
+	model "github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
