@@ -61,7 +61,7 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}, &model.Message{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}, &model.Message{}, &model.Community{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
