@@ -91,9 +91,10 @@ func main() {
 	oauthService := service.NewOAuthService(userRepo)
 	oauthHandler := handler.NewOAuthHandler(oauthService)
 
-	// Initialize Message Repository and Usecase for WebSocket
+	// Initialize Message Repository and Usecase
 	messageRepo := repository.NewMessageRepository(db)
 	messageUsecase := service.NewMessageUsecase(messageRepo)
+	messageHandler := handler.NewMessageHandler(messageUsecase)
 
 	// Initialize Community Repository, Usecase, and Handler
 	communityRepo := repository.NewCommunityRepository(db)
@@ -122,8 +123,6 @@ func main() {
 	public.GET("/posts", postHandler.GetAllPosts)
 	public.GET("/posts/:id", postHandler.GetPostByID)
 	public.GET("/posts/page/:page", postHandler.GetPostsByPage)
-
-	
 
 	protected := e.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
@@ -166,6 +165,7 @@ func main() {
 	// Community routes
 	public.GET("/communities", communityHandler.GetAllCommunities)
 	public.POST("/communities", communityHandler.CreateCommunity)
+	public.GET("/communities/:communityId/messages", messageHandler.GetMessagesByCommunityID)
 
 	// Initialize WebSocket hub
 	hub := handler.NewHub(messageUsecase)
