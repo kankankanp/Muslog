@@ -1,4 +1,4 @@
-package model
+package entity
 
 type Track struct {
 	ID            uint   `gorm:"primaryKey" json:"id"`

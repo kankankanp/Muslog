@@ -1163,6 +1163,137 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/communities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all communities
+         * @description Retrieve a list of all chat communities.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response with a list of communities. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            communities?: components["schemas"]["Community"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a new community
+         * @description Create a new chat community.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateCommunityRequest"];
+                };
+            };
+            responses: {
+                /** @description Community created successfully. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            community?: components["schemas"]["Community"];
+                        };
+                    };
+                };
+                /** @description Invalid input. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/communities/{communityId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get messages for a community
+         * @description Retrieve historical chat messages for a specific community.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The ID of the community. */
+                    communityId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successful response with a list of messages. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            messages?: components["schemas"]["Message"][];
+                        };
+                    };
+                };
+                /** @description Community not found. */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1224,6 +1355,31 @@ export interface components {
         };
         AuthResponse: {
             name: string;
+        };
+        Community: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: string;
+            /** Format: uuid */
+            creatorId: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        CreateCommunityRequest: {
+            name: string;
+            description: string;
+        };
+        Message: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            communityId: string;
+            /** Format: uuid */
+            senderId: string;
+            content: string;
+            /** Format: date-time */
+            createdAt: string;
         };
     };
     responses: never;

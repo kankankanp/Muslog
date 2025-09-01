@@ -1,4 +1,4 @@
-package service
+package usecase
 
 import (
 	model "github.com/kankankanp/Muslog/internal/entity"

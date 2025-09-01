@@ -6,6 +6,8 @@
  */
 
 export * from "./authResponse";
+export * from "./community";
+export * from "./createCommunityRequest";
 export * from "./deleteBlogsId200";
 export * from "./deletePostsId200";
 export * from "./deletePostsPostIDUnlike200";
@@ -15,6 +17,8 @@ export * from "./getAuthGoogle200";
 export * from "./getBlogs200";
 export * from "./getBlogsId200";
 export * from "./getBlogsPagePage200";
+export * from "./getCommunities200";
+export * from "./getCommunitiesCommunityIdMessages200";
 export * from "./getPosts200";
 export * from "./getPostsId200";
 export * from "./getPostsPagePage200";
@@ -28,11 +32,13 @@ export * from "./getUsers200";
 export * from "./getUsersId200";
 export * from "./getUsersIdPosts200";
 export * from "./loginRequest";
+export * from "./message";
 export * from "./post";
 export * from "./postAuthLogin200";
 export * from "./postAuthRegister201";
 export * from "./postBlogs201";
 export * from "./postBlogsBody";
+export * from "./postCommunities201";
 export * from "./postLogout200";
 export * from "./postPosts201";
 export * from "./postPostsBody";

@@ -1,14 +1,14 @@
 package repository
 
 import (
-	model "github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/entity"
 	"gorm.io/gorm"
 )
 
 type LikeRepository interface {
-	CreateLike(like *model.Like) error
+	CreateLike(like *entity.Like) error
 	DeleteLike(postID uint, userID string) error
-	GetLike(postID uint, userID string) (*model.Like, error)
+	GetLike(postID uint, userID string) (*entity.Like, error)
 	GetLikesCountByPostID(postID uint) (int, error)
 }
 
@@ -20,16 +20,16 @@ func NewLikeRepository(gormDB *gorm.DB) LikeRepository {
 	return &likeRepository{gormDB: gormDB}
 }
 
-func (r *likeRepository) CreateLike(like *model.Like) error {
+func (r *likeRepository) CreateLike(like *entity.Like) error {
 	return r.gormDB.Create(like).Error
 }
 
 func (r *likeRepository) DeleteLike(postID uint, userID string) error {
-	return r.gormDB.Where("post_id = ? AND user_id = ?", postID, userID).Delete(&model.Like{}).Error
+	return r.gormDB.Where("post_id = ? AND user_id = ?", postID, userID).Delete(&entity.Like{}).Error
 }
 
-func (r *likeRepository) GetLike(postID uint, userID string) (*model.Like, error) {
-	var like model.Like
+func (r *likeRepository) GetLike(postID uint, userID string) (*entity.Like, error) {
+	var like entity.Like
 	err := r.gormDB.Where("post_id = ? AND user_id = ?", postID, userID).First(&like).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -39,6 +39,6 @@ func (r *likeRepository) GetLike(postID uint, userID string) (*model.Like, error
 
 func (r *likeRepository) GetLikesCountByPostID(postID uint) (int, error) {
 	var count int64
-	err := r.gormDB.Model(&model.Like{}).Where("post_id = ?", postID).Count(&count).Error
+	err := r.gormDB.Model(&entity.Like{}).Where("post_id = ?", postID).Count(&count).Error
 	return int(count), err
 }
