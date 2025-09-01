@@ -49,13 +49,13 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex items-center justify-center h-[360px] pb-[47px]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 space-y-4"
+        className="dark:bg-gray-800 md:w-96 space-y-4"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-700 dark:text-gray-200">
+        <h2 className="text-2xl font-bold text-center text-gray-700">
           新規登録
         </h2>
 
@@ -77,17 +77,17 @@ export default function SignupForm() {
 
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
-            名前:
+            名前
           </label>
           <input
-            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            className="w-full mt-1 p-2 max-md:px-[52px] border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="text"
             {...register("name")}
           />
         </div>
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
-            メールアドレス:
+            メールアドレス
           </label>
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
@@ -97,7 +97,7 @@ export default function SignupForm() {
         </div>
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
-            パスワード:
+            パスワード
           </label>
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
@@ -105,11 +105,13 @@ export default function SignupForm() {
             {...register("password")}
           />
         </div>
-        <LoadingButton
-          label={"登録する"}
-          color={"green"}
-          isPending={isPending}
-        />
+        <div className="flex flex-col gap-4 w-[60%] mx-auto font-bold max-md:text-sm">
+          <LoadingButton 
+            label={"登録する"}
+            color={"green"}
+            isPending={isPending}
+          />
+        </div>
       </form>
     </div>
   );

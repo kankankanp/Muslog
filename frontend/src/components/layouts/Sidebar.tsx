@@ -21,17 +21,16 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     logoutMutation(undefined, {
-        onSuccess: () => {
-          dispatch(logout());
-          toast.success("ログアウトしました");
-          router.push("/registration/login");
-        },
-        onError: (error) => {
-          console.error("Logout error:", error);
-          toast.error("ログアウトに失敗しました。");
-        },
-      }
-    );
+      onSuccess: () => {
+        dispatch(logout());
+        toast.success("ログアウトしました");
+        router.push("/login-or-signup");
+      },
+      onError: (error) => {
+        console.error("Logout error:", error);
+        toast.error("ログアウトに失敗しました。");
+      },
+    });
   };
 
   return (

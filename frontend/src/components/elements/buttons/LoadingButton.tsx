@@ -19,7 +19,7 @@ export default function LoadingButton({
     <button
       type="submit"
       disabled={pending}
-      className={`w-full p-2 rounded-md transition duration-300 flex items-center justify-center text-white disabled:opacity-50 ${buttonColor}`}
+      className={`w-full mx-auto p-3 rounded-full transition duration-300 flex items-center justify-center text-white disabled:opacity-50 ${buttonColor}`}
     >
       {pending ? (
         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
