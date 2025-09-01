@@ -63,10 +63,10 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
         }
       },
       onError: (event) => {
-        toast.error("WebSocket error. Please check console.");
+        console.error("WebSocket error. Please check console.", event);
       },
       onClose: (event) => {
-        toast.error("Disconnected from chat. Please refresh.");
+        console.log("Disconnected from chat. Please refresh.", event);
       },
     }
   );

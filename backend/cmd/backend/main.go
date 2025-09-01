@@ -163,9 +163,10 @@ func main() {
 	tagGroup.GET("/posts/:postID", tagHandler.GetTagsByPostID)
 
 	// Community routes
-	public.GET("/communities", communityHandler.GetAllCommunities)
-	public.POST("/communities", communityHandler.CreateCommunity)
-	public.GET("/communities/:communityId/messages", messageHandler.GetMessagesByCommunityID)
+	communityGroup := protected.Group("/communities")
+	communityGroup.GET("", communityHandler.GetAllCommunities)
+	communityGroup.POST("", communityHandler.CreateCommunity)
+	communityGroup.GET("/:communityId/messages", messageHandler.GetMessagesByCommunityID)
 
 	// Initialize WebSocket hub
 	hub := handler.NewHub(messageUsecase)
