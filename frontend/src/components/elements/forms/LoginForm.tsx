@@ -85,11 +85,11 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="flex items-center justify-center dark:bg-gray-900 h-[360px]">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 space-y-4"
+        className="dark:bg-gray-800 md:w-96 space-y-4"
       >
         <h2 className="text-2xl font-bold text-center text-gray-700 dark:text-gray-200">
           ログイン
@@ -108,10 +108,10 @@ export default function LoginForm() {
 
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
-            メールアドレス:
+            メールアドレス
           </label>
           <input
-            className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            className="w-full mt-1 p-2 max-md:px-[52px] border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="email"
             {...register("email")}
           />
@@ -119,7 +119,7 @@ export default function LoginForm() {
 
         <div>
           <label className="block text-gray-700 dark:text-gray-300">
-            パスワード:
+            パスワード
           </label>
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
@@ -128,7 +128,7 @@ export default function LoginForm() {
           />
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4 w-[60%] mx-auto font-bold max-md:text-sm">
           <LoadingButton
             label={"ログイン"}
             color={"blue"}
@@ -138,7 +138,7 @@ export default function LoginForm() {
             type="button"
             onClick={handleGuestLogin}
             disabled={isPending}
-            className="px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-blue-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 text-center"
+            className="px-4 py-3 rounded-full border border-gray-300 bg-white hover:bg-blue-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 text-center"
             aria-label="ゲストログイン"
           >
             ゲストログイン
@@ -147,7 +147,7 @@ export default function LoginForm() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isPending || isGoogleLoginPending}
-            className="px-4 py-2 rounded-md border border-red-500 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700 text-center"
+            className="px-4 py-3 rounded-full border border-red-500 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 dark:border-red-700 text-center"
             aria-label="Googleでログイン"
           >
             Googleでログイン
