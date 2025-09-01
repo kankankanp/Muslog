@@ -53,7 +53,7 @@ export const useWebSocket = (url: string, options?: WebSocketOptions) => {
         wsRef.current.close();
       }
     };
-  }, [url, options]);
+  }, [url]);
 
   return { ws: wsRef.current, isConnected, lastMessage, sendMessage };
 };
