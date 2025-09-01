@@ -17,7 +17,7 @@ const (
 	writeWait = 10 * time.Second
 
 	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
+	pongWait = 300 * time.Second
 
 	pingPeriod = (pongWait * 9) / 10
 
@@ -140,6 +140,7 @@ func (c *Client) readPump() {
 	for {
 		_, messageBytes, err := c.conn.ReadMessage()
 		if err != nil {
+			log.Printf("WebSocket read error: %v", err)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
 			}

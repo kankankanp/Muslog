@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import ChatInput from "@/components/community/ChatInput";
@@ -11,8 +12,14 @@ interface CommunityChatPageProps {
   params: { communityId: string };
 }
 
-const CommunityChatPage: React.FC<CommunityChatPageProps> = ({ params }) => {
-  const { communityId } = params;
+const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
+  const params = useParams();
+  const communityId =
+    typeof params.communityId === "string"
+      ? params.communityId
+      : Array.isArray(params.communityId)
+        ? params.communityId[0]
+        : "";
   interface Message {
     id: string;
     communityId: string;
@@ -131,4 +138,3 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = ({ params }) => {
 };
 
 export default CommunityChatPage;
-
