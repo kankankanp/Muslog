@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  faHome,
-  faSignOutAlt,
-  faUser,
-  faPlusSquare,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  User,
+  Home,
+  PlusCircle,
+  Users,
+  HelpCircle,
+  LogOut,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -14,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
 import { logout } from "@/libs/store/authSlice";
 
-export default function Sidebar() {
+const Sidebar = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { mutate: logoutMutation, isPending } = usePostLogout();
@@ -34,43 +35,69 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 flex-shrink-0 bg-gray-800 text-white flex flex-col z-10">
-      <div className="p-4 text-2xl font-bold border-b border-gray-700">
-        <Link href="/dashboard">Muslog</Link>
-      </div>
-      <nav className="flex-grow p-4 space-y-2">
-        <Link
-          href="/dashboard"
-          className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
-        >
-          <FontAwesomeIcon icon={faHome} className="mr-3" />
-          ホーム
-        </Link>
-        <Link
-          href="/dashboard/me"
-          className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
-        >
-          <FontAwesomeIcon icon={faUser} className="mr-3" />
-          マイページ
-        </Link>
-        <Link
-          href="/dashboard/post/add"
-          className="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
-        >
-          <FontAwesomeIcon icon={faPlusSquare} className="mr-3" />
-          新規作成
-        </Link>
+    <aside className="h-screen w-64 bg-white border-r border-gray-200 p-4">
+      <nav>
+        <ul className="flex flex-col gap-6 mt-8">
+          <li className="mb-2">
+            <Link
+              href="/dashboard/me"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <User className="mr-3 h-5 w-5" />
+              <span>マイページ</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <Home className="mr-3 h-5 w-5" />
+              <span>ホーム</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/post/add"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <PlusCircle className="mr-3 h-5 w-5" />
+              <span>記事作成</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/community"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <Users className="mr-3 h-5 w-5" />
+              <span>コミュニティ</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/help"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <HelpCircle className="mr-3 h-5 w-5" />
+              <span>ヘルプ</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/logout"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <button onClick={handleLogout} disabled={isPending} className="flex">
+                <LogOut className="mr-3 h-5 w-5" />
+                ログアウト
+              </button>
+            </Link>
+          </li>
+        </ul>
       </nav>
-      <div className="p-4 border-t border-gray-700">
-        <button
-          onClick={handleLogout}
-          disabled={isPending}
-          className="w-full flex items-center justify-center py-2.5 px-4 rounded transition duration-200 bg-red-600 hover:bg-red-700 disabled:bg-red-400"
-        >
-          <FontAwesomeIcon icon={faSignOutAlt} className="mr-3" />
-          ログアウト
-        </button>
-      </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;
