@@ -10,12 +10,15 @@ export default function Page() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
   return (
-    <main className="dark:bg-gray-900 bg-gray-100 pt-8">
+    <>
       <Toaster />
+      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
+        記事を作成する
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
         <SelectMusicArea onSelect={setSelectedTrack} />
         <NewBlogForm selectedTrack={selectedTrack} />
       </div>
-    </main>
+    </>
   );
 }

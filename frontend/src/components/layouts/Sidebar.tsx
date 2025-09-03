@@ -40,20 +40,20 @@ const Sidebar = () => {
         <ul className="flex flex-col gap-6 mt-8">
           <li className="mb-2">
             <Link
-              href="/dashboard/me"
-              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
-            >
-              <User className="mr-3 h-5 w-5" />
-              <span>マイページ</span>
-            </Link>
-          </li>
-          <li className="mb-2">
-            <Link
               href="/dashboard"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
             >
               <Home className="mr-3 h-5 w-5" />
               <span>ホーム</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/me"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+            >
+              <User className="mr-3 h-5 w-5" />
+              <span>マイページ</span>
             </Link>
           </li>
           <li className="mb-2">
@@ -88,7 +88,11 @@ const Sidebar = () => {
               href="/logout"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
             >
-              <button onClick={handleLogout} disabled={isPending} className="flex">
+              <button
+                onClick={handleLogout}
+                disabled={isPending}
+                className="flex"
+              >
                 <LogOut className="mr-3 h-5 w-5" />
                 ログアウト
               </button>

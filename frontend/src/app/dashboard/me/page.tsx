@@ -75,10 +75,12 @@ export default function ProfilePage() {
       : "https://example.com");
 
   return (
-    <main className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* 上段：白カード */}
+    <>
+      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
+        マイページ
+      </h1>
       <section className="bg-white dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-10">
+        <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-10">
           <div className="flex items-start gap-8">
             {/* 固定サイズの円アバター（ピル化を防ぐ） */}
             <div className="shrink-0 w-44 h-44 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
@@ -104,14 +106,7 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 下段：淡色キャンバス */}
-      <section className="bg-indigo-50/60 dark:bg-gray-800/40 border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12">
-          {/* タブ */}
-          <nav className="flex gap-10 text-sm pt-6">
+          <nav className="flex gap-10 pt-8 mx-auto">
             {[
               { k: "created", label: "作成した記事" },
               { k: "liked", label: "いいねした記事" },
@@ -122,7 +117,7 @@ export default function ProfilePage() {
                 <button
                   key={k}
                   onClick={() => setTab(k as typeof tab)}
-                  className="relative pb-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="relative pb-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   {label}
                   <span
@@ -137,8 +132,11 @@ export default function ProfilePage() {
               );
             })}
           </nav>
-
-          {/* コンテンツ */}
+        </div>
+      </section>
+      {/* 下段：淡色キャンバス */}
+      <section className="bg-indigo-50/60 dark:bg-gray-800/40 border-t border-gray-200 dark:border-gray-700">
+        <div className="max-w-6xl mx-auto px-8 lg:px-12">
           <div className="pb-16">
             {tab === "created" && (
               <>
@@ -220,6 +218,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }
