@@ -53,8 +53,8 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Create Community"
-      className="modal-content" // You might need to define this CSS class
-      overlayClassName="modal-overlay" // You might need to define this CSS class
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none overflow-auto" // Updated
+      overlayClassName="fixed inset-0 bg-black bg-opacity-75 z-50" // Updated
       ariaHideApp={false} // ← 追加
     >
       <div className="p-6 border rounded-lg shadow-md bg-white dark:bg-gray-800">

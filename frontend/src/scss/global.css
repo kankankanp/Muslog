@@ -6,28 +6,3 @@ body {
   font-family: var(--font-notojp), sans-serif;
 }
 
-/* Overlay styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000; /* Ensure it's on top */
-}
-
-/* Content styles */
-.modal-content {
-  position: relative; /* Needed for positioning content inside */
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 500px; /* Adjust as needed */
-  width: 90%; /* Adjust as needed */
-  outline: none; /* Remove focus outline */
-  z-index: 1001; /* Ensure it's above the overlay */
-}
