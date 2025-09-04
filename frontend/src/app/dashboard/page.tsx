@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useSelector } from "react-redux";
+import Loading from "../loading";
 import BlogCard from "@/components/elements/cards/BlogCard";
 import {
   usePostPostsPostIDLike,
@@ -53,7 +54,7 @@ export default function Page() {
     }
   };
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <Loading />;
   if (error || !posts) return <div>Error loading posts.</div>;
 
   return (

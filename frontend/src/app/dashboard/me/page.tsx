@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { GetPosts200 } from "@/libs/api/generated/orval/model";
 import { useGetUsersIdPosts } from "@/libs/api/generated/orval/users/users";
@@ -11,6 +11,7 @@ export default function ProfilePage() {
     isPending: userLoading,
     error: userError,
   } = useGetMe();
+  console.log(currentUser);
   const {
     data: postsData,
     isPending: postsLoading,
@@ -19,17 +20,6 @@ export default function ProfilePage() {
   const [tab, setTab] = useState<"created" | "liked" | "community-history">(
     "created"
   );
-
-  const initials = useMemo(() => {
-    const n = currentUser?.name ?? "";
-    return n
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((s) => s[0])
-      .join("")
-      .toUpperCase();
-  }, [currentUser?.name]);
 
   if (userLoading) {
     return (
@@ -65,15 +55,6 @@ export default function ProfilePage() {
 
   const posts = postsData?.posts ?? [];
 
-  const profileText =
-    (currentUser as any)?.bio ||
-    "ディスクリプションディスクリプションディスクリプションディスクリプションディスクリプション";
-  const website =
-    (currentUser as any)?.website ||
-    (currentUser.email
-      ? `https://${currentUser.email.split("@")[1]}`
-      : "https://example.com");
-
   return (
     <>
       <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
@@ -81,29 +62,17 @@ export default function ProfilePage() {
       </h1>
       <section className="bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-10">
-          <div className="flex items-start gap-8">
+          <div className="flex gap-8">
             {/* 固定サイズの円アバター（ピル化を防ぐ） */}
             <div className="shrink-0 w-44 h-44 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-2xl text-gray-600 dark:text-gray-200">
-                {initials || "👤"}
-              </span>
+              <span className="text-2xl text-gray-600 dark:text-gray-200"></span>
             </div>
 
-            <div className="pt-2">
+            <div className="flex justify-center gap-1 flex-col">
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {currentUser.name || "ゲストユーザー"}
+                {currentUser.name}
               </h1>
-              <a
-                href={website}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-1 block text-sm text-blue-600 dark:text-blue-400 hover:underline break-all"
-              >
-                {website.replace(/^https?:\/\//, "")}
-              </a>
-              <p className="mt-6 text-sm leading-7 text-gray-700 dark:text-gray-300 max-w-2xl">
-                {profileText}
-              </p>
+              <p>{currentUser.email}</p>
             </div>
           </div>
           <nav className="flex gap-10 pt-8 mx-auto">

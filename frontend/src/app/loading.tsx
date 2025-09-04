@@ -3,7 +3,6 @@
 export default function Loading() {
   return (
     <>
-      {/* ヘッダーのスケルトン */}
       <header className="bg-gray-800 text-white px-4 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <div className="w-[60px] h-[60px] bg-gray-700 rounded-full animate-pulse"></div>
@@ -11,7 +10,6 @@ export default function Loading() {
         </div>
       </header>
       <div className="flex h-screen">
-        {/* サイドバーのスケルトン（768px以下は非表示） */}
         <aside className="h-screen w-64 bg-white border-r border-gray-200 p-4 hidden md:block">
           <nav>
             <ul className="flex flex-col gap-6 mt-8">
@@ -26,7 +24,6 @@ export default function Loading() {
             </ul>
           </nav>
         </aside>
-        {/* メインコンテンツのスケルトン */}
         <main className="flex-1 p-8 overflow-y-auto w-full">
           <div className="text-3xl font-bold border-gray-100 border-b-2 bg-gray-200 p-6 mb-6 h-10 w-1/3 rounded animate-pulse"></div>
           <div className="space-y-4">
