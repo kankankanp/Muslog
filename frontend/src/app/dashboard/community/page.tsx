@@ -1,14 +1,15 @@
 "use client";
 
 import { Search } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import CommunityCard from "@/components/community/CommunityCard";
-import CreateCommunityForm from "@/components/community/CreateCommunityForm";
+import CreateCommunityModal from "@/components/elements/modals/CreateCommunityModal";
 import Spinner from "@/components/layouts/Spinner";
 import { useGetCommunities } from "@/libs/api/generated/orval/communities/communities";
 
 const CommunityPage: React.FC = () => {
   const { data, isLoading, isError, error, refetch } = useGetCommunities();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) {
     return <Spinner />;
@@ -43,7 +44,15 @@ const CommunityPage: React.FC = () => {
       </div>
       <div className="container mx-auto p-4">
         <div className="w-3/5 mx-auto mb-8">
-          <CreateCommunityForm onCommunityCreated={refetch} />
+          <button
+            onClick={() => {
+              console.log(isModalOpen);
+              setIsModalOpen(true);
+            }}
+            className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
+            コミュニティを作成する
+          </button>
         </div>
 
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -61,6 +70,11 @@ const CommunityPage: React.FC = () => {
           </div>
         )}
       </div>
+      <CreateCommunityModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCommunityCreated={refetch}
+      />
     </>
   );
 };
