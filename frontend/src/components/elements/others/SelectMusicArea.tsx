@@ -13,16 +13,27 @@ type SelectMusicAreaProps = {
 const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
   const [query, setQuery] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false); // New state for button loading
+
   const { data, isPending, error } = useGetSpotifySearch(
     { q: searchQuery },
     { query: { enabled: !!searchQuery } }
   );
+
+  // Use useEffect to watch for changes in isPending from the hook
+  // and update buttonLoading accordingly
+  React.useEffect(() => {
+    if (!isPending && buttonLoading) { // If API call is no longer pending and button was loading
+      setButtonLoading(false); // Reset button loading
+    }
+  }, [isPending, buttonLoading]);
 
   const handleSearch = async () => {
     if (!query.trim()) {
       toast.error("検索ワードを入力してください");
       return;
     }
+    setButtonLoading(true); // Set button loading to true
     setSearchQuery(query.trim());
   };
 
@@ -53,10 +64,10 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
         />
         <button
           onClick={handleSearch}
-          disabled={isPending}
+          disabled={buttonLoading}
           className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 dark:hover:bg-green-700 disabled:opacity-50"
         >
-          {isPending ? "検索中…" : "検索"}
+          {buttonLoading ? "検索中…" : "検索"}
         </button>
       </div>
 
