@@ -3,12 +3,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
-import {
-  usePostPostsPostIDLike,
-  useDeletePostsPostIDUnlike,
-} from "@/libs/api/generated/orval/likes/likes";
+import { usePostPostsPostIDLike, useDeletePostsPostIDUnlike } from "@/libs/api/generated/orval/likes/likes";
 import { useGetPostsId } from "@/libs/api/generated/orval/posts/posts";
 import { RootState } from "@/libs/store/store";
+import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 export default function Page() {
   const params = useParams();
@@ -89,12 +88,16 @@ export default function Page() {
     <div className="dark:bg-gray-900 bg-gray-100 min-h-screen p-6">
       <main className="container mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <Image
+            src="/default-image.jpg" // Placeholder header image
+            alt="Header Image"
+            width={800} // Adjust width as needed
+            height={400} // Adjust height as needed
+            className="w-full h-64 object-cover rounded-md mb-6"
+          />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             {post.title}
           </h1>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {post.description}
-          </p>
 
           {post.tracks && post.tracks.length > 0 && (
             <div className="mb-6">
@@ -140,6 +143,10 @@ export default function Page() {
               ))}
             </div>
           )}
+
+          <div className="prose prose-lg max-w-none w-full mt-6">
+            <ReactMarkdown>{post.description}</ReactMarkdown>
+          </div>
 
           <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
             <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
