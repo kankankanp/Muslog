@@ -45,7 +45,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
   return (
     <div className="p-6 border rounded-lg shadow-md bg-white dark:bg-gray-800">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-        Create New Community
+        コミュニティを作成する
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
@@ -53,7 +53,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             htmlFor="name"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
-            Community Name
+            名前
           </label>
           <input
             type="text"
@@ -70,7 +70,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
             htmlFor="description"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
-            Description
+            説明
           </label>
           <textarea
             id="description"
@@ -88,7 +88,7 @@ const CreateCommunityForm: React.FC<CreateCommunityFormProps> = ({
           type="submit"
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
         >
-          Create Community
+          コミュニティを作成する
         </button>
       </form>
     </div>

@@ -61,7 +61,7 @@ export default function AddPostPage() {
           <div className="flex gap-2 mb-2 justify-end">
             <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'out')}>-</button>
             <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'in')}>+</button>
-            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'reset')}>Reset</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'reset')}>リセット</button>
           </div>
           <div className="mb-6">
             <h2 className="text-3xl font-bold text-gray-400 mt-6">
@@ -79,7 +79,7 @@ export default function AddPostPage() {
           <div className="flex gap-2 mb-2 justify-end">
             <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'out')}>-</button>
             <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'in')}>+</button>
-            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'reset')}>Reset</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'reset')}>リセット</button>
           </div>
           <input
             type="text"

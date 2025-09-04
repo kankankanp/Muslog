@@ -111,7 +111,6 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           {isConnected ? "Connected" : "Disconnected"}
         </p>
       </div>
-
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400">
@@ -130,7 +129,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex-none">
+      <div className="flex-none p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
         <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected} />
       </div>
     </div>
