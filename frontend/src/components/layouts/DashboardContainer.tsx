@@ -23,7 +23,7 @@ export default function DashboardContainer({
             onClick={() => setIsSidebarOpen(false)}
           ></div>
         )}
-        <main className="flex-1 p-8 overflow-y-auto w-full">{children}</main>
+        <main className="flex-1 overflow-y-auto w-full">{children}</main>
       </div>
     </SidebarProvider>
   );
