@@ -283,7 +283,10 @@ export default function AddPostPage() {
       >
         <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto my-20">
           <h2 className="text-2xl font-bold mb-4">Spotifyから曲を選択</h2>
-          <SelectMusicArea onSelect={handleTrackSelect} />
+          <SelectMusicArea
+            onSelect={handleTrackSelect}
+            initialSelectedTracks={finalSelectedTracks} // Pass existing selections
+          />
           <div className="flex justify-end mt-4">
             <button
               className="px-4 py-2 bg-gray-300 rounded"

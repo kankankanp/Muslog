@@ -8,13 +8,14 @@ import { useGetSpotifySearch } from "@/libs/api/generated/orval/spotify/spotify"
 
 type SelectMusicAreaProps = {
   onSelect: (tracks: Track[]) => void;
+  initialSelectedTracks?: Track[]; // New prop
 };
 
-const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
+const SelectMusicArea = ({ onSelect, initialSelectedTracks }: SelectMusicAreaProps): JSX.Element => { // Destructure new prop
   const [query, setQuery] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [buttonLoading, setButtonLoading] = useState<boolean>(false); // New state for button loading
-  const [selectedTracksInModal, setSelectedTracksInModal] = useState<Track[]>([]); // New state for selected tracks in modal
+  const [selectedTracksInModal, setSelectedTracksInModal] = useState<Track[]>(initialSelectedTracks || []); // Initialize with prop
 
   const { data, isPending, error } = useGetSpotifySearch(
     { q: searchQuery },
