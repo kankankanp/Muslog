@@ -104,8 +104,8 @@ export default function ProfilePage() {
         </div>
       </section>
       {/* 下段：淡色キャンバス */}
-      <section className="bg-indigo-50/60 dark:bg-gray-800/40 border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12">
+      <section className="bg-indigo-50/60 dark:bg-gray-800/40 border-t border-gray-200 dark:border-gray-700 h-full">
+        <div className="max-w-6xl mx-auto px-8 lg:px-12 h-full">
           <div className="pb-16">
             {tab === "created" && (
               <>
@@ -164,16 +164,6 @@ export default function ProfilePage() {
               </>
             )}
 
-            {tab === "liked" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-2xl bg-white/70 dark:bg-gray-800 shadow-sm"
-                  />
-                ))}
-              </div>
-            )}
             {tab === "liked" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
                 {Array.from({ length: 8 }).map((_, i) => (
