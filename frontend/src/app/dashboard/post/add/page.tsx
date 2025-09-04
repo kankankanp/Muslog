@@ -1,6 +1,7 @@
 "use client";
 
 import { Tag, Music } from "lucide-react";
+import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import Modal from "react-modal";
@@ -55,12 +56,17 @@ export default function AddPostPage() {
   };
 
   const handleSubmit = () => {
-    console.log("Post submitted:", { title, markdown, selectedTrack: finalSelectedTracks }); // Updated to use finalSelectedTracks
+    console.log("Post submitted:", {
+      title,
+      markdown,
+      selectedTrack: finalSelectedTracks,
+    }); // Updated to use finalSelectedTracks
     // TODO: Implement actual post submission logic
     alert("記事を投稿しました！ (実際にはまだ投稿されていません)");
   };
 
-  const handleTrackSelect = (tracks: Track[]) => { // Modified to accept array of tracks
+  const handleTrackSelect = (tracks: Track[]) => {
+    // Modified to accept array of tracks
     setFinalSelectedTracks(tracks);
     setIsSpotifyModalOpen(false);
   };
