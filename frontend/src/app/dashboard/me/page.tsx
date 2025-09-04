@@ -1,5 +1,8 @@
 "use client";
 
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
 import { useState } from "react";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { GetPosts200 } from "@/libs/api/generated/orval/model";
@@ -86,7 +89,8 @@ export default function ProfilePage() {
             {[
               { k: "created", label: "作成した記事" },
               { k: "liked", label: "いいねした記事" },
-              { k: "community-history", label: "アクセスしたコミュニティ" },
+              // TODO: コミュニティのアクセス履歴を今後実装する
+              // { k: "community-history", label: "アクセスしたコミュニティ" },
             ].map(({ k, label }) => {
               const active = tab === (k as typeof tab);
               return (
@@ -141,14 +145,24 @@ export default function ProfilePage() {
                         key={post.id}
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition p-4 aspect-square flex flex-col"
                       >
+                        <Image
+                          src="/default-image.jpg" // Placeholder header image
+                          alt="Header Image"
+                          width={200} // Adjust width as needed for this card size
+                          height={100} // Adjust height as needed
+                          className="w-full h-24 object-cover rounded-md mb-2"
+                        />
                         <h3 className="text-base text-gray-900 dark:text-gray-100 line-clamp-2">
                           {post.title}
                         </h3>
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
-                          {post.description}
-                        </p>
-                        <div className="mt-auto pt-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                          <span>❤️ {post.likesCount || 0}</span>
+                        <div className="mt-auto pt-4 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 gap-1">
+                          <span className="flex items-center gap-1">
+                            <FontAwesomeIcon
+                              icon={faHeart}
+                              className="text-gray-400"
+                            />
+                            {post.likesCount || 0}
+                          </span>
                           <div className="flex gap-3">
                             <a
                               href={`/dashboard/post/${post.id}`}
