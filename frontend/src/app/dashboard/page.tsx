@@ -59,17 +59,17 @@ export default function Page() {
 
   return (
     <div className="dark:bg-gray-900 min-h-screen">
-      <h1 className="border-gray-100 border-b-2 bg-white px-6 py-6 flex items-center justify-between">
+      <h1 className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
         <div className="text-gray-800 text-3xl font-bold">ホーム</div>
-        <div className="relative flex-grow mx-4 max-w-lg">
-          <input
-            type="text"
-            placeholder="検索"
-            className="w-full pl-4 pr-10 py-2 rounded-full text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-200 border-2"
-          />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-        </div>
       </h1>
+      <div className="relative mt-4 max-w-lg mx-auto">
+        <input
+          type="text"
+          placeholder="検索"
+          className="w-full pl-4 pr-10 py-2 rounded-full text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-200 border-2"
+        />
+        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+      </div>
       <BlogCard posts={posts.posts || []} onLikeToggle={handleLikeToggle} />
     </div>
   );

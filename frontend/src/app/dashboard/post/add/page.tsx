@@ -112,8 +112,14 @@ export default function AddPostPage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
+      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
         記事を作成する
+        <button
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+          onClick={handleSubmit}
+        >
+          記事を投稿する
+        </button>
       </h1>
       <div ref={containerRef}>
         <div className="flex justify-center gap-4 mb-4 mt-4">
@@ -283,12 +289,6 @@ export default function AddPostPage() {
               onChange={(e) => setMarkdown(e.target.value)}
               style={{ fontSize: `${editorZoom * 16}px` }}
             />
-            <button
-              className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
-              onClick={handleSubmit}
-            >
-              記事を投稿する
-            </button>
           </div>
         </div>
 

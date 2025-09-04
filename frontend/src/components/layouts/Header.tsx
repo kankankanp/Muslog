@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 const Header = () => {
@@ -16,8 +17,10 @@ const Header = () => {
         >
           <Menu size={24} />
         </button>
-        <Image src="/logo.png" width={60} height={60} alt="Muslog" />
-        <h1 className="text-2xl pb-2">Muslog</h1>
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Image src="/logo.png" width={60} height={60} alt="Muslog" />
+          <h1 className="text-2xl">Muslog</h1>
+        </Link>
       </div>
       {/* <div className="relative flex-grow mx-4 max-w-lg">
         <input
