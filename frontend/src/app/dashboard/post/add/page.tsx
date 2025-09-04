@@ -58,15 +58,13 @@ export default function AddPostPage() {
       <div className="flex h-screen bg-white">
         {/* 右側：プレビュー */}
         <div className={`p-8 overflow-y-auto ${viewMode === 'editor' ? 'hidden' : 'flex-1'} ${viewMode === 'split' ? 'w-1/2' : ''}`}>
-          {viewMode === 'split' && (
-            <div className="flex gap-2 mb-2 justify-end">
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'out')}>-</button>
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'in')}>+</button>
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'reset')}>Reset</button>
-            </div>
-          )}
+          <div className="flex gap-2 mb-2 justify-end">
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'out')}>-</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'in')}>+</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('preview', 'reset')}>Reset</button>
+          </div>
           <div className="mb-6">
-            <h2 className="text-3xl font-bold text-gray-400">
+            <h2 className="text-3xl font-bold text-gray-400 mt-6">
               {title || "記事タイトル"}
             </h2>
           </div>
@@ -78,13 +76,11 @@ export default function AddPostPage() {
         </div>
         {/* 左側：エディタ */}
         <div className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === 'preview' ? 'hidden' : 'flex-1'} ${viewMode === 'split' ? 'w-1/2' : ''}`}>
-          {viewMode === 'split' && (
-            <div className="flex gap-2 mb-2 justify-end">
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'out')}>-</button>
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'in')}>+</button>
-              <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'reset')}>Reset</button>
-            </div>
-          )}
+          <div className="flex gap-2 mb-2 justify-end">
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'out')}>-</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'in')}>+</button>
+            <button className="px-2 py-1 bg-gray-200 rounded" onClick={() => handleZoom('editor', 'reset')}>Reset</button>
+          </div>
           <input
             type="text"
             placeholder="記事タイトル"
