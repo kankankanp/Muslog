@@ -3,8 +3,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useSelector } from "react-redux";
-import Loading from "../loading";
 import BlogCard from "@/components/elements/cards/BlogCard";
+import Spinner from "@/components/layouts/Spinner";
 import {
   usePostPostsPostIDLike,
   useDeletePostsPostIDUnlike,
@@ -54,7 +54,7 @@ export default function Page() {
     }
   };
 
-  if (isPending) return <Loading />;
+  if (isPending) return <Spinner />;
   if (error || !posts) return <div>Error loading posts.</div>;
 
   return (

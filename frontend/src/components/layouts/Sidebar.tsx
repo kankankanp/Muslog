@@ -103,7 +103,7 @@ const Sidebar = () => {
           </li>
           <li className="mb-2">
             <Link
-              href="/login-or-signin"
+              href="/login-or-signup"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
             >
               <button

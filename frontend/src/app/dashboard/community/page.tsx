@@ -3,17 +3,14 @@
 import React from "react";
 import CommunityCard from "@/components/community/CommunityCard";
 import CreateCommunityForm from "@/components/community/CreateCommunityForm";
+import Spinner from "@/components/layouts/Spinner";
 import { useGetCommunities } from "@/libs/api/generated/orval/communities/communities";
 
 const CommunityPage: React.FC = () => {
   const { data, isLoading, isError, error, refetch } = useGetCommunities();
 
   if (isLoading) {
-    return (
-      <div className="text-center text-gray-600 dark:text-gray-300">
-        Loading communities...
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (isError) {
