@@ -1,124 +1,111 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
+import { Tag, Music } from "lucide-react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
-import { z } from "zod";
-import { CommonButton } from "@/components/elements/buttons/CommonButton";
-import { Tag } from "@/libs/api/generated/orval/model/tag";
-import {
-  useGetPostsId,
-  usePutPostsId,
-  useDeletePostsId,
-} from "@/libs/api/generated/orval/posts/posts";
-import {
-  useGetTagsPostsPostID,
-  usePostTagsPostsPostID,
-  useDeleteTagsPostsPostID,
-} from "@/libs/api/generated/orval/tags/tags";
+import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
+import TagModal from "@/components/elements/modals/TagModal";
+import { PostPostsBody } from "@/libs/api/generated/orval/model";
+import { Track } from "@/libs/api/generated/orval/model/track";
+import { useGetPostsId, usePutPostsId, useDeletePostsId } from "@/libs/api/generated/orval/posts/posts";
+import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
+import { User } from "@/libs/api/generated/orval/model";
 
-const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
-
-const schema = z.object({
-  title: z.string().min(1, "タイトルを入力してください"),
-  description: z.string().min(1, "内容を入力してください"),
-  tags: z.string().optional(),
-});
-
-export default function PostEditPage() {
-  const router = useRouter();
+export default function EditPostPage() {
   const params = useParams();
   const { id } = params as { id: string };
-  const { data: postData, isPending, error } = useGetPostsId(Number(id));
-  const { data: tagsData } = useGetTagsPostsPostID(Number(id));
-  const { mutate: updatePost } = usePutPostsId();
-  const { mutate: deletePost } = useDeletePostsId();
-  const addTagsToPostMutation = usePostTagsPostsPostID();
-  const removeTagsFromPostMutation = useDeleteTagsPostsPostID();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-    reset,
-    control,
-  } = useForm<{ title: string; description: string; tags?: string }>({
-    resolver: zodResolver(schema),
-  });
+  const [title, setTitle] = useState("");
+  const [markdown, setMarkdown] = useState("");
+  const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
+    "split"
+  );
+  const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
+  const [editorZoom, setEditorZoom] = useState(1.0);
+  const [editorWidth, setEditorWidth] = useState(50); // Initial width for editor in split view
+  const [previewWidth, setPreviewWidth] = useState(50); // Initial width for preview in split view
+
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
+  const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
+  const [finalSelectedTags, setFinalSelectedTags] = useState<string[]>([]); // New state for final selected tags
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const { data: userData, isLoading: isUserLoading, isError: isUserError, error: userError } = useGetMe();
+  const { data: postData, isLoading: isPostLoading, error: postError } = useGetPostsId(Number(id));
+  const { mutate: updatePost, isLoading: isUpdating } = usePutPostsId();
+  const { mutate: deletePost, isLoading: isDeleting } = useDeletePostsId();
 
   useEffect(() => {
     if (postData?.post) {
-      reset({
-        title: postData.post.title,
-        description: postData.post.description,
+      setTitle(postData.post.title);
+      setMarkdown(postData.post.description);
+      setFinalSelectedTracks(postData.post.tracks || []);
+      setFinalSelectedTags(postData.post.tags?.map(tag => tag.name) || []);
+    }
+  }, [postData]);
+
+  useEffect(() => {
+    // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
+  }, []);
+
+  const handleZoom = (
+    area: "editor" | "preview",
+    type: "in" | "out" | "reset"
+  ) => {
+    const step = 0.1;
+    const minZoom = 0.5;
+    const maxZoom = 2.0;
+
+    if (area === "preview") {
+      setPreviewZoom((prev) => {
+        if (type === "reset") return 1.0;
+        const newZoom = type === "in" ? prev + step : prev - step;
+        return Math.max(minZoom, Math.min(maxZoom, newZoom));
+      });
+    } else {
+      // editor
+      setEditorZoom((prev) => {
+        if (type === "reset") return 1.0;
+        const newZoom = type === "in" ? prev + step : prev - step;
+        return Math.max(minZoom, Math.min(maxZoom, newZoom));
       });
     }
-    if (tagsData?.tags) {
-      setValue("tags", tagsData.tags.map((tag: Tag) => tag.name).join(", "));
-    }
-  }, [postData, tagsData, reset, setValue]);
+  };
 
-  const onSubmit = async (data: {
-    title: string;
-    description: string;
-    tags?: string;
-  }) => {
+  const handleSubmit = () => {
+    if (!userData?.user?.id) {
+      alert("ユーザー情報が取得できませんでした。ログインしてください。");
+      return;
+    }
+
+    const userId = userData.user.id;
+
+    const postDataToUpdate: PostPostsBody = {
+      title,
+      description: markdown,
+      userId: userId,
+      tracks: finalSelectedTracks,
+      tags: finalSelectedTags,
+    };
+
     updatePost(
-      {
-        id: Number(id),
-        data: {
-          title: data.title,
-          description: data.description,
-        },
-      },
+      { id: Number(id), data: postDataToUpdate },
       {
         onSuccess: () => {
-          toast.success("投稿を更新しました！");
-          reset();
+          alert("記事を更新しました！");
+          router.push(`/dashboard/post/${id}`);
         },
-        onError: (error: any) => {
-          console.error("Update error:", error);
-          toast.error("更新に失敗しました。");
+        onError: (err) => {
+          console.error("Failed to update article:", err);
+          alert("記事の更新に失敗しました。");
         },
       }
     );
-
-    // タグの更新処理
-    const currentTagNames = tagsData?.tags?.map((tag: Tag) => tag.name) || [];
-    const newTagNames = data.tags
-      ? data.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag.length > 0)
-      : [];
-
-    const tagsToAdd = newTagNames.filter(
-      (tagName) => !currentTagNames.includes(tagName)
-    );
-    const tagsToRemove = currentTagNames.filter(
-      (tagName): tagName is string =>
-        typeof tagName === "string" && !newTagNames.includes(tagName)
-    );
-
-    if (tagsToAdd.length > 0) {
-      addTagsToPostMutation.mutate({
-        postID: Number(id),
-        data: { tag_names: tagsToAdd },
-      });
-    }
-    if (tagsToRemove.length > 0) {
-      removeTagsFromPostMutation.mutate({
-        postID: Number(id),
-        data: { tag_names: tagsToRemove },
-      });
-    }
   };
 
   const handleDelete = async () => {
@@ -128,141 +115,266 @@ export default function PostEditPage() {
       { id: Number(id) },
       {
         onSuccess: () => {
-          toast.success("投稿を削除しました。");
-          setTimeout(() => {
-            router.push("/dashboard");
-            router.refresh();
-          }, 2000);
+          alert("投稿を削除しました。");
+          router.push("/dashboard");
         },
         onError: (error: any) => {
           console.error("Delete error:", error);
-          toast.error("削除に失敗しました。");
+          alert("削除に失敗しました。");
         },
       }
     );
   };
 
-  if (isPending) {
+  const handleTrackSelect = (tracks: Track[]) => {
+    setFinalSelectedTracks(tracks);
+    setIsSpotifyModalOpen(false);
+  };
+
+  const handleRemoveFinalTrack = (trackToRemove: Track) => {
+    setFinalSelectedTracks((prevTracks) =>
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
+    );
+  };
+
+  const handleTagSelect = (tags: string[]) => {
+    setFinalSelectedTags(tags);
+    setIsTagModalOpen(false);
+  };
+
+  const handleRemoveFinalTag = (tagToRemove: string) => {
+    setFinalSelectedTags((prevTags) =>
+      prevTags.filter((tag) => tag !== tagToRemove)
+    );
+  };
+
+  if (isPostLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">
-            投稿を読み込み中...
-          </p>
-        </div>
+      <div className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-300">投稿を読み込み中...</p>
       </div>
     );
   }
 
-  if (error || !postData?.post) {
+  if (postError || !postData?.post) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-center">
-          <p className="text-red-600 dark:text-red-400">
-            投稿の読み込みに失敗しました。
+      <div className="dark:bg-gray-900 bg-gray-100 min-h-screen flex items-center justify-center">
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            投稿が見つかりません
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300">
+            この投稿は存在しないか、削除された可能性があります。
           </p>
-          <CommonButton href="/dashboard/blog/page/1">戻る</CommonButton>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
-      <Toaster />
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-2xl"
-      >
-        <h2 className="text-2xl font-semibold text-center text-gray-900 dark:text-gray-100 mb-6">
-          投稿の編集
-        </h2>
-
-        <div className="mb-4">
-          <label
-            htmlFor="title"
-            className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+    <>
+      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
+        記事を編集する
+      </h1>
+      <div ref={containerRef}>
+        <div className="flex justify-center gap-4 mb-4 mt-4">
+          <button
+            className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            onClick={() => setViewMode("editor")}
           >
-            タイトル
-          </label>
-          <input
-            type="text"
-            {...register("title")}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="投稿のタイトルを入力してください"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-          )}
+            エディタ
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${viewMode === "preview" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            onClick={() => setViewMode("preview")}
+          >
+            プレビュー
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            onClick={() => setViewMode("split")}
+          >
+            分割
+          </button>
         </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="description"
-            className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
+        <div className="flex h-screen bg-white">
+          {/* 右側：プレビュー */}
+          <div
+            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
           >
-            内容
-          </label>
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <SimpleMDEEditor
-                key="description-editor"
-                value={field.value}
-                onChange={field.onChange}
-                options={{
-                  spellChecker: false,
-                  hideIcons: ["side-by-side", "fullscreen"],
-                  placeholder: "投稿の内容をMarkdownで入力してください",
-                }}
-              />
+            <div className="flex gap-2 mb-2 justify-end">
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("preview", "out")}
+              >
+                -
+              </button>
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("preview", "in")}
+              >
+                +
+              </button>
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("preview", "reset")}
+              >
+                リセット
+              </button>
+            </div>
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-400 mt-6">
+                {title || "記事タイトル"}
+              </h2>
+            </div>
+            <div
+              className="prose prose-lg max-w-none w-full"
+              style={{ fontSize: `${previewZoom * 16}px` }}
+            >
+              <ReactMarkdown>
+                {markdown || "プレビューがここに表示されます。"}
+              </ReactMarkdown>
+            </div>
+          </div>
+          {/* 左側：エディタ */}
+          <div
+            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+          >
+            <div className="flex gap-2 mb-2 justify-end">
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("editor", "out")}
+              >
+                -
+              </button>
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("editor", "in")}
+              >
+                +
+              </button>
+              <button
+                className="px-2 py-1 bg-gray-200 rounded"
+                onClick={() => handleZoom("editor", "reset")}
+              >
+                リセット
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="記事タイトル"
+              className="text-3xl font-bold mb-4 bg-transparent outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                // 画像追加のロジックは後で
+              >
+                <span className="text-xl">＋</span> 画像を追加
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => setIsTagModalOpen(true)}
+              >
+                <Tag className="h-5 w-5" /> タグ
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => setIsSpotifyModalOpen(true)}
+              >
+                <Music className="h-5 w-5" /> 曲
+              </button>
+            </div>
+
+            {finalSelectedTracks.length > 0 && (
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                {" "}
+                {/* Added overflow-x-auto and pb-2 for scrollbar */}
+                {finalSelectedTracks.map((track) => (
+                  <div
+                    key={track.spotifyId}
+                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                  >
+                    <Image
+                      src={track.albumImageUrl || "/default-image.jpg"}
+                      width={20}
+                      height={20}
+                      alt={track.name || ""}
+                      className="rounded-full mr-2"
+                    />
+                    {track.name} - {track.artistName}
+                    <button
+                      onClick={() => handleRemoveFinalTrack(track)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
-          />
-          {errors.description && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.description.message}
-            </p>
-          )}
+
+            {finalSelectedTags.length > 0 && (
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                {" "}
+                {/* Added overflow-x-auto and pb-2 for scrollbar */}
+                {finalSelectedTags.map((tag) => (
+                  <div
+                    key={tag}
+                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                  >
+                    {tag}
+                    <button
+                      onClick={() => handleRemoveFinalTag(tag)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <textarea
+              className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
+              placeholder="本文をマークダウンで入力してください"
+              value={markdown}
+              onChange={(e) => setMarkdown(e.target.value)}
+              style={{ fontSize: `${editorZoom * 16}px` }}
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={handleSubmit}
+              >
+                記事を更新する
+              </button>
+              <button
+                className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors ml-4"
+                onClick={handleDelete}
+              >
+                記事を削除する
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="tags"
-            className="block text-gray-700 dark:text-gray-300 font-medium mb-2"
-          >
-            タグ (カンマ区切り)
-          </label>
-          <input
-            type="text"
-            {...register("tags")}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="例: プログラミング, 日常, 音楽"
-          />
-          {errors.tags && (
-            <p className="text-red-500 text-sm mt-1">{errors.tags.message}</p>
-          )}
-        </div>
+        <TagModal
+          isOpen={isTagModalOpen}
+          onClose={() => setIsTagModalOpen(false)}
+          onSelectTags={handleTagSelect}
+          initialSelectedTags={finalSelectedTags}
+        />
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-md transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "更新中..." : "更新"}
-          </button>
-          <button
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-md transition duration-200"
-            type="button"
-            onClick={handleDelete}
-          >
-            削除
-          </button>
-          <CommonButton href="/dashboard">キャンセル</CommonButton>
-        </div>
-      </form>
-    </div>
+        <SpotifySearchModal
+          isOpen={isSpotifyModalOpen}
+          onClose={() => setIsSpotifyModalOpen(false)}
+          onSelectTracks={handleTrackSelect}
+          initialSelectedTracks={finalSelectedTracks}
+        />
+      </div>
+    </>
   );
 }
