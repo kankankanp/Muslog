@@ -66,7 +66,7 @@ const SelectMusicArea = ({ onSelect, initialSelectedTracks }: SelectMusicAreaPro
   }, [error]);
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg">
       <div className="flex gap-2 mb-4">
         <input
           type="text"
