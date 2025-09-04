@@ -80,11 +80,6 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
                 {track.artistName}
               </p>
             </div>
-            {/* TODO 曲を再生できるようにする */}
-            {/* <div>
-              <Image src="/play_circle.png" alt="再生する" />
-              <Image src="/stop_circle.png" alt="停止する" />
-            </div> */}
           </li>
         ))}
       </ul>

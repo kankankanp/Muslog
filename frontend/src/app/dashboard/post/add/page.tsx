@@ -4,6 +4,8 @@ import { Tag, Music } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import Modal from "react-modal";
+import SelectMusicArea from "@/components/elements/others/SelectMusicArea";
+import { Track } from "@/libs/api/generated/orval/model/track";
 
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
@@ -18,11 +20,14 @@ export default function AddPostPage() {
 
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Modal.setAppElement(document.body); // Set the app root element for accessibility
+    if (containerRef.current) {
+      Modal.setAppElement(containerRef.current);
+    }
   }, []);
 
   const handleZoom = (
@@ -50,16 +55,18 @@ export default function AddPostPage() {
   };
 
   const handleSubmit = () => {
-    console.log("Post submitted:", { title, markdown });
+    console.log("Post submitted:", { title, markdown, selectedTrack });
     // TODO: Implement actual post submission logic
     alert("記事を投稿しました！ (実際にはまだ投稿されていません)");
   };
 
+  const handleTrackSelect = (track: Track) => {
+    setSelectedTrack(track);
+    setIsSpotifyModalOpen(false);
+  };
+
   return (
-    <>
-      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
-        記事を作成する
-      </h1>
+    <div ref={containerRef}>
       <div className="flex justify-center gap-4 mb-4 mt-4">
         <button
           className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -237,17 +244,8 @@ export default function AddPostPage() {
       >
         <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto my-20">
           <h2 className="text-2xl font-bold mb-4">Spotifyから曲を選択</h2>
-          <input
-            type="text"
-            placeholder="曲名、アーティスト名で検索"
-            className="w-full border rounded p-2 mb-4"
-          />
-          <div className="mb-4">
-            <h3 className="font-semibold mb-2">検索結果</h3>
-            {/* Placeholder for search results */}
-            <div className="border p-2 rounded">曲名 - アーティスト名</div>
-          </div>
-          <div className="flex justify-end">
+          <SelectMusicArea onSelect={handleTrackSelect} />
+          <div className="flex justify-end mt-4">
             <button
               className="px-4 py-2 bg-gray-300 rounded"
               onClick={() => setIsSpotifyModalOpen(false)}
@@ -257,6 +255,6 @@ export default function AddPostPage() {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 }
