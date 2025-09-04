@@ -191,11 +191,11 @@ export default function AddPostPage() {
           </div>
 
           {finalSelectedTracks.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2"> {/* Added overflow-x-auto and pb-2 for scrollbar */}
               {finalSelectedTracks.map((track) => (
                 <div
                   key={track.spotifyId}
-                  className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm"
+                  className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
                 >
                   <Image
                     src={track.albumImageUrl || "/default-image.jpg"}
