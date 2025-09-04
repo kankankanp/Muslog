@@ -4,8 +4,8 @@ import { Tag, Music } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import Modal from "react-modal";
-import SelectMusicArea from "@/components/elements/others/SelectMusicArea";
+import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
+import TagModal from "@/components/elements/modals/TagModal";
 import { Track } from "@/libs/api/generated/orval/model/track";
 
 export default function AddPostPage() {
@@ -22,13 +22,12 @@ export default function AddPostPage() {
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
   const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
+  const [finalSelectedTags, setFinalSelectedTags] = useState<string[]>([]); // New state for final selected tags
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current) {
-      Modal.setAppElement(containerRef.current);
-    }
+    // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
   }, []);
 
   const handleZoom = (
@@ -74,6 +73,17 @@ export default function AddPostPage() {
   const handleRemoveFinalTrack = (trackToRemove: Track) => {
     setFinalSelectedTracks((prevTracks) =>
       prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
+    );
+  };
+
+  const handleTagSelect = (tags: string[]) => {
+    setFinalSelectedTags(tags);
+    setIsTagModalOpen(false);
+  };
+
+  const handleRemoveFinalTag = (tagToRemove: string) => {
+    setFinalSelectedTags((prevTags) =>
+      prevTags.filter((tag) => tag !== tagToRemove)
     );
   };
 
@@ -191,7 +201,9 @@ export default function AddPostPage() {
           </div>
 
           {finalSelectedTracks.length > 0 && (
-            <div className="flex gap-2 mb-4 overflow-x-auto pb-2"> {/* Added overflow-x-auto and pb-2 for scrollbar */}
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+              {" "}
+              {/* Added overflow-x-auto and pb-2 for scrollbar */}
               {finalSelectedTracks.map((track) => (
                 <div
                   key={track.spotifyId}
@@ -207,6 +219,25 @@ export default function AddPostPage() {
                   {track.name} - {track.artistName}
                   <button
                     onClick={() => handleRemoveFinalTrack(track)}
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {finalSelectedTags.length > 0 && (
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2"> {/* Added overflow-x-auto and pb-2 for scrollbar */}
+              {finalSelectedTags.map((tag) => (
+                <div
+                  key={tag}
+                  className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                >
+                  {tag}
+                  <button
+                    onClick={() => handleRemoveFinalTag(tag)}
                     className="ml-2 text-gray-500 hover:text-gray-700"
                   >
                     &times;
@@ -232,71 +263,19 @@ export default function AddPostPage() {
         </div>
       </div>
 
-      {/* Tag Modal */}
-      <Modal
+      <TagModal
         isOpen={isTagModalOpen}
-        onRequestClose={() => setIsTagModalOpen(false)}
-        contentLabel="タグ選択/作成"
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none overflow-auto"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-75 z-50"
-      >
-        <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto my-20">
-          <h2 className="text-2xl font-bold mb-4">タグを選択または作成</h2>
-          <input
-            type="text"
-            placeholder="新しいタグを作成"
-            className="w-full border rounded p-2 mb-4"
-          />
-          <div className="mb-4">
-            <h3 className="font-semibold mb-2">既存のタグ</h3>
-            <div className="flex flex-wrap gap-2">
-              {/* Placeholder for existing tags */}
-              <span className="px-3 py-1 bg-gray-200 rounded-full text-sm">
-                タグ1
-              </span>
-              <span className="px-3 py-1 bg-gray-200 rounded-full text-sm">
-                タグ2
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              className="px-4 py-2 bg-gray-300 rounded"
-              onClick={() => setIsTagModalOpen(false)}
-            >
-              キャンセル
-            </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded">
-              追加
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => setIsTagModalOpen(false)}
+        onSelectTags={handleTagSelect} // Assuming handleTagSelect will be created
+        initialSelectedTags={finalSelectedTags} // Assuming finalSelectedTags will be created
+      />
 
-      {/* Spotify Modal */}
-      <Modal
+      <SpotifySearchModal
         isOpen={isSpotifyModalOpen}
-        onRequestClose={() => setIsSpotifyModalOpen(false)}
-        contentLabel="Spotify曲選択"
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none overflow-auto"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-75 z-50"
-      >
-        <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto my-20">
-          <h2 className="text-2xl font-bold mb-4">Spotifyから曲を選択</h2>
-          <SelectMusicArea
-            onSelect={handleTrackSelect}
-            initialSelectedTracks={finalSelectedTracks} // Pass existing selections
-          />
-          <div className="flex justify-end mt-4">
-            <button
-              className="px-4 py-2 bg-gray-300 rounded"
-              onClick={() => setIsSpotifyModalOpen(false)}
-            >
-              閉じる
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => setIsSpotifyModalOpen(false)}
+        onSelectTracks={handleTrackSelect}
+        initialSelectedTracks={finalSelectedTracks}
+      />
     </div>
   );
 }
