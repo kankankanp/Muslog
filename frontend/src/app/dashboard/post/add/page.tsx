@@ -70,7 +70,7 @@ export default function AddPostPage() {
               {title || "記事タイトル"}
             </h2>
           </div>
-          <div className="prose prose-lg max-w-none w-full" style={{ transform: `scale(${previewZoom})`, transformOrigin: 'top left' }}>
+          <div className="prose prose-lg max-w-none w-full" style={{ fontSize: `${previewZoom * 16}px` }}>
             <ReactMarkdown>
               {markdown || "プレビューがここに表示されます。"}
             </ReactMarkdown>
