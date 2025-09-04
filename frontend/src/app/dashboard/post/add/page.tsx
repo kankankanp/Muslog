@@ -2,11 +2,14 @@
 
 import { Tag, Music } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
+import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
+import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
 
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
@@ -54,14 +57,34 @@ export default function AddPostPage() {
     }
   };
 
+  const { mutate } = usePostPosts();
+  const router = useRouter();
+
   const handleSubmit = () => {
-    console.log("Post submitted:", {
+    // Placeholder for userId - needs to be replaced with actual user ID
+    const userId = "some-user-id"; // TODO: Get actual userId from auth context/hook
+
+    const postData: PostPostsBody = {
       title,
-      markdown,
-      selectedTrack: finalSelectedTracks,
-    }); // Updated to use finalSelectedTracks
-    // TODO: Implement actual post submission logic
-    alert("記事を投稿しました！ (実際にはまだ投稿されていません)");
+      description: markdown, // markdown is the description
+      userId: userId,
+      tracks: finalSelectedTracks,
+      tags: finalSelectedTags,
+    };
+
+    mutate(
+      { data: postData },
+      {
+        onSuccess: () => {
+          alert("記事を投稿しました！");
+          router.push("/dashboard"); // Redirect to dashboard after successful post
+        },
+        onError: (err) => {
+          console.error("Failed to post article:", err);
+          alert("記事の投稿に失敗しました。");
+        },
+      }
+    );
   };
 
   const handleTrackSelect = (tracks: Track[]) => {
