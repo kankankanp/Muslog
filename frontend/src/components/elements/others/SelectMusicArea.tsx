@@ -7,13 +7,14 @@ import { Track } from "@/libs/api/generated/orval/model/track";
 import { useGetSpotifySearch } from "@/libs/api/generated/orval/spotify/spotify";
 
 type SelectMusicAreaProps = {
-  onSelect: (track: Track) => void;
+  onSelect: (tracks: Track[]) => void;
 };
 
 const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
   const [query, setQuery] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [buttonLoading, setButtonLoading] = useState<boolean>(false); // New state for button loading
+  const [selectedTracksInModal, setSelectedTracksInModal] = useState<Track[]>([]); // New state for selected tracks in modal
 
   const { data, isPending, error } = useGetSpotifySearch(
     { q: searchQuery },
@@ -35,6 +36,18 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
     }
     setButtonLoading(true); // Set button loading to true
     setSearchQuery(query.trim());
+  };
+
+  const handleTrackToggle = (trackToToggle: Track) => {
+    setSelectedTracksInModal((prevTracks) => {
+      if (prevTracks.some((t) => t.spotifyId === trackToToggle.spotifyId)) {
+        // Remove track if already selected
+        return prevTracks.filter((t) => t.spotifyId !== trackToToggle.spotifyId);
+      } else {
+        // Add track if not selected
+        return [...prevTracks, trackToToggle];
+      }
+    });
   };
 
   const tracks = data?.tracks || [];
@@ -75,8 +88,12 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
         {tracks.map((track) => (
           <li
             key={track.spotifyId}
-            onClick={() => onSelect(track)}
-            className="flex items-center gap-4 p-3 border dark:border-gray-600 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => handleTrackToggle(track)} // Modified onClick
+            className={`flex items-center gap-4 p-3 border dark:border-gray-600 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+              selectedTracksInModal.some((t) => t.spotifyId === track.spotifyId)
+                ? "bg-blue-100 dark:bg-blue-900 border-blue-500" // Highlight selected
+                : ""
+            }`}
           >
             <Image
               src={track.albumImageUrl || "/default-image.jpg"}
@@ -94,6 +111,39 @@ const SelectMusicArea = ({ onSelect }: SelectMusicAreaProps): JSX.Element => {
           </li>
         ))}
       </ul>
+
+      {selectedTracksInModal.length > 0 && (
+        <div className="mt-4 pt-4 border-t dark:border-gray-600">
+          <h3 className="font-semibold mb-2 dark:text-white">選択中の曲:</h3>
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+            {selectedTracksInModal.map((track) => (
+              <div
+                key={track.spotifyId}
+                className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-3 py-1 text-sm dark:text-gray-200"
+              >
+                {track.name} - {track.artistName}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent li onClick from firing
+                    handleTrackToggle(track);
+                  }}
+                  className="ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={() => onSelect(selectedTracksInModal)} // Call onSelect with array
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              完了
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

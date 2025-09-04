@@ -20,7 +20,7 @@ export default function AddPostPage() {
 
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+  const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,14 +55,20 @@ export default function AddPostPage() {
   };
 
   const handleSubmit = () => {
-    console.log("Post submitted:", { title, markdown, selectedTrack });
+    console.log("Post submitted:", { title, markdown, selectedTrack: finalSelectedTracks }); // Updated to use finalSelectedTracks
     // TODO: Implement actual post submission logic
     alert("記事を投稿しました！ (実際にはまだ投稿されていません)");
   };
 
-  const handleTrackSelect = (track: Track) => {
-    setSelectedTrack(track);
+  const handleTrackSelect = (tracks: Track[]) => { // Modified to accept array of tracks
+    setFinalSelectedTracks(tracks);
     setIsSpotifyModalOpen(false);
+  };
+
+  const handleRemoveFinalTrack = (trackToRemove: Track) => {
+    setFinalSelectedTracks((prevTracks) =>
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
+    );
   };
 
   return (
@@ -177,6 +183,33 @@ export default function AddPostPage() {
               <Music className="h-5 w-5" /> 曲
             </button>
           </div>
+
+          {finalSelectedTracks.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {finalSelectedTracks.map((track) => (
+                <div
+                  key={track.spotifyId}
+                  className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm"
+                >
+                  <Image
+                    src={track.albumImageUrl || "/default-image.jpg"}
+                    width={20}
+                    height={20}
+                    alt={track.name || ""}
+                    className="rounded-full mr-2"
+                  />
+                  {track.name} - {track.artistName}
+                  <button
+                    onClick={() => handleRemoveFinalTrack(track)}
+                    className="ml-2 text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <textarea
             className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
             placeholder="本文をマークダウンで入力してください"
