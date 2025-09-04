@@ -60,19 +60,18 @@ export default function NotFound() {
           variants={fadeInUp}
         >
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center px-6 py-3 bg-emerald-600 dark:bg-emerald-700 text-white rounded-full font-semibold hover:bg-emerald-700 dark:hover:bg-emerald-800 transition-colors"
           >
             <Home className="mr-2 w-5 h-5" />
             ホームに戻る
           </Link>
-          
           <Link
-            href="/dashboard"
+            href="/login-or-signup"
             className="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 text-emerald-600 dark:text-emerald-300 border-2 border-emerald-600 dark:border-emerald-300 rounded-full font-semibold hover:bg-emerald-50 dark:hover:bg-gray-700 transition-colors"
           >
             <Search className="mr-2 w-5 h-5" />
-            ダッシュボード
+            ログインページへ
           </Link>
         </motion.div>
       </motion.div>

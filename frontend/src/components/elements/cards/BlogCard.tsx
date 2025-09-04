@@ -1,7 +1,6 @@
-import { faPen, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
 import { Post } from "@/libs/api/generated/orval/model/post";
 
@@ -36,12 +35,16 @@ const BlogCard = ({
             key={post.id}
             className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
           >
+            <Image
+              src="/default-image.jpg" // Placeholder header image
+              alt="Header Image"
+              width={600} // Adjust width as needed
+              height={300} // Adjust height as needed
+              className="w-full h-48 object-cover rounded-md mb-4"
+            />
             <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">
               {post.title}
             </h3>
-            <p className="text-base sm:text-lg mt-2 text-gray-700 dark:text-gray-300">
-              {post.description}
-            </p>
 
             {post.tags && post.tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -56,44 +59,18 @@ const BlogCard = ({
               </div>
             )}
 
-            {post.tracks?.length > 0 && (
-              <div className="mt-4 space-y-3">
-                <ul className="space-y-2">
-                  {post.tracks?.map((track) => (
-                    <li
-                      key={track.spotifyId}
-                      className="flex items-center gap-4 p-2 border rounded-md bg-gray-50 dark:bg-gray-700"
-                    >
-                      <Image
-                        src={track.albumImageUrl || "/default-image.jpg"}
-                        alt={track.name || ""}
-                        width={48}
-                        height={48}
-                        className="w-12 h-12 rounded object-cover"
-                        style={{ width: "auto", height: "auto" }}
-                      />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {track.name}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          {track.artistName}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             <div className="flex justify-between items-center mt-4">
               <div className="flex items-center">
                 <FontAwesomeIcon
                   icon={faHeart}
                   className={`cursor-pointer mr-1 ${
                     isDetailPage
-                      ? (isLiked ? "text-red-500" : "text-gray-400")
-                      : (post.isLiked ? "text-red-500" : "text-gray-400")
+                      ? isLiked
+                        ? "text-red-500"
+                        : "text-gray-400"
+                      : post.isLiked
+                        ? "text-red-500"
+                        : "text-gray-400"
                   }`}
                   onClick={
                     isDetailPage
@@ -105,14 +82,6 @@ const BlogCard = ({
                   {post.likesCount}
                 </span>
               </div>
-              {!isDetailPage && (
-                <Link
-                  href={`/dashboard/post/${post.id}/edit`}
-                  className="text-black dark:text-gray-300 text-base sm:text-lg transition-transform transform hover:scale-125"
-                >
-                  <FontAwesomeIcon icon={faPen} />
-                </Link>
-              )}
               {isDetailPage ? (
                 <CommonButton href={`/dashboard/blog/page/1`}>
                   Back
