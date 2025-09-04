@@ -1,7 +1,6 @@
-import { faPen, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import Link from "next/link";
 import { CommonButton } from "../buttons/CommonButton";
 import { Post } from "@/libs/api/generated/orval/model/post";
 
@@ -66,8 +65,12 @@ const BlogCard = ({
                   icon={faHeart}
                   className={`cursor-pointer mr-1 ${
                     isDetailPage
-                      ? (isLiked ? "text-red-500" : "text-gray-400")
-                      : (post.isLiked ? "text-red-500" : "text-gray-400")
+                      ? isLiked
+                        ? "text-red-500"
+                        : "text-gray-400"
+                      : post.isLiked
+                        ? "text-red-500"
+                        : "text-gray-400"
                   }`}
                   onClick={
                     isDetailPage
@@ -79,14 +82,6 @@ const BlogCard = ({
                   {post.likesCount}
                 </span>
               </div>
-              {!isDetailPage && (
-                <Link
-                  href={`/dashboard/post/${post.id}/edit`}
-                  className="text-black dark:text-gray-300 text-base sm:text-lg transition-transform transform hover:scale-125"
-                >
-                  <FontAwesomeIcon icon={faPen} />
-                </Link>
-              )}
               {isDetailPage ? (
                 <CommonButton href={`/dashboard/blog/page/1`}>
                   Back

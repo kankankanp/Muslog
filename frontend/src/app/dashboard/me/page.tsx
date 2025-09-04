@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { GetPosts200 } from "@/libs/api/generated/orval/model";
+import { useGetPosts } from "@/libs/api/generated/orval/posts/posts"; // Import useGetPosts
 import { useGetUsersIdPosts } from "@/libs/api/generated/orval/users/users";
 
 export default function ProfilePage() {
@@ -17,6 +18,11 @@ export default function ProfilePage() {
     isPending: postsLoading,
     error: postsError,
   } = useGetUsersIdPosts<GetPosts200>(currentUser?.id || "");
+  const {
+    data: allPostsData,
+    isPending: allPostsLoading,
+    error: allPostsError,
+  } = useGetPosts(); // Fetch all posts
   const [tab, setTab] = useState<"created" | "liked" | "community-history">(
     "created"
   );
@@ -54,6 +60,7 @@ export default function ProfilePage() {
   }
 
   const posts = postsData?.posts ?? [];
+  const likedPosts = allPostsData?.posts?.filter((post) => post.isLiked) ?? []; // Filter liked posts
 
   return (
     <>
@@ -165,14 +172,54 @@ export default function ProfilePage() {
             )}
 
             {tab === "liked" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-2xl bg-white/70 dark:bg-gray-800 shadow-sm"
-                  />
-                ))}
-              </div>
+              <>
+                {allPostsLoading ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    読み込み中...
+                  </div>
+                ) : allPostsError ? (
+                  <div className="py-16 text-center text-red-600 dark:text-red-400">
+                    記事の取得に失敗しました
+                  </div>
+                ) : likedPosts.length === 0 ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    いいねした記事はありません。
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
+                    {likedPosts.map((post) => (
+                      <article
+                        key={post.id}
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition p-4 aspect-square flex flex-col"
+                      >
+                        <h3 className="text-base text-gray-900 dark:text-gray-100 line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
+                          {post.description}
+                        </p>
+                        <div className="mt-auto pt-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <span>❤️ {post.likesCount || 0}</span>
+                          <div className="flex gap-3">
+                            <a
+                              href={`/dashboard/post/${post.id}`}
+                              className="hover:underline"
+                            >
+                              表示
+                            </a>
+                            <a
+                              href={`/dashboard/post/${post.id}/edit`}
+                              className="hover:underline"
+                            >
+                              編集
+                            </a>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
