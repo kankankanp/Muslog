@@ -1,3 +1,5 @@
+"use client";
+
 import {
   User,
   Home,
@@ -11,13 +13,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { useSidebar } from "@/contexts/SidebarContext";
 import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
 import { logout } from "@/libs/store/authSlice";
 
-const Sidebar = ({
-  isSidebarOpen,
-  setIsSidebarOpen,
-}: {isSidebarOpen: boolean; setIsSidebarOpen: (isOpen: boolean) => void}) => {
+const Sidebar = () => {
+  const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const router = useRouter();
   const dispatch = useDispatch();
   const { mutate: logoutMutation, isPending } = usePostLogout();
@@ -41,7 +42,10 @@ const Sidebar = ({
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 p-4 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="flex justify-end md:hidden">
-        <button onClick={() => setIsSidebarOpen(false)} className="text-gray-600 hover:text-gray-800">
+        <button
+          onClick={() => setIsSidebarOpen(false)}
+          className="text-gray-600 hover:text-gray-800"
+        >
           <X size={24} />
         </button>
       </div>

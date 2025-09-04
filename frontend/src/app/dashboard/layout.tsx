@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import DashboardLayoutClient from "./dashboard-layout-client";
+import DashboardContainer from "@/components/layouts/DashboardContainer";
 
 export const metadata: Metadata = {
   title: "Muslog - ダッシュボード",
@@ -12,8 +12,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardLayoutClient>
+    <DashboardContainer>
       {children}
-    </DashboardLayoutClient>
+    </DashboardContainer>
   );
 }

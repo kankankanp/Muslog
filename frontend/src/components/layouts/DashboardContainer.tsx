@@ -1,32 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import Header from "@/components/layouts/Header";
 import Sidebar from "@/components/layouts/Sidebar";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 
-export default function DashboardLayoutClient({
+export default function DashboardContainer({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <>
-      <Header setIsSidebarOpen={setIsSidebarOpen} />
+    <SidebarProvider>
+      <Header />
       <div className="flex h-screen">
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+        <Sidebar />
         {isSidebarOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setIsSidebarOpen(false)}
           ></div>
         )}
-        <main className="flex-1 overflow-y-auto w-full">{children}</main>
+        <main className="flex-1 p-8 overflow-y-auto w-full">{children}</main>
       </div>
-    </>
+    </SidebarProvider>
   );
 }

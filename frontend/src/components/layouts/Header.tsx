@@ -1,11 +1,12 @@
+"use client";
+
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import { useSidebar } from "@/contexts/SidebarContext";
 
-const Header = ({
-  setIsSidebarOpen,
-}: {
-  setIsSidebarOpen: (isOpen: boolean) => void;
-}) => {
+const Header = () => {
+  const { setIsSidebarOpen } = useSidebar();
+
   return (
     <header className="bg-gray-800 text-white px-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
