@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-6 py-6">
+      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-8 py-6">
         マイページ
       </h1>
       <section className="bg-white dark:bg-gray-800">

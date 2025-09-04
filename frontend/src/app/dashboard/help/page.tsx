@@ -70,11 +70,13 @@ const HelpPage = () => {
                       <ChevronDown className="h-5 w-5 text-gray-500" />
                     )}
                   </button>
-                  {openIndex === index && (
-                    <div className="py-4 text-gray-600 bg-gray-50 px-4">
-                      <p>{faq.answer}</p>
-                    </div>
-                  )}
+                  <div
+                    className={`overflow-hidden transition-all duration-200 ease-in-out ${
+                      openIndex === index ? "max-h-screen py-4" : "max-h-0"
+                    } text-gray-600 bg-gray-50 px-4`}
+                  >
+                    <p>{faq.answer}</p>
+                  </div>
                 </div>
               ))}
             </div>

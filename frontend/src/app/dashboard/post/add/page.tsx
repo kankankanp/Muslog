@@ -112,15 +112,15 @@ export default function AddPostPage() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
-        記事を作成する
+      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">記事を作成する</h1>
         <button
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
           onClick={handleSubmit}
         >
           記事を投稿する
         </button>
-      </h1>
+      </div>
       <div ref={containerRef}>
         <div className="flex justify-center gap-4 mb-4 mt-4">
           <button
