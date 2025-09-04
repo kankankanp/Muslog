@@ -1,10 +1,20 @@
-// components/Header.tsx
+import { Menu } from "lucide-react";
 import Image from "next/image";
 
-const Header = () => {
+const Header = ({
+  setIsSidebarOpen,
+}: {
+  setIsSidebarOpen: (isOpen: boolean) => void;
+}) => {
   return (
     <header className="bg-gray-800 text-white px-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
+        <button
+          className="md:hidden text-white mr-4"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu size={24} />
+        </button>
         <Image src="/logo.png" width={60} height={60} alt="Muslog" />
         <h1 className="text-2xl pb-2">Muslog</h1>
       </div>

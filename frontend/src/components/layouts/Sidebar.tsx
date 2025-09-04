@@ -1,5 +1,3 @@
-"use client";
-
 import {
   User,
   Home,
@@ -7,6 +5,7 @@ import {
   Users,
   HelpCircle,
   LogOut,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,7 +14,10 @@ import { useDispatch } from "react-redux";
 import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
 import { logout } from "@/libs/store/authSlice";
 
-const Sidebar = () => {
+const Sidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {isSidebarOpen: boolean; setIsSidebarOpen: (isOpen: boolean) => void}) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { mutate: logoutMutation, isPending } = usePostLogout();
@@ -35,13 +37,21 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="h-screen w-64 bg-white border-r border-gray-200 p-4">
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 p-4 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+    >
+      <div className="flex justify-end md:hidden">
+        <button onClick={() => setIsSidebarOpen(false)} className="text-gray-600 hover:text-gray-800">
+          <X size={24} />
+        </button>
+      </div>
       <nav>
         <ul className="flex flex-col gap-6 mt-8">
           <li className="mb-2">
             <Link
               href="/dashboard"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
             >
               <Home className="mr-3 h-5 w-5" />
               <span>ホーム</span>
@@ -51,6 +61,7 @@ const Sidebar = () => {
             <Link
               href="/dashboard/me"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
             >
               <User className="mr-3 h-5 w-5" />
               <span>マイページ</span>
@@ -60,6 +71,7 @@ const Sidebar = () => {
             <Link
               href="/dashboard/post/add"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
             >
               <PlusCircle className="mr-3 h-5 w-5" />
               <span>記事作成</span>
@@ -69,6 +81,7 @@ const Sidebar = () => {
             <Link
               href="/dashboard/community"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
             >
               <Users className="mr-3 h-5 w-5" />
               <span>コミュニティ</span>
@@ -78,6 +91,7 @@ const Sidebar = () => {
             <Link
               href="/dashboard/help"
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
             >
               <HelpCircle className="mr-3 h-5 w-5" />
               <span>ヘルプ</span>
@@ -89,7 +103,10 @@ const Sidebar = () => {
               className="flex items-center p-2 rounded-lg hover:bg-gray-100"
             >
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  handleLogout();
+                  setIsSidebarOpen(false);
+                }}
                 disabled={isPending}
                 className="flex"
               >

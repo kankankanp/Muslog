@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/components/layouts/Header";
-import Sidebar from "@/components/layouts/Sidebar";
+import DashboardLayoutClient from "./dashboard-layout-client";
 
 export const metadata: Metadata = {
   title: "Muslog - ダッシュボード",
@@ -13,12 +12,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Header />
-      <div className="flex h-screen">
-        <Sidebar />
-        <main className="flex-1p-8 overflow-y-auto w-full">{children}</main>
-      </div>
-    </>
+    <DashboardLayoutClient>
+      {children}
+    </DashboardLayoutClient>
   );
 }
