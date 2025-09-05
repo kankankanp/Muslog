@@ -182,6 +182,57 @@ paths:
                       $ref: "#/components/schemas/Post"
                   totalCount:
                     type: integer
+  /posts/search:
+    get:
+      summary: Search posts
+      description: Search for posts by query and tags
+      tags:
+        - posts
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query string for post title or description
+        - in: query
+          name: tags
+          schema:
+            type: string
+          description: Comma-separated list of tags to filter by
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page for pagination
+      responses:
+        "200":
+          description: Successful response with a list of posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  posts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Post"
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  perPage:
+                    type: integer
+        "500":
+          description: Internal server error
   /posts/{postID}/like:
     post:
       summary: Like a post
@@ -839,6 +890,52 @@ paths:
                     $ref: "#/components/schemas/Community"
         "400":
           description: Invalid input.
+  /communities/search:
+    get:
+      summary: Search communities
+      description: Search for communities by query
+      tags:
+        - communities
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query string for community name or description
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page for pagination
+      responses:
+        "200":
+          description: Successful response with a list of communities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  communities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Community"
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  perPage:
+                    type: integer
+        "500":
+          description: Internal server error
   /communities/{communityId}/messages:
     get:
       summary: Get messages for a community

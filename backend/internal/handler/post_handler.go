@@ -2,8 +2,8 @@ package handler
 
 import (
 	"net/http"
-
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -161,4 +161,49 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts, "totalCount": totalCount})
+}
+
+// SearchPosts handles searching for posts.
+func (h *PostHandler) SearchPosts(c echo.Context) error {
+	query := c.QueryParam("q")
+	tagsStr := c.QueryParam("tags")
+	pageStr := c.QueryParam("page")
+	perPageStr := c.QueryParam("perPage")
+
+	var tags []string
+	if tagsStr != "" {
+		tags = strings.Split(tagsStr, ",")
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1 // Default to page 1
+	}
+
+	perPage, err := strconv.Atoi(perPageStr)
+	if err != nil || perPage < 1 {
+		perPage = 10 // Default to 10 items per page
+	}
+
+	var userID string
+	userContext := c.Get("user")
+	if userContext != nil {
+		claims, ok := userContext.(jwt.MapClaims)
+		if ok {
+			userID, _ = claims["user_id"].(string)
+		}
+	}
+
+	posts, totalCount, err := h.Service.SearchPosts(c.Request().Context(), query, tags, page, perPage, userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to search posts", "error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":    "Posts search successful",
+		"posts":      posts,
+		"totalCount": totalCount,
+		"page":       page,
+		"perPage":    perPage,
+	})
 }

@@ -37,3 +37,8 @@ func (s PostService) DeletePost(ctx context.Context, id uint) error {
 func (s PostService) GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]model.Post, int64, error) {
 	return s.Repo.FindByPage(ctx, page, perPage, userID)
 }
+
+// SearchPosts searches for posts by query and tags.
+func (s PostService) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]model.Post, int64, error) {
+	return s.Repo.SearchPosts(ctx, query, tags, page, perPage, userID)
+}

@@ -156,6 +156,7 @@ func main() {
 	postGroup.POST("", postHandler.CreatePost)
 	postGroup.PUT("/:id", postHandler.UpdatePost)
 	postGroup.DELETE("/:id", postHandler.DeletePost)
+	postGroup.GET("/search", postHandler.SearchPosts)
 
 	// likes
 	postGroup.POST("/:postID/like", likeHandler.LikePost)
@@ -183,6 +184,7 @@ func main() {
 	communityGroup := protected.Group("/communities")
 	communityGroup.GET("", communityHandler.GetAllCommunities)
 	communityGroup.POST("", communityHandler.CreateCommunity)
+	communityGroup.GET("/search", communityHandler.SearchCommunities)
 	communityGroup.GET("/:communityId/messages", messageHandler.GetMessagesByCommunityID)
 
 	// Image routes
