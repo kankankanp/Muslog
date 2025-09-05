@@ -30,7 +30,7 @@ func (h *PostHandler) GetAllPosts(c echo.Context) error {
 		}
 	}
 
-	posts, err := h.Service.GetAllPosts(userID)
+	posts, err := h.Service.GetAllPosts(c.Request().Context(), userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -53,7 +53,7 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 		}
 	}
 
-	post, err := h.Service.GetPostByID(uint(id), userID)
+	post, err := h.Service.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
@@ -93,7 +93,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 			AlbumImageUrl: t.AlbumImageUrl,
 		})
 	}
-	if err := h.Service.CreatePost(&post); err != nil {
+	if err := h.Service.CreatePost(c.Request().Context(), &post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
@@ -114,14 +114,14 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	}
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
-	post, err := h.Service.GetPostByID(uint(id), userID)
+	post, err := h.Service.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
 	post.Title = req.Title
 	post.Description = req.Description
 	post.UpdatedAt = time.Now()
-	if err := h.Service.UpdatePost(post); err != nil {
+	if err := h.Service.UpdatePost(c.Request().Context(), post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
@@ -133,7 +133,7 @@ func (h *PostHandler) DeletePost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	if err := h.Service.DeletePost(uint(id)); err != nil {
+	if err := h.Service.DeletePost(c.Request().Context(), uint(id)); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
@@ -156,7 +156,7 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		}
 	}
 
-	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
+	posts, totalCount, err := h.Service.GetPostsByPage(c.Request().Context(), page, PerPage, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}

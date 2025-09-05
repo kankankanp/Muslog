@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	appConfig "github.com/kankankanp/Muslog/config"
 	model "github.com/kankankanp/Muslog/internal/entity"
 	"github.com/kankankanp/Muslog/internal/handler"
 	"github.com/kankankanp/Muslog/internal/middleware"
@@ -33,19 +38,19 @@ func main() {
 		_ = godotenv.Load(".env")
 	}
 
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
+	// Load application configuration
+	cfg, err := appConfig.LoadConfig()
+	if err != nil {
+		log.Fatalf("failed to load application configuration: %v", err)
+	}
 
+	// Use loaded config for DB connection
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName,
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
 	)
 
 	var db *gorm.DB
-	var err error
 	maxRetries := 10
 	for i := 0; i < maxRetries; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -68,6 +73,13 @@ func main() {
 	if err := seeder.Seed(db); err != nil {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
+
+	// Initialize AWS S3 client
+	awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
+	if err != nil {
+		log.Fatalf("failed to load AWS SDK config: %v", err)
+	}
+	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
 	postService := service.NewPostService(postRepo)
@@ -100,6 +112,10 @@ func main() {
 	communityRepo := repository.NewCommunityRepository(db)
 	communityUsecase := service.NewCommunityUsecase(communityRepo)
 	communityHandler := handler.NewCommunityHandler(communityUsecase)
+
+	// Initialize Image Usecase and Handler
+	imageUsecase := service.NewImageUsecase(s3Client, cfg.S3BucketName, cfg.S3Region)
+	imageHandler := handler.NewImageHandler(imageUsecase, userRepo, postRepo)
 
 	e := echo.New()
 	e.Use(echoMiddleware.Logger())
@@ -150,6 +166,7 @@ func main() {
 	userGroup.GET("", userHandler.GetAllUsers)
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
+	userGroup.POST("/:userId/profile-image", imageHandler.UploadProfileImage)
 
 	// tags
 	tagGroup := protected.Group("/tags")
@@ -168,6 +185,10 @@ func main() {
 	communityGroup.POST("", communityHandler.CreateCommunity)
 	communityGroup.GET("/:communityId/messages", messageHandler.GetMessagesByCommunityID)
 
+	// Image routes
+	protected.POST("/posts/:postId/header-image", imageHandler.UploadPostHeaderImage)
+	protected.POST("/images/upload", imageHandler.UploadInPostImage)
+
 	// Initialize WebSocket hub
 	hub := handler.NewHub(messageUsecase)
 	go hub.Run()
@@ -178,5 +199,5 @@ func main() {
 		return nil // ServeWs handles the response, so return nil
 	})
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }

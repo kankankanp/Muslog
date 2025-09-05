@@ -41,7 +41,7 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
 
-	user, err := h.Service.AuthenticateUser(u.Email, u.Password)
+	user, err := h.Service.AuthenticateUser(c.Request().Context(), u.Email, u.Password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unauthorized"})
 	}
@@ -72,7 +72,7 @@ func (h *UserHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
 
-	user, err := h.Service.CreateUser(req.Name, req.Email, req.Password)
+	user, err := h.Service.CreateUser(c.Request().Context(), req.Name, req.Email, req.Password)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to register user"})
 	}
@@ -137,7 +137,7 @@ func (h *UserHandler) GetMe(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
-	user, err := h.Service.GetUserByID(userID)
+	user, err := h.Service.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "User not found"})
 	}
@@ -146,7 +146,7 @@ func (h *UserHandler) GetMe(c echo.Context) error {
 }
 
 func (h *UserHandler) GetAllUsers(c echo.Context) error {
-	users, err := h.Service.GetAllUsers()
+	users, err := h.Service.GetAllUsers(c.Request().Context())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -162,7 +162,7 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 
 func (h *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("id")
-	user, err := h.Service.GetUserByID(id)
+	user, err := h.Service.GetUserByID(c.Request().Context(), id)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
@@ -172,7 +172,7 @@ func (h *UserHandler) GetUserByID(c echo.Context) error {
 
 func (h *UserHandler) GetUserPosts(c echo.Context) error {
 	id := c.Param("id")
-	posts, err := h.Service.GetUserPosts(id)
+	posts, err := h.Service.GetUserPosts(c.Request().Context(), id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}

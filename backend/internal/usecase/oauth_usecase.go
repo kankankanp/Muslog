@@ -70,7 +70,7 @@ func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
 	}
 
 	// 既存ユーザーを探す
-	existingUser, err := s.UserRepo.FindByEmail(userInfo.Email)
+	existingUser, err := s.UserRepo.FindByEmail(context.Background(), userInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 新規ユーザーを作成
@@ -80,7 +80,11 @@ func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
 				GoogleID: &userInfo.ID,
 				Password: "", // OAuth認証の場合はパスワードは空
 			}
-			return s.UserRepo.Create(user)
+			createdUser, err := s.UserRepo.Create(context.Background(), user)
+			if err != nil {
+				return nil, err
+			}
+			return createdUser, nil
 		}
 		// その他のDBエラー
 		return nil, err
@@ -89,8 +93,10 @@ func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
 	// 既存ユーザーのGoogle IDを更新
 	if existingUser.GoogleID == nil || *existingUser.GoogleID != userInfo.ID {
 		existingUser.GoogleID = &userInfo.ID
-		return s.UserRepo.Update(existingUser)
+		err := s.UserRepo.Update(context.Background(), existingUser)
+		if err != nil {
+			return nil, err
+		}
 	}
-
 	return existingUser, nil
 }
