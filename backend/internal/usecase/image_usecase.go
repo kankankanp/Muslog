@@ -11,20 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
-// ImageUsecase defines the interface for image-related operations.
 type ImageUsecase interface {
 	UploadImage(ctx context.Context, file multipart.File, fileHeader *multipart.FileHeader, folder string) (string, error)
 	DeleteImage(ctx context.Context, imageUrl string) error
 }
 
-// imageUsecase implements ImageUsecase.
 type imageUsecase struct {
 	s3Client *s3.Client
 	s3Bucket string
 	s3Region string
 }
 
-// NewImageUsecase creates a new ImageUsecase.
 func NewImageUsecase(s3Client *s3.Client, s3Bucket string, s3Region string) ImageUsecase {
 	return &imageUsecase{
 		s3Client: s3Client,
@@ -33,7 +30,6 @@ func NewImageUsecase(s3Client *s3.Client, s3Bucket string, s3Region string) Imag
 	}
 }
 
-// UploadImage uploads a file to S3 and returns its URL.
 func (u *imageUsecase) UploadImage(ctx context.Context, file multipart.File, fileHeader *multipart.FileHeader, folder string) (string, error) {
 	// Generate a unique filename
 	ext := filepath.Ext(fileHeader.Filename)

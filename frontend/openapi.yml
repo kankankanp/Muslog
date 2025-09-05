@@ -465,6 +465,126 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Post"
+  /users/{userId}/profile-image:
+    post:
+      summary: Upload or update a user's profile image
+      description: Upload or update a user's profile image
+      tags:
+        - users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Profile image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+  /posts/{postId}/header-image:
+    post:
+      summary: Upload or update a post's header image
+      description: Upload or update a post's header image
+      tags:
+        - posts
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Post header image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Post not found
+        "500":
+          description: Internal server error
+  /images/upload:
+    post:
+      summary: Upload a generic image
+      description: Upload a generic image for use within content (e.g., in-post images)
+      tags:
+        - images
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
   /tags:
     post:
       summary: Create a new tag
@@ -769,6 +889,9 @@ components:
           type: string
         userId:
           type: string
+        headerImageUrl:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -830,6 +953,9 @@ components:
           format: email
         name:
           type: string
+        profileImageUrl:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
