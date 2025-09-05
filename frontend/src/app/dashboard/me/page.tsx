@@ -72,13 +72,13 @@ export default function ProfilePage() {
       </h1>
       <section className="bg-white dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-10">
-          <div className="flex gap-8">
+          <div className="flex gap-8 max-md:flex-col max-md:items-center">
             {/* 固定サイズの円アバター（ピル化を防ぐ） */}
             <div className="shrink-0 w-44 h-44 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
               <span className="text-2xl text-gray-600 dark:text-gray-200"></span>
             </div>
 
-            <div className="flex justify-center gap-1 flex-col">
+            <div className="flex justify-center gap-1 flex-col text-center">
               <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {currentUser.name}
               </h1>

@@ -33,6 +33,20 @@ export default function AddPostPage() {
     // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && viewMode === "split") {
+        setViewMode("editor"); // Default to editor view on small screens if in split mode
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    // Call once on mount to set initial state
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [viewMode]); // Re-run effect if viewMode changes
+
   const handleZoom = (
     area: "editor" | "preview",
     type: "in" | "out" | "reset"
@@ -121,7 +135,7 @@ export default function AddPostPage() {
           記事を投稿する
         </button>
       </div>
-      <div ref={containerRef} >
+      <div ref={containerRef}>
         <div className="flex justify-center gap-4 mb-4 mt-4">
           <button
             className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -145,7 +159,7 @@ export default function AddPostPage() {
         <div className="flex h-screen bg-white">
           {/* 右側：プレビュー */}
           <div
-            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
             <div className="flex gap-2 mb-2 justify-end">
               <button
@@ -183,7 +197,7 @@ export default function AddPostPage() {
           </div>
           {/* 左側：エディタ */}
           <div
-            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
             <div className="flex gap-2 mb-2 justify-end">
               <button
