@@ -31,19 +31,19 @@ const CommunityPage: React.FC = () => {
 
   return (
     <>
-      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between">
+      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between max-md:flex-col max-md:py-2 max-md:gap-2">
         <h1 className="text-3xl font-bold">コミュニティ</h1>
         <button
           onClick={() => {
             console.log(isModalOpen);
             setIsModalOpen(true);
           }}
-          className="py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-center"
         >
           コミュニティを作成する
         </button>
       </div>
-      <div className="relative mt-4 max-w-lg mx-auto">
+      <div className="relative mt-4 max-w-lg mx-auto w-4/5">
         <input
           type="text"
           placeholder="検索"

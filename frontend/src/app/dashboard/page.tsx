@@ -62,7 +62,7 @@ export default function Page() {
       <h1 className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
         <div className="text-gray-800 text-3xl font-bold">ホーム</div>
       </h1>
-      <div className="relative mt-4 max-w-lg mx-auto">
+      <div className="relative mt-4 max-w-lg mx-auto max-md:w-4/5">
         <input
           type="text"
           placeholder="検索"

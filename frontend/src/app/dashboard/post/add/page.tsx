@@ -33,6 +33,20 @@ export default function AddPostPage() {
     // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && viewMode === "split") {
+        setViewMode("editor"); // Default to editor view on small screens if in split mode
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    // Call once on mount to set initial state
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [viewMode]); // Re-run effect if viewMode changes
+
   const handleZoom = (
     area: "editor" | "preview",
     type: "in" | "out" | "reset"
@@ -112,7 +126,7 @@ export default function AddPostPage() {
 
   return (
     <>
-      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
+      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:p-4">
         <h1 className="text-3xl font-bold">記事を作成する</h1>
         <button
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
@@ -136,7 +150,7 @@ export default function AddPostPage() {
             プレビュー
           </button>
           <button
-            className={`px-4 py-2 rounded ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             onClick={() => setViewMode("split")}
           >
             分割
@@ -145,7 +159,7 @@ export default function AddPostPage() {
         <div className="flex h-screen bg-white">
           {/* 右側：プレビュー */}
           <div
-            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
             <div className="flex gap-2 mb-2 justify-end">
               <button
@@ -183,7 +197,7 @@ export default function AddPostPage() {
           </div>
           {/* 左側：エディタ */}
           <div
-            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
             <div className="flex gap-2 mb-2 justify-end">
               <button
