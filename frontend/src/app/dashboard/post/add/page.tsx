@@ -195,7 +195,6 @@ export default function AddPostPage() {
               </ReactMarkdown>
             </div>
           </div>
-          {/* 左側：エディタ */}
           <div
             className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
@@ -250,7 +249,6 @@ export default function AddPostPage() {
             {finalSelectedTracks.length > 0 && (
               <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                 {" "}
-                {/* Added overflow-x-auto and pb-2 for scrollbar */}
                 {finalSelectedTracks.map((track) => (
                   <div
                     key={track.spotifyId}
@@ -278,7 +276,6 @@ export default function AddPostPage() {
             {finalSelectedTags.length > 0 && (
               <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
                 {" "}
-                {/* Added overflow-x-auto and pb-2 for scrollbar */}
                 {finalSelectedTags.map((tag) => (
                   <div
                     key={tag}

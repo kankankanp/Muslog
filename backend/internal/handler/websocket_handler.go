@@ -39,8 +39,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// Hub maintains the set of active clients and broadcasts messages to the
-// clients.
 type Hub struct {
 	// Registered clients for each community.
 	// communityID -> map[clientID]*Client
