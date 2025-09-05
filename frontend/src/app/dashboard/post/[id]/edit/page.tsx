@@ -7,11 +7,14 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
+import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
-import { useGetPostsId, usePutPostsId, useDeletePostsId } from "@/libs/api/generated/orval/posts/posts";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { User } from "@/libs/api/generated/orval/model";
+import {
+  useGetPostsId,
+  usePutPostsId,
+  useDeletePostsId,
+} from "@/libs/api/generated/orval/posts/posts";
 
 export default function EditPostPage() {
   const params = useParams();
@@ -35,17 +38,26 @@ export default function EditPostPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
-  const { data: userData, isLoading: isUserLoading, isError: isUserError, error: userError } = useGetMe();
-  const { data: postData, isLoading: isPostLoading, error: postError } = useGetPostsId(Number(id));
-  const { mutate: updatePost, isLoading: isUpdating } = usePutPostsId();
-  const { mutate: deletePost, isLoading: isDeleting } = useDeletePostsId();
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    isError: isUserError,
+    error: userError,
+  } = useGetMe();
+  const {
+    data: postData,
+    isLoading: isPostLoading,
+    error: postError,
+  } = useGetPostsId(Number(id));
+  const { mutate: updatePost } = usePutPostsId();
+  const { mutate: deletePost } = useDeletePostsId();
 
   useEffect(() => {
     if (postData?.post) {
       setTitle(postData.post.title);
       setMarkdown(postData.post.description);
       setFinalSelectedTracks(postData.post.tracks || []);
-      setFinalSelectedTags(postData.post.tags?.map(tag => tag.name) || []);
+      setFinalSelectedTags(postData?.post?.tags?.map((tag) => tag.name) || []);
     }
   }, [postData]);
 
@@ -78,12 +90,12 @@ export default function EditPostPage() {
   };
 
   const handleSubmit = () => {
-    if (!userData?.user?.id) {
+    if (!userData?.id) {
       alert("ユーザー情報が取得できませんでした。ログインしてください。");
       return;
     }
 
-    const userId = userData.user.id;
+    const userId = userData.id;
 
     const postDataToUpdate: PostPostsBody = {
       title,
@@ -191,7 +203,7 @@ export default function EditPostPage() {
             プレビュー
           </button>
           <button
-            className={`px-4 py-2 rounded ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             onClick={() => setViewMode("split")}
           >
             分割

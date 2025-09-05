@@ -112,7 +112,7 @@ export default function AddPostPage() {
 
   return (
     <>
-      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between">
+      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:p-4">
         <h1 className="text-3xl font-bold">記事を作成する</h1>
         <button
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
@@ -121,7 +121,7 @@ export default function AddPostPage() {
           記事を投稿する
         </button>
       </div>
-      <div ref={containerRef}>
+      <div ref={containerRef} >
         <div className="flex justify-center gap-4 mb-4 mt-4">
           <button
             className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -136,7 +136,7 @@ export default function AddPostPage() {
             プレビュー
           </button>
           <button
-            className={`px-4 py-2 rounded ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+            className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
             onClick={() => setViewMode("split")}
           >
             分割

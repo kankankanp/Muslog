@@ -31,7 +31,7 @@ const CommunityPage: React.FC = () => {
 
   return (
     <>
-      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between">
+      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between max-md:flex-col max-md:py-2 max-md:gap-2">
         <h1 className="text-3xl font-bold">コミュニティ</h1>
         <button
           onClick={() => {
@@ -43,7 +43,7 @@ const CommunityPage: React.FC = () => {
           コミュニティを作成する
         </button>
       </div>
-      <div className="relative mt-4 max-w-lg mx-auto">
+      <div className="relative mt-4 max-w-lg mx-auto w-4/5">
         <input
           type="text"
           placeholder="検索"
