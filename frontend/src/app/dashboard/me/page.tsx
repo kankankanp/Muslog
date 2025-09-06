@@ -2,19 +2,16 @@
 
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
-import { useState } from "react";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { GetPosts200 } from "@/libs/api/generated/orval/model";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { GetPosts200 } from "@/libs/api/generated/orval/model";
 import { useGetPosts } from "@/libs/api/generated/orval/posts/posts";
-import { useGetUsersIdPosts, usePostUsersUserIdProfileImage } from "@/libs/api/generated/orval/users/users";
-import { useGetUsersIdPosts } from "@/libs/api/generated/orval/users/users";
+import {
+  useGetUsersIdPosts,
+  usePostUsersUserIdProfileImage,
+} from "@/libs/api/generated/orval/users/users";
 
 export default function ProfilePage() {
   const {
@@ -41,7 +38,9 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const { mutate: uploadProfileImage } = usePostUsersUserIdProfileImage();
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -54,11 +53,11 @@ export default function ProfilePage() {
     formData.append("image", file);
 
     uploadProfileImage(
-      { userId: currentUser.id, data: formData },
+      { userId: currentUser.id, data: { image: file } },
       {
         onSuccess: () => {
           alert("プロフィール画像を更新しました！");
-          queryClient.invalidateQueries({ queryKey: ['getUserMe'] });
+          queryClient.invalidateQueries({ queryKey: ["getUserMe"] });
         },
         onError: (error) => {
           console.error("プロフィール画像の更新に失敗しました:", error);
