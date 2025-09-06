@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
+import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
@@ -14,6 +15,7 @@ import {
   useGetPostsId,
   usePutPostsId,
   useDeletePostsId,
+  usePostPostsPostIdHeaderImage, // New
 } from "@/libs/api/generated/orval/posts/posts";
 
 export default function EditPostPage() {
@@ -35,6 +37,10 @@ export default function EditPostPage() {
   const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
   const [finalSelectedTags, setFinalSelectedTags] = useState<string[]>([]); // New state for final selected tags
 
+  const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
+  const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(undefined); // New
+  const [currentUploadType, setCurrentUploadType] = useState<'header' | 'in-post' | null>(null); // New
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
@@ -51,6 +57,8 @@ export default function EditPostPage() {
   } = useGetPostsId(Number(id));
   const { mutate: updatePost } = usePutPostsId();
   const { mutate: deletePost } = useDeletePostsId();
+  const { mutate: uploadHeaderImage } = usePostPostsPostIdHeaderImage(); // New
+  const { mutate: uploadGenericImage } = usePostImagesUpload(); // New
 
   useEffect(() => {
     if (postData?.post) {
@@ -58,6 +66,7 @@ export default function EditPostPage() {
       setMarkdown(postData.post.description);
       setFinalSelectedTracks(postData.post.tracks || []);
       setFinalSelectedTags(postData?.post?.tags?.map((tag) => tag.name) || []);
+      setHeaderImageUrl(postData.post.headerImageUrl); // Initialize header image URL
     }
   }, [postData]);
 
@@ -89,6 +98,54 @@ export default function EditPostPage() {
     }
   };
 
+  const handleHeaderImageUpload = (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    uploadHeaderImage(
+      { postId: Number(id), data: formData },
+      {
+        onSuccess: (response) => {
+          setHeaderImageUrl(response.imageUrl);
+          alert("ヘッダー画像を更新しました！");
+        },
+        onError: (error) => {
+          console.error("ヘッダー画像の更新に失敗しました:", error);
+          alert("ヘッダー画像の更新に失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleInPostImageUpload = (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    uploadGenericImage(
+      { data: formData },
+      {
+        onSuccess: (response) => {
+          // Insert the image URL into the markdown content
+          setMarkdown((prevMarkdown) => `${prevMarkdown}\n![image](${response.imageUrl})\n`);
+          alert("画像を投稿内に挿入しました！");
+        },
+        onError: (error) => {
+          console.error("投稿内画像のアップロードに失敗しました:", error);
+          alert("投稿内画像のアップロードに失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleImageUpload = (file: File) => {
+    if (currentUploadType === 'header') {
+      handleHeaderImageUpload(file);
+    } else if (currentUploadType === 'in-post') {
+      handleInPostImageUpload(file);
+    }
+    setIsHeaderImageModalOpen(false); // Close modal after upload
+  };
+
   const handleSubmit = () => {
     if (!userData?.id) {
       alert("ユーザー情報が取得できませんでした。ログインしてください。");
@@ -103,6 +160,7 @@ export default function EditPostPage() {
       userId: userId,
       tracks: finalSelectedTracks,
       tags: finalSelectedTags,
+      headerImageUrl: headerImageUrl, // New: Include header image URL
     };
 
     updatePost(
@@ -235,6 +293,11 @@ export default function EditPostPage() {
               </button>
             </div>
             <div className="mb-6">
+              {headerImageUrl && (
+                <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                  <Image src={headerImageUrl} alt="Header Image" layout="fill" objectFit="cover" />
+                </div>
+              )}
               <h2 className="text-3xl font-bold text-gray-400 mt-6">
                 {title || "記事タイトル"}
               </h2>
@@ -282,9 +345,28 @@ export default function EditPostPage() {
             <div className="flex gap-2">
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                // 画像追加のロジックは後で
+                onClick={() => setIsHeaderImageModalOpen(true)}
               >
-                <span className="text-xl">＋</span> 画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像を追加
+              </button>
+              <div className="flex gap-2">
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => {
+                  setCurrentUploadType('header');
+                  setIsHeaderImageModalOpen(true);
+                }}
+              >
+                <span className="text-xl">＋</span> ヘッダー画像を追加
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => {
+                  setCurrentUploadType('in-post');
+                  setIsHeaderImageModalOpen(true);
+                }}
+              >
+                <span className="text-xl">＋</span> 投稿内画像を追加
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
@@ -385,6 +467,13 @@ export default function EditPostPage() {
           onClose={() => setIsSpotifyModalOpen(false)}
           onSelectTracks={handleTrackSelect}
           initialSelectedTracks={finalSelectedTracks}
+        />
+
+        <ImageUploadModal
+          isOpen={isHeaderImageModalOpen}
+          onClose={() => setIsHeaderImageModalOpen(false)}
+          onImageUpload={handleImageUpload}
+          currentImageUrl={currentUploadType === 'header' ? headerImageUrl : undefined}
         />
       </div>
     </>
