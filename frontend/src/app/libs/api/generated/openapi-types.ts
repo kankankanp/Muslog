@@ -58,6 +58,7 @@ export interface paths {
                         userId?: string;
                         tracks?: components["schemas"]["Track"][];
                         tags?: string[];
+                        headerImageUrl?: string | null;
                     };
                 };
             };

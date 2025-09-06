@@ -86,11 +86,8 @@ export default function AddPostPage() {
   const router = useRouter();
 
   const handleHeaderImageUpload = (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
     uploadGenericImage(
-      { data: formData },
+      { data: { image: file } },
       {
         onSuccess: (response) => {
           setHeaderImageUrl(response.imageUrl); // Store the returned URL
@@ -105,11 +102,8 @@ export default function AddPostPage() {
   };
 
   const handleInPostImageUpload = (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
     uploadGenericImage(
-      { data: formData },
+      { data: { image: file } },
       {
         onSuccess: (response) => {
           // Insert the image URL into the markdown content

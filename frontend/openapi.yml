@@ -55,6 +55,9 @@ paths:
                   type: array
                   items:
                     type: string
+                headerImageUrl:
+                  type: string
+                  nullable: true
       responses:
         "201":
           description: Post created successfully
