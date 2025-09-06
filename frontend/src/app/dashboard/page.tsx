@@ -127,6 +127,14 @@ export default function Page() {
           onClick={handleSearch}
         />
       </div>
+      {searchQuery && (
+        <div className="text-center mt-4 text-gray-600 dark:text-gray-300">
+          {totalCount}件の検索結果
+          {totalCount === 0 && (
+            <p className="mt-2">記事が見つかりませんでした。</p>
+          )}
+        </div>
+      )}
       <BlogCard posts={posts || []} onLikeToggle={handleLikeToggle} />
       {/* Pagination Component will go here */}
       {totalPages > 1 && (

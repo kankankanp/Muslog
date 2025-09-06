@@ -103,6 +103,14 @@ const CommunityPage: React.FC = () => {
           onClick={handleSearch}
         />
       </div>
+      {searchQuery && (
+        <div className="text-center mt-4 text-gray-600 dark:text-gray-300">
+          {totalCount}件の検索結果
+          {totalCount === 0 && (
+            <p className="mt-2">コミュニティが見つかりませんでした。</p>
+          )}
+        </div>
+      )}
       <div className="container mx-auto p-4">
         <div className="w-3/5 mx-auto mb-8"></div>
 
