@@ -12,6 +12,8 @@ export interface Post {
   title: string;
   description: string;
   userId: string;
+  /** @nullable */
+  headerImageUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
   tracks: Track[];

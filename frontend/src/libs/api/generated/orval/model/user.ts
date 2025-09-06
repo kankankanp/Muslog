@@ -9,6 +9,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  /** @nullable */
+  profileImageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

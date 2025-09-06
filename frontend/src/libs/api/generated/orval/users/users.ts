@@ -4,15 +4,18 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
@@ -21,6 +24,8 @@ import type {
   GetUsers200,
   GetUsersId200,
   GetUsersIdPosts200,
+  PostUsersUserIdProfileImage200,
+  PostUsersUserIdProfileImageBody,
 } from ".././model";
 
 import { customInstance } from "../../../custom-instance";
@@ -448,3 +453,98 @@ export function useGetUsersIdPosts<
 
   return query;
 }
+
+/**
+ * Upload or update a user's profile image
+ * @summary Upload or update a user's profile image
+ */
+export const postUsersUserIdProfileImage = (
+  userId: string,
+  postUsersUserIdProfileImageBody: PostUsersUserIdProfileImageBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  if (postUsersUserIdProfileImageBody.image !== undefined) {
+    formData.append(`image`, postUsersUserIdProfileImageBody.image);
+  }
+
+  return customInstance<PostUsersUserIdProfileImage200>({
+    url: `/users/${userId}/profile-image`,
+    method: "POST",
+    headers: { "Content-Type": "multipart/form-data" },
+    data: formData,
+    signal,
+  });
+};
+
+export const getPostUsersUserIdProfileImageMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postUsersUserIdProfileImage>>,
+    TError,
+    { userId: string; data: PostUsersUserIdProfileImageBody },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postUsersUserIdProfileImage>>,
+  TError,
+  { userId: string; data: PostUsersUserIdProfileImageBody },
+  TContext
+> => {
+  const mutationKey = ["postUsersUserIdProfileImage"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postUsersUserIdProfileImage>>,
+    { userId: string; data: PostUsersUserIdProfileImageBody }
+  > = (props) => {
+    const { userId, data } = props ?? {};
+
+    return postUsersUserIdProfileImage(userId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostUsersUserIdProfileImageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postUsersUserIdProfileImage>>
+>;
+export type PostUsersUserIdProfileImageMutationBody =
+  PostUsersUserIdProfileImageBody;
+export type PostUsersUserIdProfileImageMutationError = void;
+
+/**
+ * @summary Upload or update a user's profile image
+ */
+export const usePostUsersUserIdProfileImage = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postUsersUserIdProfileImage>>,
+      TError,
+      { userId: string; data: PostUsersUserIdProfileImageBody },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postUsersUserIdProfileImage>>,
+  TError,
+  { userId: string; data: PostUsersUserIdProfileImageBody },
+  TContext
+> => {
+  const mutationOptions =
+    getPostUsersUserIdProfileImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

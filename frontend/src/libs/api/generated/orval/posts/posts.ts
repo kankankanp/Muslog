@@ -25,8 +25,12 @@ import type {
   GetPosts200,
   GetPostsId200,
   GetPostsPagePage200,
+  GetPostsSearch200,
+  GetPostsSearchParams,
   PostPosts201,
   PostPostsBody,
+  PostPostsPostIdHeaderImage200,
+  PostPostsPostIdHeaderImageBody,
   PutPostsId200,
   PutPostsIdBody,
 } from ".././model";
@@ -695,3 +699,236 @@ export function useGetPostsPagePage<
 
   return query;
 }
+
+/**
+ * Search for posts by query and tags
+ * @summary Search posts
+ */
+export const getPostsSearch = (
+  params?: GetPostsSearchParams,
+  signal?: AbortSignal,
+) => {
+  return customInstance<GetPostsSearch200>({
+    url: `/posts/search`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
+
+export const getGetPostsSearchQueryKey = (params?: GetPostsSearchParams) => {
+  return [`/posts/search`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetPostsSearchQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPostsSearch>>,
+  TError = void,
+>(
+  params?: GetPostsSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsSearch>>, TError, TData>
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPostsSearchQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsSearch>>> = ({
+    signal,
+  }) => getPostsSearch(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPostsSearch>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPostsSearchQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPostsSearch>>
+>;
+export type GetPostsSearchQueryError = void;
+
+export function useGetPostsSearch<
+  TData = Awaited<ReturnType<typeof getPostsSearch>>,
+  TError = void,
+>(
+  params: undefined | GetPostsSearchParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsSearch>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPostsSearch>>,
+          TError,
+          Awaited<ReturnType<typeof getPostsSearch>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPostsSearch<
+  TData = Awaited<ReturnType<typeof getPostsSearch>>,
+  TError = void,
+>(
+  params?: GetPostsSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsSearch>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPostsSearch>>,
+          TError,
+          Awaited<ReturnType<typeof getPostsSearch>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetPostsSearch<
+  TData = Awaited<ReturnType<typeof getPostsSearch>>,
+  TError = void,
+>(
+  params?: GetPostsSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsSearch>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Search posts
+ */
+
+export function useGetPostsSearch<
+  TData = Awaited<ReturnType<typeof getPostsSearch>>,
+  TError = void,
+>(
+  params?: GetPostsSearchParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPostsSearch>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetPostsSearchQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * Upload or update a post's header image
+ * @summary Upload or update a post's header image
+ */
+export const postPostsPostIdHeaderImage = (
+  postId: number,
+  postPostsPostIdHeaderImageBody: PostPostsPostIdHeaderImageBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  if (postPostsPostIdHeaderImageBody.image !== undefined) {
+    formData.append(`image`, postPostsPostIdHeaderImageBody.image);
+  }
+
+  return customInstance<PostPostsPostIdHeaderImage200>({
+    url: `/posts/${postId}/header-image`,
+    method: "POST",
+    headers: { "Content-Type": "multipart/form-data" },
+    data: formData,
+    signal,
+  });
+};
+
+export const getPostPostsPostIdHeaderImageMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>,
+    TError,
+    { postId: number; data: PostPostsPostIdHeaderImageBody },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>,
+  TError,
+  { postId: number; data: PostPostsPostIdHeaderImageBody },
+  TContext
+> => {
+  const mutationKey = ["postPostsPostIdHeaderImage"];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>,
+    { postId: number; data: PostPostsPostIdHeaderImageBody }
+  > = (props) => {
+    const { postId, data } = props ?? {};
+
+    return postPostsPostIdHeaderImage(postId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostPostsPostIdHeaderImageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>
+>;
+export type PostPostsPostIdHeaderImageMutationBody =
+  PostPostsPostIdHeaderImageBody;
+export type PostPostsPostIdHeaderImageMutationError = void;
+
+/**
+ * @summary Upload or update a post's header image
+ */
+export const usePostPostsPostIdHeaderImage = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>,
+      TError,
+      { postId: number; data: PostPostsPostIdHeaderImageBody },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postPostsPostIdHeaderImage>>,
+  TError,
+  { postId: number; data: PostPostsPostIdHeaderImageBody },
+  TContext
+> => {
+  const mutationOptions = getPostPostsPostIdHeaderImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
