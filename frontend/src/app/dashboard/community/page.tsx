@@ -1,14 +1,46 @@
 "use client";
 
 import { Search } from "lucide-react";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import CommunityCard from "@/components/community/CommunityCard";
 import CreateCommunityModal from "@/components/elements/modals/CreateCommunityModal";
 import Spinner from "@/components/layouts/Spinner";
-import { useGetCommunities } from "@/libs/api/generated/orval/communities/communities";
+import { useGetCommunitiesSearch } from "@/libs/api/generated/orval/communities/communities";
 
 const CommunityPage: React.FC = () => {
-  const { data, isLoading, isError, error, refetch } = useGetCommunities();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearchQuery = searchParams.get("q") || "";
+  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [currentInput, setCurrentInput] = useState(initialSearchQuery);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchQuery) {
+      params.set("q", searchQuery);
+    } else {
+      params.delete("q");
+    }
+    params.set("page", currentPage.toString());
+    router.push(`?${params.toString()}`);
+  }, [searchQuery, currentPage, router, searchParams]);
+
+  const {
+    data: searchResult,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetCommunitiesSearch({
+    q: searchQuery,
+    page: currentPage,
+    perPage: 10,
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) {
@@ -16,18 +48,32 @@ const CommunityPage: React.FC = () => {
   }
 
   if (isError) {
-    const errorMessage =
-      error && typeof error === "object" && "message" in error
-        ? (error as { message: string }).message
-        : "Unknown error";
     return (
       <div className="text-center text-red-600">
-        Error: {errorMessage || "Failed to load communities"}
+        Error: {typeof error !== "undefined" && error ? String(error) : "Failed to load communities"}
       </div>
     );
   }
 
-  const communities = data?.communities || [];
+  const communities = searchResult?.communities || [];
+  const totalCount = searchResult?.totalCount || 0;
+  const perPage = searchResult?.perPage || 10;
+  const totalPages = Math.ceil(totalCount / perPage);
+
+  const handleSearch = () => {
+    setSearchQuery(currentInput);
+    setCurrentPage(1); // Reset to first page on new search
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
@@ -47,9 +93,15 @@ const CommunityPage: React.FC = () => {
         <input
           type="text"
           placeholder="検索"
-          className="w-full pl-4 pr-10 py-2 rounded-full text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-200 border-2"
+          className="w-full pl-4 pr-10 py-2 rounded-full text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-200 border-2"
+          value={currentInput}
+          onChange={(e) => setCurrentInput(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <Search
+          className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 cursor-pointer"
+          onClick={handleSearch}
+        />
       </div>
       <div className="container mx-auto p-4">
         <div className="w-3/5 mx-auto mb-8"></div>
@@ -69,6 +121,23 @@ const CommunityPage: React.FC = () => {
           </div>
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8 pb-8">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`mx-1 px-3 py-1 rounded ${
+                currentPage === page
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+      )}
       <CreateCommunityModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
