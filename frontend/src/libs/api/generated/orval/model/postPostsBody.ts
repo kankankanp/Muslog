@@ -12,4 +12,6 @@ export type PostPostsBody = {
   userId?: string;
   tracks?: Track[];
   tags?: string[];
+  /** @nullable */
+  headerImageUrl?: string | null;
 };

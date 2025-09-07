@@ -5,8 +5,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
+import { usePostImagesUpload } from "@/libs/api/generated/orval/images/images"; // New
 import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
 import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
@@ -26,6 +28,14 @@ export default function AddPostPage() {
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
   const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
   const [finalSelectedTags, setFinalSelectedTags] = useState<string[]>([]); // New state for final selected tags
+
+  const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
+  const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
+    undefined
+  ); // New
+  const [currentUploadType, setCurrentUploadType] = useState<
+    "header" | "in-post" | null
+  >(null); // New
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +82,53 @@ export default function AddPostPage() {
   };
 
   const { mutate } = usePostPosts();
+  const { mutate: uploadGenericImage } = usePostImagesUpload(); // New
   const router = useRouter();
+
+  const handleHeaderImageUpload = (file: File) => {
+    uploadGenericImage(
+      { data: { image: file } },
+      {
+        onSuccess: (response) => {
+          setHeaderImageUrl(response.imageUrl); // Store the returned URL
+          alert("ヘッダー画像を仮アップロードしました！");
+        },
+        onError: (error) => {
+          console.error("ヘッダー画像のアップロードに失敗しました:", error);
+          alert("ヘッダー画像のアップロードに失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleInPostImageUpload = (file: File) => {
+    uploadGenericImage(
+      { data: { image: file } },
+      {
+        onSuccess: (response) => {
+          // Insert the image URL into the markdown content
+          setMarkdown(
+            (prevMarkdown) =>
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`
+          );
+          alert("画像を投稿内に挿入しました！");
+        },
+        onError: (error) => {
+          console.error("投稿内画像のアップロードに失敗しました:", error);
+          alert("投稿内画像のアップロードに失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleImageUpload = (file: File) => {
+    if (currentUploadType === "header") {
+      handleHeaderImageUpload(file);
+    } else if (currentUploadType === "in-post") {
+      handleInPostImageUpload(file);
+    }
+    setIsHeaderImageModalOpen(false); // Close modal after upload
+  };
 
   const handleSubmit = () => {
     // Placeholder for userId - needs to be replaced with actual user ID
@@ -84,6 +140,7 @@ export default function AddPostPage() {
       userId: userId,
       tracks: finalSelectedTracks,
       tags: finalSelectedTags,
+      headerImageUrl: headerImageUrl, // New: Include header image URL
     };
 
     mutate(
@@ -182,6 +239,16 @@ export default function AddPostPage() {
               </button>
             </div>
             <div className="mb-6">
+              {headerImageUrl && (
+                <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                  <Image
+                    src={headerImageUrl}
+                    alt="Header Image"
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              )}
               <h2 className="text-3xl font-bold text-gray-400 mt-6">
                 {title || "記事タイトル"}
               </h2>
@@ -228,9 +295,21 @@ export default function AddPostPage() {
             <div className="flex gap-2">
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                // 画像追加のロジックは後で
+                onClick={() => {
+                  setCurrentUploadType("header");
+                  setIsHeaderImageModalOpen(true);
+                }}
               >
-                <span className="text-xl">＋</span> 画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像を追加
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => {
+                  setCurrentUploadType("in-post");
+                  setIsHeaderImageModalOpen(true);
+                }}
+              >
+                <span className="text-xl">＋</span> 投稿内画像を追加
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
@@ -315,6 +394,15 @@ export default function AddPostPage() {
           onClose={() => setIsSpotifyModalOpen(false)}
           onSelectTracks={handleTrackSelect}
           initialSelectedTracks={finalSelectedTracks}
+        />
+
+        <ImageUploadModal
+          isOpen={isHeaderImageModalOpen}
+          onClose={() => setIsHeaderImageModalOpen(false)}
+          onImageUpload={handleImageUpload}
+          currentImageUrl={
+            currentUploadType === "header" ? headerImageUrl : undefined
+          }
         />
       </div>
     </>

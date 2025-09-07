@@ -32,7 +32,7 @@ func (h *likeHandler) LikePost(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
-	liked, err := h.likeService.ToggleLike(postID, userID)
+	liked, err := h.likeService.ToggleLike(c.Request().Context(), postID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
@@ -53,10 +53,10 @@ func (h *likeHandler) UnlikePost(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
-	if err := h.likeService.UnlikePost(postID, userID); err != nil {
+	if err := h.likeService.UnlikePost(c.Request().Context(), postID, userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
-
+	
 	return c.JSON(http.StatusOK, echo.Map{"message": "Post unliked successfully"})
 }
 
@@ -68,7 +68,7 @@ func (h *likeHandler) IsPostLikedByUser(c echo.Context) error {
 
 	userID := c.Get("userID").(string) // From auth middleware
 
-	isLiked, err := h.likeService.IsPostLikedByUser(postID, userID)
+	isLiked, err := h.likeService.IsPostLikedByUser(c.Request().Context(), postID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}

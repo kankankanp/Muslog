@@ -2,8 +2,8 @@ package handler
 
 import (
 	"net/http"
-
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -30,7 +30,7 @@ func (h *PostHandler) GetAllPosts(c echo.Context) error {
 		}
 	}
 
-	posts, err := h.Service.GetAllPosts(userID)
+	posts, err := h.Service.GetAllPosts(c.Request().Context(), userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
@@ -53,7 +53,7 @@ func (h *PostHandler) GetPostByID(c echo.Context) error {
 		}
 	}
 
-	post, err := h.Service.GetPostByID(uint(id), userID)
+	post, err := h.Service.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
@@ -93,7 +93,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 			AlbumImageUrl: t.AlbumImageUrl,
 		})
 	}
-	if err := h.Service.CreatePost(&post); err != nil {
+	if err := h.Service.CreatePost(c.Request().Context(), &post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
@@ -114,14 +114,14 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	}
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
-	post, err := h.Service.GetPostByID(uint(id), userID)
+	post, err := h.Service.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
 	}
 	post.Title = req.Title
 	post.Description = req.Description
 	post.UpdatedAt = time.Now()
-	if err := h.Service.UpdatePost(post); err != nil {
+	if err := h.Service.UpdatePost(c.Request().Context(), post); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
@@ -133,7 +133,7 @@ func (h *PostHandler) DeletePost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
 	}
-	if err := h.Service.DeletePost(uint(id)); err != nil {
+	if err := h.Service.DeletePost(c.Request().Context(), uint(id)); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
@@ -156,9 +156,54 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 		}
 	}
 
-	posts, totalCount, err := h.Service.GetPostsByPage(page, PerPage, userID)
+	posts, totalCount, err := h.Service.GetPostsByPage(c.Request().Context(), page, PerPage, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts, "totalCount": totalCount})
+}
+
+// SearchPosts handles searching for posts.
+func (h *PostHandler) SearchPosts(c echo.Context) error {
+	query := c.QueryParam("q")
+	tagsStr := c.QueryParam("tags")
+	pageStr := c.QueryParam("page")
+	perPageStr := c.QueryParam("perPage")
+
+	var tags []string
+	if tagsStr != "" {
+		tags = strings.Split(tagsStr, ",")
+	}
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1 // Default to page 1
+	}
+
+	perPage, err := strconv.Atoi(perPageStr)
+	if err != nil || perPage < 1 {
+		perPage = 10 // Default to 10 items per page
+	}
+
+	var userID string
+	userContext := c.Get("user")
+	if userContext != nil {
+		claims, ok := userContext.(jwt.MapClaims)
+		if ok {
+			userID, _ = claims["user_id"].(string)
+		}
+	}
+
+	posts, totalCount, err := h.Service.SearchPosts(c.Request().Context(), query, tags, page, perPage, userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to search posts", "error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":    "Posts search successful",
+		"posts":      posts,
+		"totalCount": totalCount,
+		"page":       page,
+		"perPage":    perPage,
+	})
 }

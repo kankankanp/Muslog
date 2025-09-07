@@ -55,6 +55,9 @@ paths:
                   type: array
                   items:
                     type: string
+                headerImageUrl:
+                  type: string
+                  nullable: true
       responses:
         "201":
           description: Post created successfully
@@ -182,6 +185,57 @@ paths:
                       $ref: "#/components/schemas/Post"
                   totalCount:
                     type: integer
+  /posts/search:
+    get:
+      summary: Search posts
+      description: Search for posts by query and tags
+      tags:
+        - posts
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query string for post title or description
+        - in: query
+          name: tags
+          schema:
+            type: string
+          description: Comma-separated list of tags to filter by
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page for pagination
+      responses:
+        "200":
+          description: Successful response with a list of posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  posts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Post"
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  perPage:
+                    type: integer
+        "500":
+          description: Internal server error
   /posts/{postID}/like:
     post:
       summary: Like a post
@@ -465,6 +519,126 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Post"
+  /users/{userId}/profile-image:
+    post:
+      summary: Upload or update a user's profile image
+      description: Upload or update a user's profile image
+      tags:
+        - users
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Profile image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+  /posts/{postId}/header-image:
+    post:
+      summary: Upload or update a post's header image
+      description: Upload or update a post's header image
+      tags:
+        - posts
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Post header image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Post not found
+        "500":
+          description: Internal server error
+  /images/upload:
+    post:
+      summary: Upload a generic image
+      description: Upload a generic image for use within content (e.g., in-post images)
+      tags:
+        - images
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imageUrl:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
   /tags:
     post:
       summary: Create a new tag
@@ -719,6 +893,52 @@ paths:
                     $ref: "#/components/schemas/Community"
         "400":
           description: Invalid input.
+  /communities/search:
+    get:
+      summary: Search communities
+      description: Search for communities by query
+      tags:
+        - communities
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query string for community name or description
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page for pagination
+      responses:
+        "200":
+          description: Successful response with a list of communities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  communities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Community"
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  perPage:
+                    type: integer
+        "500":
+          description: Internal server error
   /communities/{communityId}/messages:
     get:
       summary: Get messages for a community
@@ -769,6 +989,9 @@ components:
           type: string
         userId:
           type: string
+        headerImageUrl:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -830,6 +1053,9 @@ components:
           format: email
         name:
           type: string
+        profileImageUrl:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time

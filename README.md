@@ -288,6 +288,11 @@ aws rds describe-db-clusters \
 - 開始: RDS が starting → available 状態になり、ECS の desired count が 2 に戻ります  
 - RDS の停止・開始は数分かかることがあります
 
+
+aws secretsmanager delete-secret --secret-id production/app_secrets --region ap-northeast-1
+
+aws secretsmanager delete-secret --secret-id production/app_secrets --region ap-northeast-1 --force-delete-without-recovery
+
 ### DB のマイグレーション・シーディング
 
 ```

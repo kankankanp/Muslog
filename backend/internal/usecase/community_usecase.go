@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,9 +11,10 @@ import (
 
 // CommunityUsecase defines the interface for community-related business logic.
 type CommunityUsecase interface {
-	CreateCommunity(name, description, creatorID string) (*entity.Community, error)
-	GetAllCommunities() ([]entity.Community, error)
-	GetCommunityByID(id string) (*entity.Community, error)
+	CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error)
+	GetAllCommunities(ctx context.Context) ([]entity.Community, error)
+	GetCommunityByID(ctx context.Context, id string) (*entity.Community, error)
+	SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error)
 }
 
 // communityUsecase implements CommunityUsecase.
@@ -26,7 +28,7 @@ func NewCommunityUsecase(repo repository.CommunityRepository) CommunityUsecase {
 }
 
 // CreateCommunity creates a new community.
-func (uc *communityUsecase) CreateCommunity(name, description, creatorID string) (*entity.Community, error) {
+func (uc *communityUsecase) CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error) {
 	community := &entity.Community{
 		ID:          uuid.New().String(),
 		Name:        name,
@@ -35,7 +37,7 @@ func (uc *communityUsecase) CreateCommunity(name, description, creatorID string)
 		CreatedAt:   time.Now(),
 	}
 
-	err := uc.repo.Save(community)
+	err := uc.repo.Save(ctx, community)
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +45,16 @@ func (uc *communityUsecase) CreateCommunity(name, description, creatorID string)
 }
 
 // GetAllCommunities retrieves all communities.
-func (uc *communityUsecase) GetAllCommunities() ([]entity.Community, error) {
-	return uc.repo.FindAll()
+func (uc *communityUsecase) GetAllCommunities(ctx context.Context) ([]entity.Community, error) {
+	return uc.repo.FindAll(ctx)
 }
 
 // GetCommunityByID retrieves a community by its ID.
-func (uc *communityUsecase) GetCommunityByID(id string) (*entity.Community, error) {
-	return uc.repo.FindByID(id)
+func (uc *communityUsecase) GetCommunityByID(ctx context.Context, id string) (*entity.Community, error) {
+	return uc.repo.FindByID(ctx, id)
+}
+
+// SearchCommunities searches for communities by query.
+func (uc *communityUsecase) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error) {
+	return uc.repo.SearchCommunities(ctx, query, page, perPage)
 }

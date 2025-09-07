@@ -2,12 +2,16 @@
 
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { GetPosts200 } from "@/libs/api/generated/orval/model";
-import { useGetPosts } from "@/libs/api/generated/orval/posts/posts"; // Import useGetPosts
-import { useGetUsersIdPosts } from "@/libs/api/generated/orval/users/users";
+import { useGetPosts } from "@/libs/api/generated/orval/posts/posts";
+import {
+  useGetUsersIdPosts,
+  usePostUsersUserIdProfileImage,
+} from "@/libs/api/generated/orval/users/users";
 
 export default function ProfilePage() {
   const {
@@ -29,6 +33,39 @@ export default function ProfilePage() {
   const [tab, setTab] = useState<"created" | "liked" | "community-history">(
     "created"
   );
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+  const { mutate: uploadProfileImage } = usePostUsersUserIdProfileImage();
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!currentUser?.id) {
+      alert("ユーザーIDが見つかりません。");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    uploadProfileImage(
+      { userId: currentUser.id, data: { image: file } },
+      {
+        onSuccess: () => {
+          alert("プロフィール画像を更新しました！");
+          queryClient.invalidateQueries({ queryKey: ["getUserMe"] });
+        },
+        onError: (error) => {
+          console.error("プロフィール画像の更新に失敗しました:", error);
+          alert("プロフィール画像の更新に失敗しました。");
+        },
+      }
+    );
+  };
 
   if (userLoading) {
     return (
@@ -74,8 +111,29 @@ export default function ProfilePage() {
         <div className="max-w-6xl mx-auto px-8 lg:px-12 pt-10">
           <div className="flex gap-8 max-md:flex-col max-md:items-center">
             {/* 固定サイズの円アバター（ピル化を防ぐ） */}
-            <div className="shrink-0 w-44 h-44 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-2xl text-gray-600 dark:text-gray-200"></span>
+            <div
+              className="shrink-0 w-44 h-44 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative overflow-hidden cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {currentUser.profileImageUrl ? (
+                <Image
+                  src={currentUser.profileImageUrl}
+                  alt="Profile Picture"
+                  layout="fill"
+                  objectFit="cover"
+                />
+              ) : (
+                <span className="text-2xl text-gray-600 dark:text-gray-200">
+                  No Image
+                </span>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
             </div>
 
             <div className="flex justify-center gap-1 flex-col text-center">
