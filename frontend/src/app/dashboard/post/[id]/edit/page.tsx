@@ -5,15 +5,18 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
+import { usePostImagesUpload } from "@/libs/api/generated/orval/images/images";
 import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
 import {
   useGetPostsId,
   usePutPostsId,
   useDeletePostsId,
+  usePostPostsPostIdHeaderImage, // New
 } from "@/libs/api/generated/orval/posts/posts";
 
 export default function EditPostPage() {
@@ -35,6 +38,14 @@ export default function EditPostPage() {
   const [finalSelectedTracks, setFinalSelectedTracks] = useState<Track[]>([]); // New state for final selected tracks
   const [finalSelectedTags, setFinalSelectedTags] = useState<string[]>([]); // New state for final selected tags
 
+  const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
+  const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
+    undefined
+  ); // New
+  const [currentUploadType, setCurrentUploadType] = useState<
+    "header" | "in-post" | null
+  >(null); // New
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
@@ -51,13 +62,20 @@ export default function EditPostPage() {
   } = useGetPostsId(Number(id));
   const { mutate: updatePost } = usePutPostsId();
   const { mutate: deletePost } = useDeletePostsId();
+  const { mutate: uploadHeaderImage } = usePostPostsPostIdHeaderImage(); // New
+  const { mutate: uploadGenericImage } = usePostImagesUpload(); // New
 
   useEffect(() => {
     if (postData?.post) {
       setTitle(postData.post.title);
       setMarkdown(postData.post.description);
       setFinalSelectedTracks(postData.post.tracks || []);
-      setFinalSelectedTags(postData?.post?.tags?.map((tag) => tag.name) || []);
+      setFinalSelectedTags(
+        postData?.post?.tags
+          ?.map((tag) => tag.name)
+          .filter((name): name is string => typeof name === "string") || []
+      );
+      setHeaderImageUrl(postData?.post?.headerImageUrl ?? undefined); // Initialize header image URL
     }
   }, [postData]);
 
@@ -89,6 +107,54 @@ export default function EditPostPage() {
     }
   };
 
+  const handleHeaderImageUpload = (file: File) => {
+    uploadHeaderImage(
+      { postId: Number(id), data: { image: file } },
+      {
+        onSuccess: (response) => {
+          setHeaderImageUrl(response.imageUrl);
+          alert("ヘッダー画像を更新しました！");
+        },
+        onError: (error) => {
+          console.error("ヘッダー画像の更新に失敗しました:", error);
+          alert("ヘッダー画像の更新に失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleInPostImageUpload = (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    uploadGenericImage(
+      { data: { image: file } },
+      {
+        onSuccess: (response) => {
+          // Insert the image URL into the markdown content
+          setMarkdown(
+            (prevMarkdown) =>
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`
+          );
+          alert("画像を投稿内に挿入しました！");
+        },
+        onError: (error) => {
+          console.error("投稿内画像のアップロードに失敗しました:", error);
+          alert("投稿内画像のアップロードに失敗しました。");
+        },
+      }
+    );
+  };
+
+  const handleImageUpload = (file: File) => {
+    if (currentUploadType === "header") {
+      handleHeaderImageUpload(file);
+    } else if (currentUploadType === "in-post") {
+      handleInPostImageUpload(file);
+    }
+    setIsHeaderImageModalOpen(false); // Close modal after upload
+  };
+
   const handleSubmit = () => {
     if (!userData?.id) {
       alert("ユーザー情報が取得できませんでした。ログインしてください。");
@@ -103,6 +169,7 @@ export default function EditPostPage() {
       userId: userId,
       tracks: finalSelectedTracks,
       tags: finalSelectedTags,
+      headerImageUrl: headerImageUrl, // New: Include header image URL
     };
 
     updatePost(
@@ -235,6 +302,16 @@ export default function EditPostPage() {
               </button>
             </div>
             <div className="mb-6">
+              {headerImageUrl && (
+                <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                  <Image
+                    src={headerImageUrl}
+                    alt="Header Image"
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              )}
               <h2 className="text-3xl font-bold text-gray-400 mt-6">
                 {title || "記事タイトル"}
               </h2>
@@ -282,110 +359,139 @@ export default function EditPostPage() {
             <div className="flex gap-2">
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                // 画像追加のロジックは後で
+                onClick={() => setIsHeaderImageModalOpen(true)}
               >
-                <span className="text-xl">＋</span> 画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像を追加
               </button>
-              <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                onClick={() => setIsTagModalOpen(true)}
-              >
-                <Tag className="h-5 w-5" /> タグ
-              </button>
-              <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                onClick={() => setIsSpotifyModalOpen(true)}
-              >
-                <Music className="h-5 w-5" /> 曲
-              </button>
-            </div>
-
-            {finalSelectedTracks.length > 0 && (
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                {" "}
-                {/* Added overflow-x-auto and pb-2 for scrollbar */}
-                {finalSelectedTracks.map((track) => (
-                  <div
-                    key={track.spotifyId}
-                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
-                  >
-                    <Image
-                      src={track.albumImageUrl || "/default-image.jpg"}
-                      width={20}
-                      height={20}
-                      alt={track.name || ""}
-                      className="rounded-full mr-2"
-                    />
-                    {track.name} - {track.artistName}
-                    <button
-                      onClick={() => handleRemoveFinalTrack(track)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
+              <div className="flex gap-2">
+                <button
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                  onClick={() => {
+                    setCurrentUploadType("header");
+                    setIsHeaderImageModalOpen(true);
+                  }}
+                >
+                  <span className="text-xl">＋</span> ヘッダー画像を追加
+                </button>
+                <button
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                  onClick={() => {
+                    setCurrentUploadType("in-post");
+                    setIsHeaderImageModalOpen(true);
+                  }}
+                >
+                  <span className="text-xl">＋</span> 投稿内画像を追加
+                </button>
+                <button
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                  onClick={() => setIsTagModalOpen(true)}
+                >
+                  <Tag className="h-5 w-5" /> タグ
+                </button>
+                <button
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                  onClick={() => setIsSpotifyModalOpen(true)}
+                >
+                  <Music className="h-5 w-5" /> 曲
+                </button>
               </div>
-            )}
 
-            {finalSelectedTags.length > 0 && (
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                {" "}
-                {/* Added overflow-x-auto and pb-2 for scrollbar */}
-                {finalSelectedTags.map((tag) => (
-                  <div
-                    key={tag}
-                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
-                  >
-                    {tag}
-                    <button
-                      onClick={() => handleRemoveFinalTag(tag)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
+              {finalSelectedTracks.length > 0 && (
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                  {" "}
+                  {/* Added overflow-x-auto and pb-2 for scrollbar */}
+                  {finalSelectedTracks.map((track) => (
+                    <div
+                      key={track.spotifyId}
+                      className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
                     >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      <Image
+                        src={track.albumImageUrl || "/default-image.jpg"}
+                        width={20}
+                        height={20}
+                        alt={track.name || ""}
+                        className="rounded-full mr-2"
+                      />
+                      {track.name} - {track.artistName}
+                      <button
+                        onClick={() => handleRemoveFinalTrack(track)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-            <textarea
-              className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
-              placeholder="本文をマークダウンで入力してください"
-              value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              style={{ fontSize: `${editorZoom * 16}px` }}
-            />
-            <div className="flex justify-end mt-4">
-              <button
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
-                onClick={handleSubmit}
-              >
-                記事を更新する
-              </button>
-              <button
-                className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors ml-4"
-                onClick={handleDelete}
-              >
-                記事を削除する
-              </button>
+              {finalSelectedTags.length > 0 && (
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                  {" "}
+                  {/* Added overflow-x-auto and pb-2 for scrollbar */}
+                  {finalSelectedTags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                    >
+                      {tag}
+                      <button
+                        onClick={() => handleRemoveFinalTag(tag)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <textarea
+                className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
+                placeholder="本文をマークダウンで入力してください"
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+                style={{ fontSize: `${editorZoom * 16}px` }}
+              />
+              <div className="flex justify-end mt-4">
+                <button
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+                  onClick={handleSubmit}
+                >
+                  記事を更新する
+                </button>
+                <button
+                  className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors ml-4"
+                  onClick={handleDelete}
+                >
+                  記事を削除する
+                </button>
+              </div>
             </div>
           </div>
+
+          <TagModal
+            isOpen={isTagModalOpen}
+            onClose={() => setIsTagModalOpen(false)}
+            onSelectTags={handleTagSelect}
+            initialSelectedTags={finalSelectedTags}
+          />
+
+          <SpotifySearchModal
+            isOpen={isSpotifyModalOpen}
+            onClose={() => setIsSpotifyModalOpen(false)}
+            onSelectTracks={handleTrackSelect}
+            initialSelectedTracks={finalSelectedTracks}
+          />
+
+          <ImageUploadModal
+            isOpen={isHeaderImageModalOpen}
+            onClose={() => setIsHeaderImageModalOpen(false)}
+            onImageUpload={handleImageUpload}
+            currentImageUrl={
+              currentUploadType === "header" ? headerImageUrl : undefined
+            }
+          />
         </div>
-
-        <TagModal
-          isOpen={isTagModalOpen}
-          onClose={() => setIsTagModalOpen(false)}
-          onSelectTags={handleTagSelect}
-          initialSelectedTags={finalSelectedTags}
-        />
-
-        <SpotifySearchModal
-          isOpen={isSpotifyModalOpen}
-          onClose={() => setIsSpotifyModalOpen(false)}
-          onSelectTracks={handleTrackSelect}
-          initialSelectedTracks={finalSelectedTracks}
-        />
       </div>
     </>
   );

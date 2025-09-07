@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 
 	model "github.com/kankankanp/Muslog/internal/entity"
@@ -9,10 +10,10 @@ import (
 )
 
 type LikeService interface {
-	LikePost(postID uint, userID string) error
-	UnlikePost(postID uint, userID string) error
-	IsPostLikedByUser(postID uint, userID string) (bool, error)
-	ToggleLike(postID uint, userID string) (bool, error) // Returns true if liked, false if unliked
+	LikePost(ctx context.Context, postID uint, userID string) error
+	UnlikePost(ctx context.Context, postID uint, userID string) error
+	IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error)
+	ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) // Returns true if liked, false if unliked
 }
 
 type likeService struct {
@@ -24,9 +25,9 @@ func NewLikeService(likeRepository repository.LikeRepository, postRepository rep
 	return &likeService{likeRepository: likeRepository, postRepository: postRepository}
 }
 
-func (s *likeService) LikePost(postID uint, userID string) error {
+func (s *likeService) LikePost(ctx context.Context, postID uint, userID string) error {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -54,12 +55,12 @@ func (s *likeService) LikePost(postID uint, userID string) error {
 
 	// Increment likes count in post
 	post.LikesCount++
-	return s.postRepository.Update(post)
+	return s.postRepository.Update(ctx, post)
 }
 
-func (s *likeService) UnlikePost(postID uint, userID string) error {
+func (s *likeService) UnlikePost(ctx context.Context, postID uint, userID string) error {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("post not found")
@@ -83,12 +84,12 @@ func (s *likeService) UnlikePost(postID uint, userID string) error {
 
 	// Decrement likes count in post
 	post.LikesCount--
-	return s.postRepository.Update(post)
+	return s.postRepository.Update(ctx, post)
 }
 
-func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
+func (s *likeService) ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) {
 	// Check if the post exists
-	post, err := s.postRepository.FindByID(postID)
+	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, errors.New("post not found")
@@ -108,7 +109,7 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 			return false, err
 		}
 		post.LikesCount--
-		if err := s.postRepository.Update(post); err != nil {
+		if err := s.postRepository.Update(ctx, post); err != nil {
 			return false, err
 		}
 		return false, nil // Unliked
@@ -122,14 +123,14 @@ func (s *likeService) ToggleLike(postID uint, userID string) (bool, error) {
 			return false, err
 		}
 		post.LikesCount++
-		if err := s.postRepository.Update(post); err != nil {
+		if err := s.postRepository.Update(ctx, post); err != nil {
 			return false, err
 		}
 		return true, nil // Liked
 	}
 }
 
-func (s *likeService) IsPostLikedByUser(postID uint, userID string) (bool, error) {
+func (s *likeService) IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error) {
 	like, err := s.likeRepository.GetLike(postID, userID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, err
