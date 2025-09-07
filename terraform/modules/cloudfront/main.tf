@@ -40,15 +40,27 @@ resource "aws_cloudfront_distribution" "main" {
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
 
     forwarded_values {
-      query_string = false
+      query_string = true
+      headers      = ["Authorization", "Content-Type", "Origin", "Accept", "Accept-Language", "User-Agent", "Host"]
       cookies {
-        forward = "none"
+        forward = "all"
       }
     }
 
+    # Keep SPA rewrite at viewer-request if present
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.url_rewrite.arn
+    }
+
+    # Attach Lambda@Edge for SSR on origin-request if provided
+    dynamic "lambda_function_association" {
+      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
+      content {
+        event_type   = "origin-request"
+        lambda_arn   = lambda_function_association.value
+        include_body = true
+      }
     }
   }
 
@@ -64,6 +76,48 @@ resource "aws_cloudfront_distribution" "main" {
       headers      = ["Authorization", "Content-Type", "Origin"]
       cookies {
         forward = "all"
+      }
+    }
+  }
+
+  # Serve Next static assets from S3 with caching
+  ordered_cache_behavior {
+    path_pattern           = "/_next/static/*"
+    target_origin_id       = "s3-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  # SSR demo path handled by Lambda@Edge without viewer-request rewrite
+  ordered_cache_behavior {
+    path_pattern           = "/ssr/*"
+    target_origin_id       = "s3-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Content-Type", "Origin", "Accept", "Accept-Language", "User-Agent", "Host"]
+      cookies {
+        forward = "all"
+      }
+    }
+
+    dynamic "lambda_function_association" {
+      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
+      content {
+        event_type   = "origin-request"
+        lambda_arn   = lambda_function_association.value
+        include_body = true
       }
     }
   }

@@ -18,9 +18,14 @@ variable "alb_dns_name" {
   type        = string
 }
 
+variable "lambda_edge_origin_request_arn" {
+  description = "(Optional) Qualified ARN of Lambda@Edge function for origin-request."
+  type        = string
+  default     = ""
+}
+
 variable "url_rewrite_function_path" {
   description = "The path to the URL rewrite function code."
   type        = string
 }
-
 

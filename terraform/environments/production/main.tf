@@ -2,6 +2,10 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "aws" {
+  alias  = "useast1"
+  region = "us-east-1"
+}
 data "aws_caller_identity" "current" {}
 
 module "network" {
@@ -81,6 +85,16 @@ module "cloudfront" {
   alb_dns_name                        = module.alb.alb_dns_name
   environment                         = var.environment
   url_rewrite_function_path           = "../../../frontend/url-rewrite-function.js"
+  lambda_edge_origin_request_arn      = module.lambda_edge.lambda_function_qualified_arn
 }
 
+
+module "lambda_edge" {
+  source             = "../../modules/lambda_edge"
+  providers = {
+    aws.useast1 = aws.useast1
+  }
+  environment        = var.environment
+  function_source_dir = "../../lambda-edge-ssr"
+}
 
