@@ -39,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
 }
 
 resource "aws_lambda_function" "edge_ssr" {
-  function_name    = "${var.environment}-edge-ssr"
+  function_name    = "${var.environment}-edge-ssr-use1"
   description      = "SSR handler for CloudFront (Lambda@Edge)"
   role             = aws_iam_role.lambda_edge_role.arn
   handler          = "index.handler"

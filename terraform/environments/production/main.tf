@@ -90,11 +90,10 @@ module "cloudfront" {
 
 
 module "lambda_edge" {
-  source             = "../../modules/lambda_edge"
+  source = "../../modules/lambda_edge"
   providers = {
-    aws.useast1 = aws.useast1
+    aws = aws.useast1
   }
-  environment        = var.environment
+  environment         = var.environment
   function_source_dir = "../../lambda-edge-ssr"
 }
-
