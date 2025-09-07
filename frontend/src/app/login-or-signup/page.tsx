@@ -1,8 +1,7 @@
-// components/AuthContainer.tsx
 "use client";
 
 import { useState } from "react";
-import LoginForm from "@/components/elements/forms/LoginForm";
+import LoginFormWrapper from "@/components/elements/forms/LoginformWrapper";
 import SignupForm from "@/components/elements/forms/SignupForm";
 
 const Page = () => {
@@ -19,29 +18,29 @@ const Page = () => {
       </div>
 
       <div className="w-full md:w-3/5 p-12 bg-white flex flex-col justify-center items-center">
-          <div className="flex w-full max-w-sm mb-8 rounded-full border border-gray-300 overflow-hidden">
-            <button
-              className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
-                isLoginForm
-                  ? "bg-gray-800 text-white font-bold"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => setIsLoginForm(true)}
-            >
-              ログイン
-            </button>
-            <button
-              className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
-                !isLoginForm
-                  ? "bg-gray-800 text-white font-bold"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => setIsLoginForm(false)}
-            >
-              新規登録
-            </button>
-          </div>
-          {isLoginForm ? <LoginForm /> : <SignupForm />}
+        <div className="flex w-full max-w-sm mb-8 rounded-full border border-gray-300 overflow-hidden">
+          <button
+            className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
+              isLoginForm
+                ? "bg-gray-800 text-white font-bold"
+                : "bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+            onClick={() => setIsLoginForm(true)}
+          >
+            ログイン
+          </button>
+          <button
+            className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
+              !isLoginForm
+                ? "bg-gray-800 text-white font-bold"
+                : "bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+            onClick={() => setIsLoginForm(false)}
+          >
+            新規登録
+          </button>
+        </div>
+        {isLoginForm ? <LoginFormWrapper /> : <SignupForm />}
       </div>
     </div>
   );
