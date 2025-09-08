@@ -5,7 +5,6 @@ import type {
 } from "@/libs/api/generated/orval/model";
 import { serverInstance } from "@/libs/api/server-instance";
 
-// サーバーサイド用のgetPosts関数
 const getPostsServer = (signal?: AbortSignal) => {
   return serverInstance<GetPosts200>({ url: `/posts`, method: "GET", signal });
 };
