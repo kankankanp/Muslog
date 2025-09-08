@@ -1,13 +1,16 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
-import { usePostPostsPostIDLike, useDeletePostsPostIDUnlike } from "@/libs/api/generated/orval/likes/likes";
+import {
+  usePostPostsPostIDLike,
+  useDeletePostsPostIDUnlike,
+} from "@/libs/api/generated/orval/likes/likes";
 import { useGetPostsId } from "@/libs/api/generated/orval/posts/posts";
 import { RootState } from "@/libs/store/store";
-import Image from "next/image";
-import ReactMarkdown from "react-markdown";
 
 export default function Page() {
   const params = useParams();
