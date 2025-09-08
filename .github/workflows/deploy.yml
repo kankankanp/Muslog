@@ -17,7 +17,7 @@ env:
   ECS_SERVICE_NAME: production-backend-service
   ECS_TASK_DEFINITION: terraform/environments/production/task-definition.json
   FRONTEND_S3_BUCKET: muslog-frontend-production
-  CLOUDFRONT_DISTRIBUTION_ID: E2YFD76QWKVXAV
+  CLOUDFRONT_DISTRIBUTION_ID: E14S0Y1JU8QVZY
 
 jobs:
   check-changes:
@@ -124,14 +124,6 @@ jobs:
           role-to-assume: arn:aws:iam::135808923918:role/muslog
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Resolve CloudFront distribution ID
-        id: resolve-cf
-        run: |
-          CF_ID=$(aws cloudfront list-distributions \
-            --query "DistributionList.Items[?Comment=='CloudFront distribution for production'].Id" \
-            --output text)
-          echo "id=$CF_ID" >> $GITHUB_OUTPUT
-
       - name: Deploy OpenNext assets to S3
         working-directory: ./frontend
         run: |
@@ -140,5 +132,5 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ steps.resolve-cf.outputs.id }} \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
