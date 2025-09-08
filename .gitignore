@@ -42,3 +42,4 @@ pg_log/
 *.tfstate.backup
 *.tfstate.lock.info
 .terraform/
+.open-next

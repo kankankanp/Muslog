@@ -19,3 +19,21 @@ variable "cache_bucket_arn" {
   type        = string
   default     = ""
 }
+
+variable "function_name" {
+  description = "Override Lambda function name. Leave empty to use default."
+  type        = string
+  default     = ""
+}
+
+variable "role_name_suffix" {
+  description = "Optional suffix to make IAM role name unique per function (e.g., 'image')."
+  type        = string
+  default     = ""
+}
+
+variable "zip_name_suffix" {
+  description = "Optional suffix to make archive filename unique per instance (e.g., '-image')."
+  type        = string
+  default     = ""
+}

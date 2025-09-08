@@ -14,11 +14,11 @@ terraform {
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = var.function_source_dir
-  output_path = "${path.module}/edge-ssr.zip"
+  output_path = "${path.module}/edge-ssr${var.zip_name_suffix}.zip"
 }
 
 resource "aws_iam_role" "lambda_edge_role" {
-  name               = "${var.environment}-lambda-edge-role"
+  name               = var.role_name_suffix == "" ? "${var.environment}-lambda-edge-role" : "${var.environment}-lambda-edge-${var.role_name_suffix}-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -39,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
 }
 
 resource "aws_lambda_function" "edge_ssr" {
-  function_name    = "${var.environment}-edge-ssr-use1"
+  function_name    = var.function_name != "" ? var.function_name : "${var.environment}-edge-ssr-use1"
   description      = "SSR handler for CloudFront (Lambda@Edge)"
   role             = aws_iam_role.lambda_edge_role.arn
   handler          = "index.handler"
@@ -49,9 +49,6 @@ resource "aws_lambda_function" "edge_ssr" {
   memory_size      = 512
   timeout          = 5
 
-  environment {
-    variables = var.environment_variables
-  }
 }
 
 # Optional: allow Lambda@Edge to read/write ISR cache in a specified S3 bucket
