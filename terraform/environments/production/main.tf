@@ -86,6 +86,7 @@ module "cloudfront" {
   environment                         = var.environment
   url_rewrite_function_path           = "../../../frontend/url-rewrite-function.js"
   lambda_edge_origin_request_arn      = module.lambda_edge.lambda_function_qualified_arn
+  lambda_edge_image_origin_request_arn = module.lambda_edge_image.lambda_function_qualified_arn
 }
 
 
@@ -95,5 +96,29 @@ module "lambda_edge" {
     aws = aws.useast1
   }
   environment         = var.environment
-  function_source_dir = "../../lambda-edge-ssr"
+  # OpenNext server function 成果物
+  function_source_dir = "../../../frontend/.open-next/server-function"
+  # OpenNextの実装に応じて必要な環境変数を設定してください。
+  # 代表例: キャッシュ/アセット参照用バケット名
+  environment_variables = {
+    # OpenNextのバージョンにより名称が異なる場合があります。
+    # 例: CACHE_BUCKET_NAME / OPEN_NEXT_CACHE_BUCKET / ASSETS_BUCKET_NAME など
+    CACHE_BUCKET_NAME  = module.s3.open_next_cache_bucket_name
+    ASSETS_BUCKET_NAME = module.s3.frontend_bucket_name
+    AWS_REGION         = var.aws_region
+  }
+  cache_bucket_arn = module.s3.open_next_cache_bucket_arn
+}
+
+# 画像最適化用 Lambda@Edge（OpenNext成果物）
+module "lambda_edge_image" {
+  source = "../../modules/lambda_edge"
+  providers = {
+    aws = aws.useast1
+  }
+  environment         = var.environment
+  function_source_dir = "../../../frontend/.open-next/image-optimization-function"
+  environment_variables = {
+    AWS_REGION = var.aws_region
+  }
 }

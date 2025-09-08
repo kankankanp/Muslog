@@ -11,11 +11,10 @@ module "network" {
 }
 
 module "s3" {
-  source                          = "../../modules/s3"
-  project_name                    = var.project_name
-  environment                     = var.environment
-  cloudfront_origin_access_identity_arn = module.cloudfront.s3_origin_access_identity_arn
-  ecs_task_execution_role_arn     = module.ecs.ecs_task_execution_role_arn
+  source                      = "../../modules/s3"
+  project_name                = var.project_name
+  environment                 = var.environment
+  ecs_task_execution_role_arn = module.ecs.ecs_task_execution_role_arn
 }
 
 module "alb" {
@@ -71,12 +70,29 @@ module "ecs-scheduler" {
 }
 
 module "cloudfront" {
-  source                              = "../../modules/cloudfront"
-  s3_bucket_regional_domain_name      = module.s3.frontend_bucket_regional_domain_name
-  s3_origin_access_identity_arn       = module.s3.s3_origin_access_identity_arn
-  alb_dns_name                        = module.alb.alb_dns_name
-  environment                         = var.environment
+  source                         = "../../modules/cloudfront"
+  s3_bucket_regional_domain_name = module.s3.frontend_bucket_regional_domain_name
+  s3_origin_access_identity_path = module.s3.s3_origin_access_identity_path
+  alb_dns_name                   = module.alb.alb_dns_name
+  environment                    = var.environment
+  url_rewrite_function_path      = "../../../frontend/url-rewrite-function.js"
+  # 開発環境でもSSRを試せるようにLambda@Edgeを関連付け（us-east-1必須のため必要に応じてコメントアウト）
+  # lambda_edge_origin_request_arn = module.lambda_edge.lambda_function_qualified_arn
 }
+
+# us-east-1にデプロイされるLambda@Edge（必要時のみ有効化）
+# provider "aws" {
+#   alias  = "useast1"
+#   region = "us-east-1"
+# }
+# module "lambda_edge" {
+#   source = "../../modules/lambda_edge"
+#   providers = {
+#     aws = aws.useast1
+#   }
+#   environment         = var.environment
+#   function_source_dir = "../../lambda-edge-ssr"
+# }
 
 
 

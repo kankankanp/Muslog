@@ -17,3 +17,13 @@ output "media_bucket_name" {
   description = "The name of the media S3 bucket."
   value       = aws_s3_bucket.media_bucket.id
 }
+
+output "open_next_cache_bucket_name" {
+  description = "The name of the OpenNext cache S3 bucket."
+  value       = aws_s3_bucket.open_next_cache_bucket.id
+}
+
+output "open_next_cache_bucket_arn" {
+  description = "The ARN of the OpenNext cache S3 bucket."
+  value       = aws_s3_bucket.open_next_cache_bucket.arn
+}

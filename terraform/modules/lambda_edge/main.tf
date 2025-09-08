@@ -48,4 +48,34 @@ resource "aws_lambda_function" "edge_ssr" {
   publish          = true
   memory_size      = 512
   timeout          = 5
+
+  environment {
+    variables = var.environment_variables
+  }
+}
+
+# Optional: allow Lambda@Edge to read/write ISR cache in a specified S3 bucket
+resource "aws_iam_policy" "lambda_edge_cache_rw" {
+  count = var.cache_bucket_arn == "" ? 0 : 1
+  name  = "${var.environment}-lambda-edge-cache-rw"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = ["${var.cache_bucket_arn}/*"]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_edge_cache_rw_attach" {
+  count      = var.cache_bucket_arn == "" ? 0 : 1
+  role       = aws_iam_role.lambda_edge_role.name
+  policy_arn = aws_iam_policy.lambda_edge_cache_rw[0].arn
 }

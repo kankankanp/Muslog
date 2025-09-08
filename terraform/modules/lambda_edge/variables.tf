@@ -8,3 +8,14 @@ variable "environment" {
   type        = string
 }
 
+variable "environment_variables" {
+  description = "Environment variables to inject into the Lambda@Edge function."
+  type        = map(string)
+  default     = {}
+}
+
+variable "cache_bucket_arn" {
+  description = "Optional ARN of S3 bucket used for ISR/cache by the function. Grants s3 read/write."
+  type        = string
+  default     = ""
+}

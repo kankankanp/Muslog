@@ -24,8 +24,13 @@ variable "lambda_edge_origin_request_arn" {
   default     = ""
 }
 
+variable "lambda_edge_image_origin_request_arn" {
+  description = "(Optional) Qualified ARN of Lambda@Edge image optimization function for origin-request."
+  type        = string
+  default     = ""
+}
+
 variable "url_rewrite_function_path" {
   description = "The path to the URL rewrite function code."
   type        = string
 }
-

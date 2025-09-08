@@ -47,10 +47,13 @@ resource "aws_cloudfront_distribution" "main" {
       }
     }
 
-    # Keep SPA rewrite at viewer-request if present
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.url_rewrite.arn
+    # SPA用のURLリライトはSSR未使用時のみ有効化
+    dynamic "function_association" {
+      for_each = var.lambda_edge_origin_request_arn == "" ? [1] : []
+      content {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.url_rewrite.arn
+      }
     }
 
     # Attach Lambda@Edge for SSR on origin-request if provided
@@ -92,6 +95,31 @@ resource "aws_cloudfront_distribution" "main" {
       query_string = false
       cookies {
         forward = "none"
+      }
+    }
+  }
+
+  # Next.js 画像最適化
+  ordered_cache_behavior {
+    path_pattern           = "/_next/image*"
+    target_origin_id       = "s3-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = true
+      cookies {
+        forward = "none"
+      }
+    }
+
+    dynamic "lambda_function_association" {
+      for_each = var.lambda_edge_image_origin_request_arn == "" ? [] : [var.lambda_edge_image_origin_request_arn]
+      content {
+        event_type   = "origin-request"
+        lambda_arn   = lambda_function_association.value
+        include_body = true
       }
     }
   }
