@@ -73,3 +73,20 @@ data "aws_iam_policy_document" "media_bucket_policy_document" {
     }
   }
 }
+
+# OpenNext/ISR 用のキャッシュバケット（プライベート）
+resource "aws_s3_bucket" "open_next_cache_bucket" {
+  bucket = "${var.project_name}-open-next-cache-${var.environment}"
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "open_next_cache_block" {
+  bucket                  = aws_s3_bucket.open_next_cache_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
