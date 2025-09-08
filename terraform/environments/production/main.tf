@@ -109,8 +109,8 @@ module "lambda_edge" {
     CACHE_BUCKET_NAME  = module.s3.open_next_cache_bucket_name
     ASSETS_BUCKET_NAME = module.s3.frontend_bucket_name
   }
-  # 初回はキャッシュS3の書込権限を付与せず（後で有効化可）
-  # cache_bucket_arn = module.s3.open_next_cache_bucket_arn
+  # SSRでISR/キャッシュを利用するためS3権限を付与
+  cache_bucket_arn = module.s3.open_next_cache_bucket_arn
 }
 
 # 画像最適化用 Lambda@Edge（OpenNext成果物）

@@ -27,7 +27,6 @@ export async function generateStaticParams() {
   }
 }
 
-// サーバーサイド用のgetPostsId関数
 const getPostsIdServer = (id: number, signal?: AbortSignal) => {
   return serverInstance<GetPostsId200>({
     url: `/posts/${id}`,
