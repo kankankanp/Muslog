@@ -66,6 +66,11 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
+	// Ensure required PostgreSQL extensions
+	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
+		log.Fatalf("failed to create uuid-ossp extension: %v", err)
+	}
+
 	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}, &model.Message{}, &model.Community{}); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
