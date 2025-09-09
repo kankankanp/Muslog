@@ -31,7 +31,6 @@ func NewImageUsecase(s3Client *s3.Client, s3Bucket string, s3Region string) Imag
 }
 
 func (u *imageUsecase) UploadImage(ctx context.Context, file multipart.File, fileHeader *multipart.FileHeader, folder string) (string, error) {
-	// Generate a unique filename
 	ext := filepath.Ext(fileHeader.Filename)
 	fileName := fmt.Sprintf("%s%s", uuid.New().String(), ext)
 	key := fmt.Sprintf("%s/%s", folder, fileName)
