@@ -293,6 +293,10 @@ aws secretsmanager delete-secret --secret-id production/app_secrets --region ap-
 
 aws secretsmanager delete-secret --secret-id production/app_secrets --region ap-northeast-1 --force-delete-without-recovery
 
+aws logs describe-log-groups --region ap-northeast-1 --log-
+group-name-prefix "/aws/lambda/production-open-next-regional"
+--query 'logGroups[].logGroupName' --output text
+
 ### DB のマイグレーション・シーディング
 
 ```
