@@ -32,6 +32,12 @@ variable "role_name_suffix" {
   default     = ""
 }
 
+variable "skip_destroy" {
+  description = "When true, do not delete the Lambda function on destroy (useful for Lambda@Edge replicas)."
+  type        = bool
+  default     = false
+}
+
 variable "zip_name_suffix" {
   description = "Optional suffix to make archive filename unique per instance (e.g., '-image')."
   type        = string

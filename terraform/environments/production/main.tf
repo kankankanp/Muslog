@@ -143,3 +143,17 @@ module "lambda_edge_demo" {
   role_name_suffix    = "demo"
   zip_name_suffix     = "-demo"
 }
+# 画像最適化用 Lambda@Edge（OpenNext成果物）
+module "lambda_edge_image" {
+  source = "../../modules/lambda_edge"
+  providers = {
+    aws = aws.useast1
+  }
+  environment         = var.environment
+  function_source_dir = "../../../frontend/.open-next/image-optimization-function"
+  function_name       = "${var.environment}-edge-image-use1"
+  role_name_suffix    = "image"
+  zip_name_suffix     = "-image"
+  skip_destroy        = true
+  # 関連付けは行わない（CloudFrontはAPIGW経由で処理）
+}

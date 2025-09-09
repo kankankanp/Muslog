@@ -55,7 +55,8 @@ resource "aws_cloudfront_distribution" "main" {
 
     forwarded_values {
       query_string = true
-      headers      = ["Authorization", "Content-Type", "Origin", "Accept", "Accept-Language", "User-Agent", "Host"]
+      # API GatewayへはHostヘッダを転送しない（APIGWは自ホスト名を期待）
+      headers      = var.apigw_domain_name == "" ? ["Authorization", "Content-Type", "Origin", "Accept", "Accept-Language", "User-Agent", "Host"] : ["Authorization", "Content-Type", "Origin", "Accept", "Accept-Language", "User-Agent"]
       cookies {
         forward = "all"
       }
