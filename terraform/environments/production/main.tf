@@ -85,8 +85,8 @@ module "cloudfront" {
   alb_dns_name                        = module.alb.alb_dns_name
   environment                         = var.environment
   url_rewrite_function_path           = "../../../frontend/url-rewrite-function.js"
-  lambda_edge_origin_request_arn      = module.lambda_edge.lambda_function_qualified_arn
-  lambda_edge_image_origin_request_arn = module.lambda_edge_image.lambda_function_qualified_arn
+  # APIGW(HTTP)をSSRに使用
+  apigw_domain_name                   = module.apigw.api_host
 }
 
 
@@ -103,26 +103,43 @@ module "lambda_edge" {
   zip_name_suffix     = "-server"
   # OpenNextの実装に応じて必要な環境変数を設定してください。
   # 代表例: キャッシュ/アセット参照用バケット名
-  environment_variables = {
-    # OpenNextのバージョンにより名称が異なる場合があります。
-    # 例: CACHE_BUCKET_NAME / OPEN_NEXT_CACHE_BUCKET / ASSETS_BUCKET_NAME など
-    CACHE_BUCKET_NAME  = module.s3.open_next_cache_bucket_name
-    ASSETS_BUCKET_NAME = module.s3.frontend_bucket_name
-  }
+  # Edgeでは環境変数を使用しない（制約のため）
   # SSRでISR/キャッシュを利用するためS3権限を付与
   cache_bucket_arn = module.s3.open_next_cache_bucket_arn
 }
 
-# 画像最適化用 Lambda@Edge（OpenNext成果物）
-module "lambda_edge_image" {
+module "lambda_opennext_regional" {
+  source = "../../modules/lambda_edge"
+  # リージョンLambdaとしてデプロイ（useast1ではなく既定リージョン）
+  environment         = var.environment
+  function_source_dir = "../../../frontend/.open-next/server-functions/default"
+  function_name       = "${var.environment}-open-next-regional"
+  role_name_suffix    = "regional"
+  zip_name_suffix     = "-regional"
+  # リージョンLambdaでは環境変数利用可
+  environment_variables = {
+    CACHE_BUCKET_NAME  = module.s3.open_next_cache_bucket_name
+    ASSETS_BUCKET_NAME = module.s3.frontend_bucket_name
+  }
+  cache_bucket_arn = module.s3.open_next_cache_bucket_arn
+}
+
+module "apigw" {
+  source               = "../../modules/apigw"
+  environment          = var.environment
+  lambda_function_arn  = module.lambda_opennext_regional.lambda_function_qualified_arn
+  lambda_function_name = module.lambda_opennext_regional.lambda_role_name == null ? "${var.environment}-open-next-regional" : "${var.environment}-open-next-regional"
+}
+
+# デモ用 SSR Lambda@Edge（/ と /ssr/* の疎通確認用）
+module "lambda_edge_demo" {
   source = "../../modules/lambda_edge"
   providers = {
     aws = aws.useast1
   }
   environment         = var.environment
-  function_source_dir = "../../../frontend/.open-next/image-optimization-function"
-  function_name       = "${var.environment}-edge-image-use1"
-  role_name_suffix    = "image"
-  zip_name_suffix     = "-image"
-  # 画像最適化関数は環境変数なし
+  function_source_dir = "../../lambda-edge-ssr"
+  function_name       = "${var.environment}-edge-ssr-demo-use1"
+  role_name_suffix    = "demo"
+  zip_name_suffix     = "-demo"
 }

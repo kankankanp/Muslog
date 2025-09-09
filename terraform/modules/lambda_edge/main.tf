@@ -47,7 +47,7 @@ resource "aws_lambda_function" "edge_ssr" {
   filename         = data.archive_file.lambda_zip.output_path
   publish          = true
   memory_size      = 512
-  timeout          = 5
+  timeout          = 15
 
 }
 

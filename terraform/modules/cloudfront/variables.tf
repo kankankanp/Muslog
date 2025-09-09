@@ -18,6 +18,12 @@ variable "alb_dns_name" {
   type        = string
 }
 
+variable "apigw_domain_name" {
+  description = "(Optional) The hostname of the API Gateway HTTP API for SSR."
+  type        = string
+  default     = ""
+}
+
 variable "lambda_edge_origin_request_arn" {
   description = "(Optional) Qualified ARN of Lambda@Edge function for origin-request."
   type        = string

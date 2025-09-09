@@ -33,8 +33,22 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
+  dynamic "origin" {
+    for_each = var.apigw_domain_name == "" ? [] : [var.apigw_domain_name]
+    content {
+      domain_name = origin.value
+      origin_id   = "apigw-origin"
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+    }
+  }
+
   default_cache_behavior {
-    target_origin_id       = "s3-origin"
+    target_origin_id       = var.apigw_domain_name == "" ? "s3-origin" : "apigw-origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
@@ -49,17 +63,16 @@ resource "aws_cloudfront_distribution" "main" {
 
     # SPA用のURLリライトはSSR未使用時のみ有効化
     dynamic "function_association" {
-      for_each = var.lambda_edge_origin_request_arn == "" ? [1] : []
+      for_each = var.lambda_edge_origin_request_arn == "" && var.apigw_domain_name == "" ? [1] : []
       content {
         event_type   = "viewer-request"
         function_arn = aws_cloudfront_function.url_rewrite.arn
       }
     }
 
-    # Attach Lambda@Edge for SSR on origin-request if provided
-    # SSR（OpenNext）をデフォルト経路に関連付け
+    # Lambda@Edge SSR（使用時のみ）
     dynamic "lambda_function_association" {
-      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
+      for_each = var.apigw_domain_name == "" && var.lambda_edge_origin_request_arn != "" ? [var.lambda_edge_origin_request_arn] : []
       content {
         event_type   = "origin-request"
         lambda_arn   = lambda_function_association.value
@@ -116,10 +129,10 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  # Next.js 画像最適化
+  # Next.js 画像最適化（APIGW経由で実行）
   ordered_cache_behavior {
     path_pattern           = "/_next/image*"
-    target_origin_id       = "s3-origin"
+    target_origin_id       = var.apigw_domain_name == "" ? "s3-origin" : "apigw-origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -130,21 +143,28 @@ resource "aws_cloudfront_distribution" "main" {
         forward = "none"
       }
     }
+  }
 
-    dynamic "lambda_function_association" {
-      for_each = var.lambda_edge_image_origin_request_arn == "" ? [] : [var.lambda_edge_image_origin_request_arn]
-      content {
-        event_type   = "origin-request"
-        lambda_arn   = lambda_function_association.value
-        include_body = true
+  # Next.js データフェッチ（APIGWへ）
+  ordered_cache_behavior {
+    path_pattern           = "/_next/data/*"
+    target_origin_id       = var.apigw_domain_name == "" ? "s3-origin" : "apigw-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = true
+      cookies {
+        forward = "all"
       }
     }
   }
 
-  # SSR demo path handled by Lambda@Edge without viewer-request rewrite
+  # SSR demo path handled by Lambda@Edge without viewer-request rewrite（APIGW利用時は無効化）
   ordered_cache_behavior {
     path_pattern           = "/ssr/*"
-    target_origin_id       = "s3-origin"
+    target_origin_id       = var.apigw_domain_name == "" ? "s3-origin" : "apigw-origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
@@ -158,7 +178,7 @@ resource "aws_cloudfront_distribution" "main" {
     }
 
     dynamic "lambda_function_association" {
-      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
+      for_each = var.apigw_domain_name == "" && var.lambda_edge_origin_request_arn != "" ? [var.lambda_edge_origin_request_arn] : []
       content {
         event_type   = "origin-request"
         lambda_arn   = lambda_function_association.value
