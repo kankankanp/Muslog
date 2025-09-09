@@ -103,5 +103,9 @@ variable "google_client_id" {
   default     = ""
 }
 
+variable "media_bucket_name" {
+  description = "S3 media bucket name for uploads"
+  type        = string
+}
 
 

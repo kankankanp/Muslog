@@ -124,6 +124,8 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "DB_PORT", value = var.db_port },
         { name = "DB_USER", value = var.db_username },
         { name = "DB_NAME", value = var.db_name },
+        { name = "S3_REGION", value = var.aws_region },
+        { name = "S3_BUCKET_NAME", value = var.media_bucket_name },
         { name = "SPOTIFY_CLIENT_ID", value = var.spotify_client_id },
         { name = "GOOGLE_REDIRECT_URL", value = var.google_redirect_url },
         { name = "FRONTEND_URL", value = var.frontend_url },
@@ -132,7 +134,8 @@ resource "aws_ecs_task_definition" "backend" {
       secrets = [
         { name = "DB_PASSWORD", valueFrom = "${var.app_secrets_secret_arn}:DB_PASSWORD::" },
         { name = "SPOTIFY_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:SPOTIFY_CLIENT_SECRET::" },
-        { name = "GOOGLE_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:GOOGLE_CLIENT_SECRET::" }
+        { name = "GOOGLE_CLIENT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:GOOGLE_CLIENT_SECRET::" },
+        { name = "JWT_SECRET", valueFrom = "${var.app_secrets_secret_arn}:JWT_SECRET::" }
       ],
       logConfiguration = {
         logDriver = "awslogs",

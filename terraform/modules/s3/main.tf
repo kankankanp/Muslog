@@ -72,6 +72,18 @@ data "aws_iam_policy_document" "media_bucket_policy_document" {
       identifiers = [var.ecs_task_execution_role_arn]
     }
   }
+
+  dynamic "statement" {
+    for_each = var.ecs_task_role_arn == "" ? [] : [var.ecs_task_role_arn]
+    content {
+      actions   = ["s3:PutObject"]
+      resources = ["${aws_s3_bucket.media_bucket.arn}/*"]
+      principals {
+        type        = "AWS"
+        identifiers = [statement.value]
+      }
+    }
+  }
 }
 
 # OpenNext/ISR 用のキャッシュバケット（プライベート）

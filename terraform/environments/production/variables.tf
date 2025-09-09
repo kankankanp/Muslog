@@ -60,3 +60,8 @@ variable "spotify_client_id" {
   sensitive   = true
 }
 
+variable "jwt_secret" {
+  description = "JWT signing secret for backend."
+  type        = string
+  sensitive   = true
+}

@@ -10,5 +10,6 @@ resource "aws_secretsmanager_secret_version" "app_secrets_version" {
     SPOTIFY_CLIENT_SECRET = var.spotify_client_secret
     GOOGLE_CLIENT_ID      = var.google_client_id
     GOOGLE_CLIENT_SECRET  = var.google_client_secret
+    JWT_SECRET            = var.jwt_secret
   })
 }

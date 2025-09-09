@@ -19,6 +19,7 @@ module "s3" {
   project_name                    = var.project_name
   environment                     = var.environment
   ecs_task_execution_role_arn     = module.ecs.ecs_task_execution_role_arn
+  ecs_task_role_arn               = module.ecs.ecs_task_role_arn
 }
 
 module "alb" {
@@ -64,6 +65,7 @@ module "ecs" {
   db_cluster_arn           = module.rds.db_cluster_arn
   db_cluster_identifier    = module.rds.db_cluster_identifier
   depends_on               = [module.alb]
+  media_bucket_name        = module.s3.media_bucket_name
 }
 
 module "ecs-scheduler" {
