@@ -10,7 +10,7 @@ resource "aws_cloudfront_distribution" "main" {
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "CloudFront distribution for ${var.environment}"
-  default_root_object = "index.html"
+  # SSR有効化のためdefault_root_objectは未設定（"/"をLambda@Edgeで処理）
 
   origin {
     domain_name = var.s3_bucket_regional_domain_name
@@ -57,10 +57,14 @@ resource "aws_cloudfront_distribution" "main" {
     }
 
     # Attach Lambda@Edge for SSR on origin-request if provided
-    # デフォルトではSSRのLambda@Edgeを関連付けない（静的や資産配信を優先）
+    # SSR（OpenNext）をデフォルト経路に関連付け
     dynamic "lambda_function_association" {
-      for_each = []
-      content {}
+      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
+      content {
+        event_type   = "origin-request"
+        lambda_arn   = lambda_function_association.value
+        include_body = true
+      }
     }
   }
 
