@@ -61,6 +61,13 @@ resource "aws_iam_policy" "lambda_edge_cache_rw" {
       {
         Effect = "Allow",
         Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [var.cache_bucket_arn]
+      },
+      {
+        Effect = "Allow",
+        Action = [
           "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject"
