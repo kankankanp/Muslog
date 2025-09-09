@@ -57,13 +57,10 @@ resource "aws_cloudfront_distribution" "main" {
     }
 
     # Attach Lambda@Edge for SSR on origin-request if provided
+    # デフォルトではSSRのLambda@Edgeを関連付けない（静的や資産配信を優先）
     dynamic "lambda_function_association" {
-      for_each = var.lambda_edge_origin_request_arn == "" ? [] : [var.lambda_edge_origin_request_arn]
-      content {
-        event_type   = "origin-request"
-        lambda_arn   = lambda_function_association.value
-        include_body = true
-      }
+      for_each = []
+      content {}
     }
   }
 
@@ -93,6 +90,22 @@ resource "aws_cloudfront_distribution" "main" {
 
     forwarded_values {
       query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  # 拡張子を含むリクエスト（例: *.ico, *.png, *.js, *.css）はS3から配信（SSRを通さない）
+  ordered_cache_behavior {
+    path_pattern           = "*.*"
+    target_origin_id       = "s3-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+
+    forwarded_values {
+      query_string = true
       cookies {
         forward = "none"
       }
