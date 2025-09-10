@@ -12,7 +12,6 @@ type userRepositoryImpl struct {
 	DB *gorm.DB
 }
 
-// 戻り値の型を domainRepo.UserRepository にする
 func NewUserRepository(db *gorm.DB) domainRepo.UserRepository {
 	return &userRepositoryImpl{DB: db}
 }

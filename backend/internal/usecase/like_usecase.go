@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 
-	model "github.com/kankankanp/Muslog/internal/domain/entity"
-	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	gorm "gorm.io/gorm"
 )
 
@@ -17,11 +18,11 @@ type LikeUsecase interface {
 }
 
 type likeUsecase struct {
-	likeRepository repository.LikeRepository
-	postRepository repository.PostRepository
+	likeRepository domainRepo.LikeRepository
+	postRepository domainRepo.PostRepository
 }
 
-func NewLikeUsecase(likeRepository repository.LikeRepository, postRepository repository.PostRepository) LikeUsecase {
+func NewLikeUsecase(likeRepository domainRepo.LikeRepository, postRepository domainRepo.PostRepository) LikeUsecase {
 	return &likeUsecase{likeRepository: likeRepository, postRepository: postRepository}
 }
 
@@ -45,7 +46,7 @@ func (s *likeUsecase) LikePost(ctx context.Context, postID uint, userID string) 
 	}
 
 	// Create like
-	newLike := &model.Like{
+	newLike := &entity.Like{
 		PostID: postID,
 		UserID: userID,
 	}
@@ -115,7 +116,7 @@ func (s *likeUsecase) ToggleLike(ctx context.Context, postID uint, userID string
 		return false, nil // Unliked
 	} else {
 		// Post is not liked, so like it
-		newLike := &model.Like{
+		newLike := &entity.Like{
 			PostID: postID,
 			UserID: userID,
 		}

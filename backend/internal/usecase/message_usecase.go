@@ -1,8 +1,9 @@
 package usecase
 
 import (
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+
 	"github.com/kankankanp/Muslog/internal/domain/entity"
-	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 )
 
 // MessageUsecase defines the interface for message-related business logic.
@@ -13,11 +14,11 @@ type MessageUsecase interface {
 
 // messageUsecase implements MessageUsecase.
 type messageUsecase struct {
-	repo repository.MessageRepository
+	repo domainRepo.MessageRepository
 }
 
 // NewMessageUsecase creates a new MessageUsecase.
-func NewMessageUsecase(repo repository.MessageRepository) MessageUsecase {
+func NewMessageUsecase(repo domainRepo.MessageRepository) MessageUsecase {
 	return &messageUsecase{repo: repo}
 }
 

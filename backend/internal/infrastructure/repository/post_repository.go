@@ -5,29 +5,19 @@ import (
 	"fmt"
 
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 	"gorm.io/gorm"
 )
 
-type PostRepository interface {
-	Create(ctx context.Context, post *entity.Post) error
-	FindAll(ctx context.Context, userID string) ([]entity.Post, error)
-	FindByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error)
-	FindByID(ctx context.Context, id uint) (*entity.Post, error)
-	FindByIDWithUserID(ctx context.Context, id uint, userID string) (*entity.Post, error)
-	Update(ctx context.Context, post *entity.Post) error
-	Delete(ctx context.Context, id uint) error
-	SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error)
-}
-
-type postRepository struct {
+type postRepositoryImpl struct {
 	DB *gorm.DB
 }
 
-func NewPostRepository(db *gorm.DB) PostRepository {
-	return &postRepository{DB: db}
+func NewPostRepository(db *gorm.DB) domainRepo.PostRepository {
+	return &postRepositoryImpl{DB: db}
 }
 
-func (r *postRepository) FindByID(ctx context.Context, id uint) (*entity.Post, error) {
+func (r *postRepositoryImpl) FindByID(ctx context.Context, id uint) (*entity.Post, error) {
 	var post entity.Post
 	err := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags").First(&post, id).Error
 	if err != nil {
@@ -36,7 +26,7 @@ func (r *postRepository) FindByID(ctx context.Context, id uint) (*entity.Post, e
 	return &post, nil
 }
 
-func (r *postRepository) FindByIDWithUserID(ctx context.Context, id uint, userID string) (*entity.Post, error) {
+func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, userID string) (*entity.Post, error) {
 	var post entity.Post
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
@@ -53,7 +43,7 @@ func (r *postRepository) FindByIDWithUserID(ctx context.Context, id uint, userID
 	return &post, nil
 }
 
-func (r *postRepository) FindAll(ctx context.Context, userID string) ([]entity.Post, error) {
+func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]entity.Post, error) {
 	var posts []entity.Post
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
@@ -67,15 +57,15 @@ func (r *postRepository) FindAll(ctx context.Context, userID string) ([]entity.P
 	return posts, err
 }
 
-func (r *postRepository) Create(ctx context.Context, post *entity.Post) error {
+func (r *postRepositoryImpl) Create(ctx context.Context, post *entity.Post) error {
 	return r.DB.WithContext(ctx).Create(post).Error
 }
 
-func (r *postRepository) Update(ctx context.Context, post *entity.Post) error {
+func (r *postRepositoryImpl) Update(ctx context.Context, post *entity.Post) error {
 	return r.DB.WithContext(ctx).Save(post).Error
 }
 
-func (r *postRepository) Delete(ctx context.Context, id uint) error {
+func (r *postRepositoryImpl) Delete(ctx context.Context, id uint) error {
 	// 先にtracksを削除
 	err := r.DB.WithContext(ctx).Where("post_id = ?", id).Delete(&entity.Track{}).Error
 	if err != nil {
@@ -84,7 +74,7 @@ func (r *postRepository) Delete(ctx context.Context, id uint) error {
 	return r.DB.WithContext(ctx).Delete(&entity.Post{}, id).Error
 }
 
-func (r *postRepository) FindByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
 	var posts []entity.Post
 	var totalCount int64
 	r.DB.WithContext(ctx).Model(&entity.Post{}).Count(&totalCount)
@@ -104,8 +94,7 @@ func (r *postRepository) FindByPage(ctx context.Context, page, perPage int, user
 	return posts, totalCount, err
 }
 
-// SearchPosts searches for posts by query and tags.
-func (r *postRepository) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
 	var posts []entity.Post
 	var totalCount int64
 
@@ -120,7 +109,7 @@ func (r *postRepository) SearchPosts(ctx context.Context, query string, tags []s
 		db = db.Joins("JOIN post_tags pt ON pt.post_id = posts.id").
 			Joins("JOIN tags t ON t.id = pt.tag_id").
 			Where("t.name IN (?)", tags).
-			Group("posts.id") // Group by post ID to avoid duplicate posts when joining tags
+			Group("posts.id")
 	}
 
 	if userID != "" {
@@ -128,16 +117,14 @@ func (r *postRepository) SearchPosts(ctx context.Context, query string, tags []s
 			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
 	}
 
-	err := db.Count(&totalCount).Error
-	if err != nil {
+	if err := db.Count(&totalCount).Error; err != nil {
 		return nil, 0, err
 	}
 
-	err = db.Order("created_at DESC").
+	if err := db.Order("created_at DESC").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
-		Find(&posts).Error
-	if err != nil {
+		Find(&posts).Error; err != nil {
 		return nil, 0, err
 	}
 

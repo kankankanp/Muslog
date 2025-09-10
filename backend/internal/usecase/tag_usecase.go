@@ -6,7 +6,6 @@ import (
 	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 
 	"github.com/kankankanp/Muslog/internal/domain/entity"
-	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 )
 
 type TagService interface {
@@ -23,10 +22,10 @@ type TagService interface {
 
 type tagService struct {
 	tagRepo  domainRepo.TagRepository
-	postRepo repository.PostRepository
+	postRepo domainRepo.PostRepository
 }
 
-func NewTagService(tagRepo domainRepo.TagRepository, postRepo repository.PostRepository) TagService {
+func NewTagService(tagRepo domainRepo.TagRepository, postRepo domainRepo.PostRepository) TagService {
 	return &tagService{tagRepo: tagRepo, postRepo: postRepo}
 }
 

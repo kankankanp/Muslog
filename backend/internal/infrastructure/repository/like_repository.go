@@ -2,43 +2,41 @@ package repository
 
 import (
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 	"gorm.io/gorm"
 )
 
-type LikeRepository interface {
-	CreateLike(like *entity.Like) error
-	DeleteLike(postID uint, userID string) error
-	GetLike(postID uint, userID string) (*entity.Like, error)
-	GetLikesCountByPostID(postID uint) (int, error)
+type likeRepositoryImpl struct {
+	db *gorm.DB
 }
 
-type likeRepository struct {
-	gormDB *gorm.DB
+func NewLikeRepository(db *gorm.DB) domainRepo.LikeRepository {
+	return &likeRepositoryImpl{db: db}
 }
 
-func NewLikeRepository(gormDB *gorm.DB) LikeRepository {
-	return &likeRepository{gormDB: gormDB}
+func (r *likeRepositoryImpl) CreateLike(like *entity.Like) error {
+	return r.db.Create(like).Error
 }
 
-func (r *likeRepository) CreateLike(like *entity.Like) error {
-	return r.gormDB.Create(like).Error
+func (r *likeRepositoryImpl) DeleteLike(postID uint, userID string) error {
+	return r.db.Where("post_id = ? AND user_id = ?", postID, userID).
+		Delete(&entity.Like{}).Error
 }
 
-func (r *likeRepository) DeleteLike(postID uint, userID string) error {
-	return r.gormDB.Where("post_id = ? AND user_id = ?", postID, userID).Delete(&entity.Like{}).Error
-}
-
-func (r *likeRepository) GetLike(postID uint, userID string) (*entity.Like, error) {
+func (r *likeRepositoryImpl) GetLike(postID uint, userID string) (*entity.Like, error) {
 	var like entity.Like
-	err := r.gormDB.Where("post_id = ? AND user_id = ?", postID, userID).First(&like).Error
+	err := r.db.Where("post_id = ? AND user_id = ?", postID, userID).
+		First(&like).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	}
 	return &like, err
 }
 
-func (r *likeRepository) GetLikesCountByPostID(postID uint) (int, error) {
+func (r *likeRepositoryImpl) GetLikesCountByPostID(postID uint) (int, error) {
 	var count int64
-	err := r.gormDB.Model(&entity.Like{}).Where("post_id = ?", postID).Count(&count).Error
+	err := r.db.Model(&entity.Like{}).
+		Where("post_id = ?", postID).
+		Count(&count).Error
 	return int(count), err
 }

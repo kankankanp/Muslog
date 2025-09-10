@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+
 	"github.com/google/uuid"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
-	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 )
 
 // CommunityUsecase defines the interface for community-related business logic.
@@ -19,11 +20,11 @@ type CommunityUsecase interface {
 
 // communityUsecase implements CommunityUsecase.
 type communityUsecase struct {
-	repo repository.CommunityRepository
+	repo domainRepo.CommunityRepository
 }
 
 // NewCommunityUsecase creates a new CommunityUsecase.
-func NewCommunityUsecase(repo repository.CommunityRepository) CommunityUsecase {
+func NewCommunityUsecase(repo domainRepo.CommunityRepository) CommunityUsecase {
 	return &communityUsecase{repo: repo}
 }
 
