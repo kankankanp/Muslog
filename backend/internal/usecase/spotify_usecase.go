@@ -37,21 +37,21 @@ type FormattedTrack struct {
 	AlbumImageURL string `json:"albumImageUrl"`
 }
 
-type SpotifyService struct {
+type SpotifyUsecase struct {
 	clientID     string
 	clientSecret string
 	accessToken  string
 	expiresAt    time.Time
 }
 
-func NewSpotifyService() *SpotifyService {
-	return &SpotifyService{
+func NewSpotifyUsecase() *SpotifyUsecase {
+	return &SpotifyUsecase{
 		clientID:     os.Getenv("SPOTIFY_CLIENT_ID"),
 		clientSecret: os.Getenv("SPOTIFY_CLIENT_SECRET"),
 	}
 }
 
-func (s *SpotifyService) getAccessToken() (string, error) {
+func (s *SpotifyUsecase) getAccessToken() (string, error) {
 	if s.accessToken != "" && s.expiresAt.After(time.Now()) {
 		return s.accessToken, nil
 	}
@@ -92,7 +92,7 @@ func (s *SpotifyService) getAccessToken() (string, error) {
 	return s.accessToken, nil
 }
 
-func (s *SpotifyService) SearchTracks(query string) ([]FormattedTrack, error) {
+func (s *SpotifyUsecase) SearchTracks(query string) ([]FormattedTrack, error) {
 	token, err := s.getAccessToken()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get Spotify access token: %w", err)

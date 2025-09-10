@@ -8,7 +8,7 @@ import (
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 )
 
-type TagService interface {
+type TagUsecase interface {
 	CreateTag(name string) (*entity.Tag, error)
 	GetTagByID(id uint) (*entity.Tag, error)
 	GetTagByName(name string) (*entity.Tag, error)
@@ -20,16 +20,16 @@ type TagService interface {
 	GetTagsByPostID(postID uint) ([]entity.Tag, error)
 }
 
-type tagService struct {
+type tagUsecase struct {
 	tagRepo  domainRepo.TagRepository
 	postRepo domainRepo.PostRepository
 }
 
-func NewTagService(tagRepo domainRepo.TagRepository, postRepo domainRepo.PostRepository) TagService {
-	return &tagService{tagRepo: tagRepo, postRepo: postRepo}
+func NewTagUsecase(tagRepo domainRepo.TagRepository, postRepo domainRepo.PostRepository) TagUsecase {
+	return &tagUsecase{tagRepo: tagRepo, postRepo: postRepo}
 }
 
-func (s *tagService) CreateTag(name string) (*entity.Tag, error) {
+func (s *tagUsecase) CreateTag(name string) (*entity.Tag, error) {
 	if _, err := s.tagRepo.GetTagByName(name); err == nil {
 		return nil, errors.New("tag with this name already exists")
 	}
@@ -41,19 +41,19 @@ func (s *tagService) CreateTag(name string) (*entity.Tag, error) {
 	return tag, nil
 }
 
-func (s *tagService) GetTagByID(id uint) (*entity.Tag, error) {
+func (s *tagUsecase) GetTagByID(id uint) (*entity.Tag, error) {
 	return s.tagRepo.GetTagByID(id)
 }
 
-func (s *tagService) GetTagByName(name string) (*entity.Tag, error) {
+func (s *tagUsecase) GetTagByName(name string) (*entity.Tag, error) {
 	return s.tagRepo.GetTagByName(name)
 }
 
-func (s *tagService) GetAllTags() ([]entity.Tag, error) {
+func (s *tagUsecase) GetAllTags() ([]entity.Tag, error) {
 	return s.tagRepo.GetAllTags()
 }
 
-func (s *tagService) UpdateTag(id uint, name string) (*entity.Tag, error) {
+func (s *tagUsecase) UpdateTag(id uint, name string) (*entity.Tag, error) {
 	tag, err := s.tagRepo.GetTagByID(id)
 	if err != nil {
 		return nil, err
@@ -68,11 +68,11 @@ func (s *tagService) UpdateTag(id uint, name string) (*entity.Tag, error) {
 	return tag, nil
 }
 
-func (s *tagService) DeleteTag(id uint) error {
+func (s *tagUsecase) DeleteTag(id uint) error {
 	return s.tagRepo.DeleteTag(id)
 }
 
-func (s *tagService) AddTagsToPost(postID uint, tagNames []string) error {
+func (s *tagUsecase) AddTagsToPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
 		tag, err := s.tagRepo.GetTagByName(tagName)
@@ -89,7 +89,7 @@ func (s *tagService) AddTagsToPost(postID uint, tagNames []string) error {
 	return s.tagRepo.AddTagsToPost(postID, tagIDs)
 }
 
-func (s *tagService) RemoveTagsFromPost(postID uint, tagNames []string) error {
+func (s *tagUsecase) RemoveTagsFromPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
 		tag, err := s.tagRepo.GetTagByName(tagName)
@@ -101,6 +101,6 @@ func (s *tagService) RemoveTagsFromPost(postID uint, tagNames []string) error {
 	return s.tagRepo.RemoveTagsFromPost(postID, tagIDs)
 }
 
-func (s *tagService) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
+func (s *tagUsecase) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
 	return s.tagRepo.GetTagsByPostID(postID)
 }

@@ -8,10 +8,10 @@ import (
 )
 
 type SpotifyHandler struct {
-	spotifyService *service.SpotifyService
+	spotifyService *service.SpotifyUsecase
 }
 
-func NewSpotifyHandler(spotifyService *service.SpotifyService) *SpotifyHandler {
+func NewSpotifyHandler(spotifyService *service.SpotifyUsecase) *SpotifyHandler {
 	return &SpotifyHandler{
 		spotifyService: spotifyService,
 	}

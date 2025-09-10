@@ -13,10 +13,10 @@ import (
 )
 
 type OAuthHandler struct {
-	Service *service.OAuthService
+	Service *service.OAuthUsecase
 }
 
-func NewOAuthHandler(service *service.OAuthService) *OAuthHandler {
+func NewOAuthHandler(service *service.OAuthUsecase) *OAuthHandler {
 	return &OAuthHandler{Service: service}
 }
 
