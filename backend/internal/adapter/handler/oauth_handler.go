@@ -8,16 +8,16 @@ import (
 
 	"time"
 
-	service "github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 
 type OAuthHandler struct {
-	Service *service.OAuthUsecase
+	Usecase usecase.OAuthUsecase
 }
 
-func NewOAuthHandler(service *service.OAuthUsecase) *OAuthHandler {
-	return &OAuthHandler{Service: service}
+func NewOAuthHandler(usecase *usecase.OAuthUsecase) *OAuthHandler {
+	return &OAuthHandler{Usecase: *usecase}
 }
 
 func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
@@ -25,7 +25,7 @@ func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
 
 	setStateCookie(c, state)
 
-	authURL := h.Service.GetAuthURL(state)
+	authURL := h.Usecase.GetAuthURL(state)
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"authURL": authURL,
@@ -51,7 +51,7 @@ func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 		})
 	}
 
-	user, err := h.Service.HandleCallback(code)
+	user, err := h.Usecase.HandleCallback(code)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "Failed to authenticate with Google",

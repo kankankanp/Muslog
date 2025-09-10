@@ -9,17 +9,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// CommunityHandler handles HTTP requests for communities.
 type CommunityHandler struct {
 	communityUsecase usecase.CommunityUsecase
 }
 
-// NewCommunityHandler creates a new CommunityHandler.
 func NewCommunityHandler(communityUsecase usecase.CommunityUsecase) *CommunityHandler {
 	return &CommunityHandler{communityUsecase: communityUsecase}
 }
 
-// CreateCommunity handles the creation of a new community.
 func (h *CommunityHandler) CreateCommunity(c echo.Context) error {
 	var req struct {
 		Name        string `json:"name"`
@@ -41,7 +38,6 @@ func (h *CommunityHandler) CreateCommunity(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Community created successfully", "community": community})
 }
 
-// GetAllCommunities handles retrieving all communities.
 func (h *CommunityHandler) GetAllCommunities(c echo.Context) error {
 	communities, err := h.communityUsecase.GetAllCommunities(c.Request().Context())
 	if err != nil {
@@ -51,7 +47,6 @@ func (h *CommunityHandler) GetAllCommunities(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Communities retrieved successfully", "communities": communities})
 }
 
-// SearchCommunities handles searching for communities.
 func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 	query := c.QueryParam("q")
 	pageStr := c.QueryParam("page")
@@ -59,12 +54,12 @@ func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
-		page = 1 // Default to page 1
+		page = 1
 	}
 
 	perPage, err := strconv.Atoi(perPageStr)
 	if err != nil || perPage < 1 {
-		perPage = 10 // Default to 10 items per page
+		perPage = 10
 	}
 
 	communities, totalCount, err := h.communityUsecase.SearchCommunities(c.Request().Context(), query, page, perPage)
@@ -73,10 +68,10 @@ func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message":    "Communities search successful",
+		"message":     "Communities search successful",
 		"communities": communities,
-		"totalCount": totalCount,
-		"page":       page,
-		"perPage":    perPage,
+		"totalCount":  totalCount,
+		"page":        page,
+		"perPage":     perPage,
 	})
 }

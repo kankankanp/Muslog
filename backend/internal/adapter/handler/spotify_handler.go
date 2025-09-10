@@ -3,15 +3,15 @@ package handler
 import (
 	"net/http"
 
-	 "github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 
 type SpotifyHandler struct {
-	spotifyUsecase *usecase.SpotifyUsecase
+	spotifyUsecase usecase.SpotifyUsecase
 }
 
-func NewSpotifyHandler(spotifyUsecase *usecase.SpotifyUsecase) *SpotifyHandler {
+func NewSpotifyHandler(spotifyUsecase usecase.SpotifyUsecase) *SpotifyHandler {
 	return &SpotifyHandler{
 		spotifyUsecase: spotifyUsecase,
 	}
