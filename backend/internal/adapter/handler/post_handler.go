@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	model "github.com/kankankanp/Muslog/internal/entity"
+	model "github.com/kankankanp/Muslog/internal/domain/entity"
 	service "github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )

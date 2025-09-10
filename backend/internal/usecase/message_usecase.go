@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 )
 
 // MessageUsecase defines the interface for message-related business logic.

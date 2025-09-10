@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
-	service "github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/kankankanp/Muslog/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
@@ -16,11 +16,7 @@ type LikeHandler interface {
 }
 
 type likeHandler struct {
-	likeService service.LikeService
-}
-
-func NewLikeHandler(likeService service.LikeService) LikeHandler {
-	return &likeHandler{likeService: likeService}
+	likeUsecase usecase.LikeUsecase
 }
 
 func (h *likeHandler) LikePost(c echo.Context) error {
@@ -32,7 +28,7 @@ func (h *likeHandler) LikePost(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
-	liked, err := h.likeService.ToggleLike(c.Request().Context(), postID, userID)
+	liked, err := h.likeUsecase.ToggleLike(c.Request().Context(), postID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
@@ -53,10 +49,10 @@ func (h *likeHandler) UnlikePost(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
 
-	if err := h.likeService.UnlikePost(c.Request().Context(), postID, userID); err != nil {
+	if err := h.likeUsecase.UnlikePost(c.Request().Context(), postID, userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
-	
+
 	return c.JSON(http.StatusOK, echo.Map{"message": "Post unliked successfully"})
 }
 
@@ -68,7 +64,7 @@ func (h *likeHandler) IsPostLikedByUser(c echo.Context) error {
 
 	userID := c.Get("userID").(string) // From auth middleware
 
-	isLiked, err := h.likeService.IsPostLikedByUser(c.Request().Context(), postID, userID)
+	isLiked, err := h.likeUsecase.IsPostLikedByUser(c.Request().Context(), postID, userID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}

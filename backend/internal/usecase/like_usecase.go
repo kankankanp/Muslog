@@ -4,28 +4,28 @@ import (
 	"context"
 	"errors"
 
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+	model "github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	gorm "gorm.io/gorm"
 )
 
-type LikeService interface {
+type LikeUsecase interface {
 	LikePost(ctx context.Context, postID uint, userID string) error
 	UnlikePost(ctx context.Context, postID uint, userID string) error
 	IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error)
 	ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) // Returns true if liked, false if unliked
 }
 
-type likeService struct {
+type likeUsecase struct {
 	likeRepository repository.LikeRepository
 	postRepository repository.PostRepository
 }
 
-func NewLikeService(likeRepository repository.LikeRepository, postRepository repository.PostRepository) LikeService {
-	return &likeService{likeRepository: likeRepository, postRepository: postRepository}
+func NewLikeUsecase(likeRepository repository.LikeRepository, postRepository repository.PostRepository) LikeUsecase {
+	return &likeUsecase{likeRepository: likeRepository, postRepository: postRepository}
 }
 
-func (s *likeService) LikePost(ctx context.Context, postID uint, userID string) error {
+func (s *likeUsecase) LikePost(ctx context.Context, postID uint, userID string) error {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *likeService) LikePost(ctx context.Context, postID uint, userID string) 
 	return s.postRepository.Update(ctx, post)
 }
 
-func (s *likeService) UnlikePost(ctx context.Context, postID uint, userID string) error {
+func (s *likeUsecase) UnlikePost(ctx context.Context, postID uint, userID string) error {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *likeService) UnlikePost(ctx context.Context, postID uint, userID string
 	return s.postRepository.Update(ctx, post)
 }
 
-func (s *likeService) ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) {
+func (s *likeUsecase) ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) {
 	// Check if the post exists
 	post, err := s.postRepository.FindByID(ctx, postID)
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *likeService) ToggleLike(ctx context.Context, postID uint, userID string
 	}
 }
 
-func (s *likeService) IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error) {
+func (s *likeUsecase) IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error) {
 	like, err := s.likeRepository.GetLike(postID, userID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, err

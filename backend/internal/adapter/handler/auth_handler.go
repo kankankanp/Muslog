@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kankankanp/Muslog/internal/entity"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +16,7 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
 
-	user, err := h.Service.AuthenticateUser(c.Request().Context(), u.Email, u.Password)
+	user, err := h.Usecase.AuthenticateUser(c.Request().Context(), u.Email, u.Password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unauthorized"})
 	}
@@ -47,7 +47,7 @@ func (h *UserHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request"})
 	}
 
-	user, err := h.Service.CreateUser(c.Request().Context(), req.Name, req.Email, req.Password)
+	user, err := h.Usecase.CreateUser(c.Request().Context(), req.Name, req.Email, req.Password)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to register user"})
 	}

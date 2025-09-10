@@ -8,7 +8,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
-	model "github.com/kankankanp/Muslog/internal/entity"
+	model "github.com/kankankanp/Muslog/internal/domain/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

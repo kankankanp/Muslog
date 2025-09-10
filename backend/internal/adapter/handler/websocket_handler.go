@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid" // For generating unique message IDs
 	"github.com/gorilla/websocket"
-	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/usecase"
 )
 

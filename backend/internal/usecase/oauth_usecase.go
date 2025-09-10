@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"
@@ -51,7 +51,7 @@ func (s *OAuthService) GetAuthURL(state string) string {
 	return s.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
+func (s *OAuthService) HandleCallback(code string) (*entity.User, error) {
 	token, err := s.config.Exchange(context.Background(), code)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %v", err)
@@ -74,7 +74,7 @@ func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// 新規ユーザーを作成
-			user := &model.User{
+			user := &entity.User{
 				Name:     userInfo.Name,
 				Email:    userInfo.Email,
 				GoogleID: &userInfo.ID,

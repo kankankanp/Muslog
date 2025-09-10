@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"context"
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+
+	model "github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 )
 
 type PostService struct {

@@ -2,32 +2,50 @@ package usecase
 
 import (
 	"context"
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserUsecase struct {
-	Repo *repository.UserRepository
+type UserUsecase interface {
+	CreateUser(ctx context.Context, name, email, password string) (*entity.User, error)
+	AuthenticateUser(ctx context.Context, email, password string) (*entity.User, error)
+	GetAllUsers(ctx context.Context) ([]entity.User, error)
+	GetUserByID(ctx context.Context, id string) (*entity.User, error)
+	GetUserPosts(ctx context.Context, userID string) ([]entity.Post, error)
 }
 
-func (s *UserUsecase) CreateUser(ctx context.Context, name string, email string, password string) (*model.User, error) {
+type userUsecaseImpl struct {
+	userRepo domainRepo.UserRepository
+	postRepo domainRepo.PostRepository
+}
+
+func NewUserUsecase(userRepo domainRepo.UserRepository, postRepo domainRepo.PostRepository) UserUsecase {
+	return &userUsecaseImpl{
+		userRepo: userRepo,
+		postRepo: postRepo,
+	}
+}
+
+func (u *userUsecaseImpl) CreateUser(ctx context.Context, name, email, password string) (*entity.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	user := &model.User{
+	user := &entity.User{
 		Name:     name,
 		Email:    email,
 		Password: string(hashedPassword),
 	}
 
-	return s.Repo.Create(ctx, user)
+	return u.userRepo.Create(ctx, user)
 }
 
-func (s *UserUsecase) AuthenticateUser(ctx context.Context, email, password string) (*model.User, error) {
-	user, err := s.Repo.FindByEmail(ctx, email)
+func (u *userUsecaseImpl) AuthenticateUser(ctx context.Context, email, password string) (*entity.User, error) {
+	user, err := u.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
@@ -40,14 +58,14 @@ func (s *UserUsecase) AuthenticateUser(ctx context.Context, email, password stri
 	return user, nil
 }
 
-func (s *UserUsecase) GetAllUsers(ctx context.Context) ([]model.User, error) {
-	return s.Repo.FindAll(ctx)
+func (u *userUsecaseImpl) GetAllUsers(ctx context.Context) ([]entity.User, error) {
+	return u.userRepo.FindAll(ctx)
 }
 
-func (s *UserUsecase) GetUserByID(ctx context.Context, id string) (*model.User, error) {
-	return s.Repo.FindByID(ctx, id)
+func (u *userUsecaseImpl) GetUserByID(ctx context.Context, id string) (*entity.User, error) {
+	return u.userRepo.FindByID(ctx, id)
 }
 
-func (s *UserUsecase) GetUserPosts(ctx context.Context, userID string) ([]model.Post, error) {
-	return s.Repo.FindPosts(ctx, userID)
+func (u *userUsecaseImpl) GetUserPosts(ctx context.Context, userID string) ([]entity.Post, error) {
+	return u.userRepo.FindPosts(ctx, userID)
 }

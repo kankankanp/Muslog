@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"gorm.io/gorm"
 )
 

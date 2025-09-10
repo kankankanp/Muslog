@@ -14,8 +14,8 @@ import (
 	appConfig "github.com/kankankanp/Muslog/config"
 	model "github.com/kankankanp/Muslog/internal/entity"
 	"github.com/kankankanp/Muslog/internal/handler"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"github.com/kankankanp/Muslog/internal/middleware"
-	"github.com/kankankanp/Muslog/internal/repository"
 	"github.com/kankankanp/Muslog/internal/seeder"
 	service "github.com/kankankanp/Muslog/internal/usecase"
 

@@ -3,7 +3,7 @@ package response
 import (
 	"time"
 
-	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 )
 
 type UserResponse struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )

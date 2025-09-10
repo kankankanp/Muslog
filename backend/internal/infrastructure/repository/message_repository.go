@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/kankankanp/Muslog/internal/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"gorm.io/gorm"
 )
 
