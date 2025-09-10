@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
-
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 )
 
@@ -20,65 +19,70 @@ type TagUsecase interface {
 	GetTagsByPostID(postID uint) ([]entity.Tag, error)
 }
 
-type tagUsecase struct {
+type tagUsecaseImpl struct {
 	tagRepo  domainRepo.TagRepository
 	postRepo domainRepo.PostRepository
 }
 
 func NewTagUsecase(tagRepo domainRepo.TagRepository, postRepo domainRepo.PostRepository) TagUsecase {
-	return &tagUsecase{tagRepo: tagRepo, postRepo: postRepo}
+	return &tagUsecaseImpl{
+		tagRepo:  tagRepo,
+		postRepo: postRepo,
+	}
 }
 
-func (s *tagUsecase) CreateTag(name string) (*entity.Tag, error) {
-	if _, err := s.tagRepo.GetTagByName(name); err == nil {
+func (u *tagUsecaseImpl) CreateTag(name string) (*entity.Tag, error) {
+	if _, err := u.tagRepo.GetTagByName(name); err == nil {
 		return nil, errors.New("tag with this name already exists")
 	}
 
 	tag := &entity.Tag{Name: name}
-	if err := s.tagRepo.CreateTag(tag); err != nil {
+	if err := u.tagRepo.CreateTag(tag); err != nil {
 		return nil, err
 	}
 	return tag, nil
 }
 
-func (s *tagUsecase) GetTagByID(id uint) (*entity.Tag, error) {
-	return s.tagRepo.GetTagByID(id)
+func (u *tagUsecaseImpl) GetTagByID(id uint) (*entity.Tag, error) {
+	return u.tagRepo.GetTagByID(id)
 }
 
-func (s *tagUsecase) GetTagByName(name string) (*entity.Tag, error) {
-	return s.tagRepo.GetTagByName(name)
+func (u *tagUsecaseImpl) GetTagByName(name string) (*entity.Tag, error) {
+	return u.tagRepo.GetTagByName(name)
 }
 
-func (s *tagUsecase) GetAllTags() ([]entity.Tag, error) {
-	return s.tagRepo.GetAllTags()
+func (u *tagUsecaseImpl) GetAllTags() ([]entity.Tag, error) {
+	return u.tagRepo.GetAllTags()
 }
 
-func (s *tagUsecase) UpdateTag(id uint, name string) (*entity.Tag, error) {
-	tag, err := s.tagRepo.GetTagByID(id)
+func (u *tagUsecaseImpl) UpdateTag(id uint, name string) (*entity.Tag, error) {
+	tag, err := u.tagRepo.GetTagByID(id)
 	if err != nil {
 		return nil, err
 	}
-	tag.Name = name
-	if existingTag, err := s.tagRepo.GetTagByName(name); err == nil && existingTag.ID != tag.ID {
+
+	if existingTag, err := u.tagRepo.GetTagByName(name); err == nil && existingTag.ID != tag.ID {
 		return nil, errors.New("tag with this name already exists")
 	}
-	if err := s.tagRepo.UpdateTag(tag); err != nil {
+
+	tag.Name = name
+	if err := u.tagRepo.UpdateTag(tag); err != nil {
 		return nil, err
 	}
 	return tag, nil
 }
 
-func (s *tagUsecase) DeleteTag(id uint) error {
-	return s.tagRepo.DeleteTag(id)
+func (u *tagUsecaseImpl) DeleteTag(id uint) error {
+	return u.tagRepo.DeleteTag(id)
 }
 
-func (s *tagUsecase) AddTagsToPost(postID uint, tagNames []string) error {
+func (u *tagUsecaseImpl) AddTagsToPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
-		tag, err := s.tagRepo.GetTagByName(tagName)
+		tag, err := u.tagRepo.GetTagByName(tagName)
 		if err != nil {
 			newTag := &entity.Tag{Name: tagName}
-			if err := s.tagRepo.CreateTag(newTag); err != nil {
+			if err := u.tagRepo.CreateTag(newTag); err != nil {
 				return err
 			}
 			tagIDs = append(tagIDs, newTag.ID)
@@ -86,21 +90,21 @@ func (s *tagUsecase) AddTagsToPost(postID uint, tagNames []string) error {
 			tagIDs = append(tagIDs, tag.ID)
 		}
 	}
-	return s.tagRepo.AddTagsToPost(postID, tagIDs)
+	return u.tagRepo.AddTagsToPost(postID, tagIDs)
 }
 
-func (s *tagUsecase) RemoveTagsFromPost(postID uint, tagNames []string) error {
+func (u *tagUsecaseImpl) RemoveTagsFromPost(postID uint, tagNames []string) error {
 	var tagIDs []uint
 	for _, tagName := range tagNames {
-		tag, err := s.tagRepo.GetTagByName(tagName)
+		tag, err := u.tagRepo.GetTagByName(tagName)
 		if err != nil {
 			continue
 		}
 		tagIDs = append(tagIDs, tag.ID)
 	}
-	return s.tagRepo.RemoveTagsFromPost(postID, tagIDs)
+	return u.tagRepo.RemoveTagsFromPost(postID, tagIDs)
 }
 
-func (s *tagUsecase) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
-	return s.tagRepo.GetTagsByPostID(postID)
+func (u *tagUsecaseImpl) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
+	return u.tagRepo.GetTagsByPostID(postID)
 }

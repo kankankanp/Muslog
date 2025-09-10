@@ -4,13 +4,11 @@ import (
 	"context"
 	"time"
 
-	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
-
 	"github.com/google/uuid"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 )
 
-// CommunityUsecase defines the interface for community-related business logic.
 type CommunityUsecase interface {
 	CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error)
 	GetAllCommunities(ctx context.Context) ([]entity.Community, error)
@@ -18,18 +16,15 @@ type CommunityUsecase interface {
 	SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error)
 }
 
-// communityUsecase implements CommunityUsecase.
-type communityUsecase struct {
+type communityUsecaseImpl struct {
 	repo domainRepo.CommunityRepository
 }
 
-// NewCommunityUsecase creates a new CommunityUsecase.
 func NewCommunityUsecase(repo domainRepo.CommunityRepository) CommunityUsecase {
-	return &communityUsecase{repo: repo}
+	return &communityUsecaseImpl{repo: repo}
 }
 
-// CreateCommunity creates a new community.
-func (uc *communityUsecase) CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error) {
+func (u *communityUsecaseImpl) CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error) {
 	community := &entity.Community{
 		ID:          uuid.New().String(),
 		Name:        name,
@@ -38,24 +33,20 @@ func (uc *communityUsecase) CreateCommunity(ctx context.Context, name, descripti
 		CreatedAt:   time.Now(),
 	}
 
-	err := uc.repo.Save(ctx, community)
-	if err != nil {
+	if err := u.repo.Save(ctx, community); err != nil {
 		return nil, err
 	}
 	return community, nil
 }
 
-// GetAllCommunities retrieves all communities.
-func (uc *communityUsecase) GetAllCommunities(ctx context.Context) ([]entity.Community, error) {
-	return uc.repo.FindAll(ctx)
+func (u *communityUsecaseImpl) GetAllCommunities(ctx context.Context) ([]entity.Community, error) {
+	return u.repo.FindAll(ctx)
 }
 
-// GetCommunityByID retrieves a community by its ID.
-func (uc *communityUsecase) GetCommunityByID(ctx context.Context, id string) (*entity.Community, error) {
-	return uc.repo.FindByID(ctx, id)
+func (u *communityUsecaseImpl) GetCommunityByID(ctx context.Context, id string) (*entity.Community, error) {
+	return u.repo.FindByID(ctx, id)
 }
 
-// SearchCommunities searches for communities by query.
-func (uc *communityUsecase) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error) {
-	return uc.repo.SearchCommunities(ctx, query, page, perPage)
+func (u *communityUsecaseImpl) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error) {
+	return u.repo.SearchCommunities(ctx, query, page, perPage)
 }

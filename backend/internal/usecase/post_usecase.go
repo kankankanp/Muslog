@@ -3,44 +3,52 @@ package usecase
 import (
 	"context"
 
-	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
-
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 )
 
-type PostUsecase struct {
-	Repo domainRepo.PostRepository
+type PostUsecase interface {
+	GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error)
+	GetPostByID(ctx context.Context, id uint, userID string) (*entity.Post, error)
+	CreatePost(ctx context.Context, post *entity.Post) error
+	UpdatePost(ctx context.Context, post *entity.Post) error
+	DeletePost(ctx context.Context, id uint) error
+	GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error)
+	SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error)
 }
 
-func NewPostUsecase(repo domainRepo.PostRepository) *PostUsecase {
-	return &PostUsecase{Repo: repo}
+type postUsecaseImpl struct {
+	repo domainRepo.PostRepository
 }
 
-func (s PostUsecase) GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error) {
-	return s.Repo.FindAll(ctx, userID)
+func NewPostUsecase(repo domainRepo.PostRepository) PostUsecase {
+	return &postUsecaseImpl{repo: repo}
 }
 
-func (s PostUsecase) GetPostByID(ctx context.Context, id uint, userID string) (*entity.Post, error) {
-	return s.Repo.FindByIDWithUserID(ctx, id, userID)
+func (u *postUsecaseImpl) GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error) {
+	return u.repo.FindAll(ctx, userID)
 }
 
-func (s PostUsecase) CreatePost(ctx context.Context, post *entity.Post) error {
-	return s.Repo.Create(ctx, post)
+func (u *postUsecaseImpl) GetPostByID(ctx context.Context, id uint, userID string) (*entity.Post, error) {
+	return u.repo.FindByIDWithUserID(ctx, id, userID)
 }
 
-func (s PostUsecase) UpdatePost(ctx context.Context, post *entity.Post) error {
-	return s.Repo.Update(ctx, post)
+func (u *postUsecaseImpl) CreatePost(ctx context.Context, post *entity.Post) error {
+	return u.repo.Create(ctx, post)
 }
 
-func (s PostUsecase) DeletePost(ctx context.Context, id uint) error {
-	return s.Repo.Delete(ctx, id)
+func (u *postUsecaseImpl) UpdatePost(ctx context.Context, post *entity.Post) error {
+	return u.repo.Update(ctx, post)
 }
 
-func (s PostUsecase) GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
-	return s.Repo.FindByPage(ctx, page, perPage, userID)
+func (u *postUsecaseImpl) DeletePost(ctx context.Context, id uint) error {
+	return u.repo.Delete(ctx, id)
 }
 
-// SearchPosts searches for posts by query and tags.
-func (s PostUsecase) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
-	return s.Repo.SearchPosts(ctx, query, tags, page, perPage, userID)
+func (u *postUsecaseImpl) GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
+	return u.repo.FindByPage(ctx, page, perPage, userID)
+}
+
+func (u *postUsecaseImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
+	return u.repo.SearchPosts(ctx, query, tags, page, perPage, userID)
 }
