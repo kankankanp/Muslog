@@ -20,10 +20,6 @@ func NewUserHandler(u usecase.UserUsecase) *UserHandler {
 	return &UserHandler{Usecase: u}
 }
 
-// ==========================
-// ユーザー取得系
-// ==========================
-
 func (h *UserHandler) GetMe(c echo.Context) error {
 	userContext := c.Get("user").(jwt.MapClaims)
 	userID := userContext["user_id"].(string)
