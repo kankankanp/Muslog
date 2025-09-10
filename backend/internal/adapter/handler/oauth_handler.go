@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,8 +17,8 @@ type OAuthHandler struct {
 	Usecase usecase.OAuthUsecase
 }
 
-func NewOAuthHandler(usecase *usecase.OAuthUsecase) *OAuthHandler {
-	return &OAuthHandler{Usecase: *usecase}
+func NewOAuthHandler(usecase usecase.OAuthUsecase) *OAuthHandler {
+	return &OAuthHandler{Usecase: usecase}
 }
 
 func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
@@ -59,22 +60,22 @@ func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 		})
 	}
 
-	accessToken, err := createToken(user.ID, time.Hour*24)
+	accessToken, err := utils.CreateToken(user.ID, time.Hour*24)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "Could not create access token",
 		})
 	}
 
-	refreshToken, err := createToken(user.ID, time.Hour*24*7)
+	refreshToken, err := utils.CreateToken(user.ID, time.Hour*24*7)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "Could not create refresh token",
 		})
 	}
 
-	setTokenCookie(c, "access_token", accessToken)
-	setTokenCookie(c, "refresh_token", refreshToken)
+	utils.SetTokenCookie(c, "access_token", accessToken)
+	utils.SetTokenCookie(c, "refresh_token", refreshToken)
 
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
-	model "github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -29,7 +29,7 @@ func Seed(db *gorm.DB) error {
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-		demo := model.User{
+		demo := entity.User{
 			ID:       uuid.NewString(),
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
@@ -51,8 +51,8 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		user := model.User{
-			ID: uuid.NewString(),
+		user := entity.User{
+			ID:       uuid.NewString(),
 			Name:     name,
 			Email:    email,
 			Password: string(hashedPassword),
@@ -61,7 +61,7 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		post := model.Post{
+		post := entity.Post{
 			Title:       gf.Sentence(6),
 			Description: gf.Paragraph(1, 3, 12, " "),
 			UserID:      user.ID,
@@ -75,7 +75,7 @@ func Seed(db *gorm.DB) error {
 			seed := fmt.Sprintf("%d-%d-%d", user.ID, i, j)
 			img := fmt.Sprintf("https://picsum.photos/seed/%s/300/300", url.PathEscape(seed))
 
-			track := model.Track{
+			track := entity.Track{
 				SpotifyID:     gf.UUID(),
 				Name:          gf.Word(),
 				ArtistName:    gf.Name(),

@@ -7,27 +7,32 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// MessageHandler handles HTTP requests related to messages.
 type MessageHandler struct {
-	messageUsecase usecase.MessageUsecase
+	Usecase usecase.MessageUsecase
 }
 
-// NewMessageHandler creates a new MessageHandler.
-func NewMessageHandler(messageUsecase usecase.MessageUsecase) *MessageHandler {
-	return &MessageHandler{messageUsecase: messageUsecase}
+func NewMessageHandler(u usecase.MessageUsecase) *MessageHandler {
+	return &MessageHandler{Usecase: u}
 }
 
-// GetMessagesByCommunityID handles the retrieval of messages for a specific community.
-func (mh *MessageHandler) GetMessagesByCommunityID(c echo.Context) error {
+func (h *MessageHandler) GetMessagesByCommunityID(c echo.Context) error {
 	communityID := c.Param("communityId")
 	if communityID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Community ID is required"})
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "Community ID is required",
+		})
 	}
 
-	messages, err := mh.messageUsecase.GetMessagesByCommunityID(communityID)
+	messages, err := h.Usecase.GetMessagesByCommunityID(communityID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve messages"})
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "Failed to retrieve messages",
+			"error":   err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"messages": messages})
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":  "Success",
+		"messages": messages,
+	})
 }

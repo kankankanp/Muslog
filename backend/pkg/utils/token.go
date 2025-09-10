@@ -1,4 +1,4 @@
-package handler
+package utils
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func createToken(userID string, expiry time.Duration) (string, error) {
+func CreateToken(userID string, expiry time.Duration) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(expiry).Unix(),
@@ -17,7 +17,7 @@ func createToken(userID string, expiry time.Duration) (string, error) {
 	return token.SignedString([]byte("secret"))
 }
 
-func setTokenCookie(c echo.Context, name, token string) {
+func SetTokenCookie(c echo.Context, name, token string) {
 	cookie := new(http.Cookie)
 	cookie.Name = name
 	cookie.Value = token
@@ -28,7 +28,7 @@ func setTokenCookie(c echo.Context, name, token string) {
 	c.SetCookie(cookie)
 }
 
-func clearTokenCookie(c echo.Context, name string) {
+func ClearTokenCookie(c echo.Context, name string) {
 	cookie := new(http.Cookie)
 	cookie.Name = name
 	cookie.Value = ""

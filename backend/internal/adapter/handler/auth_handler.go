@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,18 +22,18 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unauthorized"})
 	}
 
-	accessToken, err := createToken(user.ID, time.Hour*24) // 有効期限は24時間
+	accessToken, err := utils.CreateToken(user.ID, time.Hour*24) // 有効期限は24時間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
 
-	refreshToken, err := createToken(user.ID, time.Hour*24*7) // 有効期限は7日間
+	refreshToken, err := utils.CreateToken(user.ID, time.Hour*24*7) // 有効期限は7日間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create refresh token"})
 	}
 
-	setTokenCookie(c, "access_token", accessToken)
-	setTokenCookie(c, "refresh_token", refreshToken)
+	utils.SetTokenCookie(c, "access_token", accessToken)
+	utils.SetTokenCookie(c, "refresh_token", refreshToken)
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "Login successful", "user": response.ToUserResponse(user)})
 }
@@ -52,18 +53,18 @@ func (h *UserHandler) Register(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to register user"})
 	}
 
-	accessToken, err := createToken(user.ID, time.Hour*24) // 有効期限は24時間
+	accessToken, err := utils.CreateToken(user.ID, time.Hour*24) // 有効期限は24時間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
 
-	refreshToken, err := createToken(user.ID, time.Hour*24*7) // 有効期限は7日間
+	refreshToken, err := utils.CreateToken(user.ID, time.Hour*24*7) // 有効期限は7日間
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create refresh token"})
 	}
 
-	setTokenCookie(c, "access_token", accessToken)
-	setTokenCookie(c, "refresh_token", refreshToken)
+	utils.SetTokenCookie(c, "access_token", accessToken)
+	utils.SetTokenCookie(c, "refresh_token", refreshToken)
 
 	return c.JSON(http.StatusCreated, echo.Map{"message": "User registered successfully", "user": response.ToUserResponse(user)})
 }
@@ -92,18 +93,18 @@ func (h *UserHandler) RefreshToken(c echo.Context) error {
 
 	userID := claims["user_id"].(string)
 
-	accessToken, err := createToken(userID, time.Hour*24) // 24 hours
+	accessToken, err := utils.CreateToken(userID, time.Hour*24) // 24 hours
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not create access token"})
 	}
 
-	setTokenCookie(c, "access_token", accessToken)
+	utils.SetTokenCookie(c, "access_token", accessToken)
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "Token refreshed", "accessToken": accessToken})
 }
 
 func (h *UserHandler) Logout(c echo.Context) error {
-	clearTokenCookie(c, "access_token")
-	clearTokenCookie(c, "refresh_token")
+	utils.ClearTokenCookie(c, "access_token")
+	utils.ClearTokenCookie(c, "refresh_token")
 	return c.JSON(http.StatusOK, echo.Map{"message": "Logout successful"})
 }
