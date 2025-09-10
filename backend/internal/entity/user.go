@@ -8,7 +8,7 @@ type User struct {
 	Email           string `gorm:"unique"`
 	Password        string
 	GoogleID        *string `gorm:"unique;default:null"`
-	ProfileImageUrl string  // New field for profile image URL
+	ProfileImageUrl string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	Posts           []Post

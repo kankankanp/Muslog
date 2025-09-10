@@ -7,11 +7,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserService struct {
+type UserUsecase struct {
 	Repo *repository.UserRepository
 }
 
-func (s *UserService) CreateUser(ctx context.Context, name string, email string, password string) (*model.User, error) {
+func (s *UserUsecase) CreateUser(ctx context.Context, name string, email string, password string) (*model.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func (s *UserService) CreateUser(ctx context.Context, name string, email string,
 	return s.Repo.Create(ctx, user)
 }
 
-func (s *UserService) AuthenticateUser(ctx context.Context, email, password string) (*model.User, error) {
+func (s *UserUsecase) AuthenticateUser(ctx context.Context, email, password string) (*model.User, error) {
 	user, err := s.Repo.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -40,14 +40,14 @@ func (s *UserService) AuthenticateUser(ctx context.Context, email, password stri
 	return user, nil
 }
 
-func (s *UserService) GetAllUsers(ctx context.Context) ([]model.User, error) {
+func (s *UserUsecase) GetAllUsers(ctx context.Context) ([]model.User, error) {
 	return s.Repo.FindAll(ctx)
 }
 
-func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
+func (s *UserUsecase) GetUserByID(ctx context.Context, id string) (*model.User, error) {
 	return s.Repo.FindByID(ctx, id)
 }
 
-func (s *UserService) GetUserPosts(ctx context.Context, userID string) ([]model.Post, error) {
+func (s *UserUsecase) GetUserPosts(ctx context.Context, userID string) ([]model.Post, error) {
 	return s.Repo.FindPosts(ctx, userID)
 }
