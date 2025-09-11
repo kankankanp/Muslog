@@ -3,11 +3,11 @@ package entity
 import "time"
 
 type User struct {
-	ID              string `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"id"`
+	ID              string
 	Name            string
-	Email           string `gorm:"unique"`
+	Email           string
 	Password        string
-	GoogleID        *string `gorm:"unique;default:null"`
+	GoogleID        *string
 	ProfileImageUrl string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time

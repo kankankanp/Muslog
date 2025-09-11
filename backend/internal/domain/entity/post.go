@@ -3,15 +3,15 @@ package entity
 import "time"
 
 type Post struct {
-	ID            uint      `gorm:"primaryKey" json:"id"`
-	Title         string    `json:"title"`
-	Description   string    `json:"description"`
-	UserID        string    `json:"userId"`
-	HeaderImageUrl string   `json:"headerImageUrl"` // New field for post header image URL
-	Tracks        []Track   `json:"tracks"`
-	Tags          []Tag     `gorm:"many2many:post_tags;" json:"tags"`
-	LikesCount    int       `gorm:"default:0" json:"likesCount"`
-	IsLiked       bool      `gorm:"-" json:"isLiked"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID             uint
+	Title          string
+	Description    string
+	UserID         string
+	HeaderImageUrl string
+	Tracks         []Track
+	Tags           []Tag
+	LikesCount     int
+	IsLiked        bool
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }

@@ -3,6 +3,8 @@ package repository
 import (
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+	"github.com/kankankanp/Muslog/internal/infrastructure/mapper"
+	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"gorm.io/gorm"
 )
 
@@ -15,63 +17,87 @@ func NewTagRepository(db *gorm.DB) domainRepo.TagRepository {
 }
 
 func (r *tagRepositoryImpl) CreateTag(tag *entity.Tag) error {
-	return r.db.Create(tag).Error
+	m := mapper.FromTagEntity(tag)
+	return r.db.Create(m).Error
 }
 
 func (r *tagRepositoryImpl) GetTagByID(id uint) (*entity.Tag, error) {
-	var tag entity.Tag
-	if err := r.db.First(&tag, id).Error; err != nil {
+	var m model.TagModel
+	if err := r.db.First(&m, id).Error; err != nil {
 		return nil, err
 	}
-	return &tag, nil
+	return mapper.ToTagEntity(&m), nil
 }
 
 func (r *tagRepositoryImpl) GetTagByName(name string) (*entity.Tag, error) {
-	var tag entity.Tag
-	if err := r.db.Where("name = ?", name).First(&tag).Error; err != nil {
+	var m model.TagModel
+	if err := r.db.Where("name = ?", name).First(&m).Error; err != nil {
 		return nil, err
 	}
-	return &tag, nil
+	return mapper.ToTagEntity(&m), nil
 }
 
 func (r *tagRepositoryImpl) GetAllTags() ([]entity.Tag, error) {
-	var tags []entity.Tag
-	if err := r.db.Find(&tags).Error; err != nil {
+	var models []model.TagModel
+	if err := r.db.Find(&models).Error; err != nil {
 		return nil, err
+	}
+
+	tags := make([]entity.Tag, 0, len(models))
+	for _, m := range models {
+		tags = append(tags, *mapper.ToTagEntity(&m))
 	}
 	return tags, nil
 }
 
 func (r *tagRepositoryImpl) UpdateTag(tag *entity.Tag) error {
-	return r.db.Save(tag).Error
+	m := mapper.FromTagEntity(tag)
+	return r.db.Save(m).Error
 }
 
 func (r *tagRepositoryImpl) DeleteTag(id uint) error {
-	return r.db.Delete(&entity.Tag{}, id).Error
+	return r.db.Delete(&model.TagModel{}, id).Error
 }
 
 func (r *tagRepositoryImpl) AddTagsToPost(postID uint, tagIDs []uint) error {
-	var post entity.Post
+	// Post を model でロード
+	var post model.PostModel
 	if err := r.db.First(&post, postID).Error; err != nil {
 		return err
 	}
 
-	return r.db.Model(&post).Association("Tags").Append(tagIDs)
+	// Post と Tag の関連付け（中間テーブル post_tags）
+	var tags []model.TagModel
+	if err := r.db.Where("id IN ?", tagIDs).Find(&tags).Error; err != nil {
+		return err
+	}
+
+	return r.db.Model(&post).Association("Tags").Append(&tags)
 }
 
 func (r *tagRepositoryImpl) RemoveTagsFromPost(postID uint, tagIDs []uint) error {
-	var post entity.Post
+	var post model.PostModel
 	if err := r.db.First(&post, postID).Error; err != nil {
 		return err
 	}
 
-	return r.db.Model(&post).Association("Tags").Delete(tagIDs)
+	var tags []model.TagModel
+	if err := r.db.Where("id IN ?", tagIDs).Find(&tags).Error; err != nil {
+		return err
+	}
+
+	return r.db.Model(&post).Association("Tags").Delete(&tags)
 }
 
 func (r *tagRepositoryImpl) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
-	var post entity.Post
+	var post model.PostModel
 	if err := r.db.Preload("Tags").First(&post, postID).Error; err != nil {
 		return nil, err
 	}
-	return post.Tags, nil
+
+	tags := make([]entity.Tag, 0, len(post.Tags))
+	for _, m := range post.Tags {
+		tags = append(tags, *mapper.ToTagEntity(&m))
+	}
+	return tags, nil
 }

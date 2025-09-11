@@ -6,6 +6,8 @@ import (
 
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+	"github.com/kankankanp/Muslog/internal/infrastructure/mapper"
+	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"gorm.io/gorm"
 )
 
@@ -18,16 +20,16 @@ func NewPostRepository(db *gorm.DB) domainRepo.PostRepository {
 }
 
 func (r *postRepositoryImpl) FindByID(ctx context.Context, id uint) (*entity.Post, error) {
-	var post entity.Post
-	err := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags").First(&post, id).Error
+	var m model.PostModel
+	err := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags").First(&m, id).Error
 	if err != nil {
 		return nil, err
 	}
-	return &post, nil
+	return mapper.ToPostEntity(&m), nil
 }
 
 func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, userID string) (*entity.Post, error) {
-	var post entity.Post
+	var m model.PostModel
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
 	if userID != "" {
@@ -36,15 +38,14 @@ func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, us
 			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
 	}
 
-	err := query.First(&post, id).Error
-	if err != nil {
+	if err := query.First(&m, id).Error; err != nil {
 		return nil, err
 	}
-	return &post, nil
+	return mapper.ToPostEntity(&m), nil
 }
 
 func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]entity.Post, error) {
-	var posts []entity.Post
+	var models []model.PostModel
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
 	if userID != "" {
@@ -53,31 +54,39 @@ func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]enti
 			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
 	}
 
-	err := query.Order("created_at desc").Find(&posts).Error
-	return posts, err
+	if err := query.Order("created_at desc").Find(&models).Error; err != nil {
+		return nil, err
+	}
+
+	posts := make([]entity.Post, 0, len(models))
+	for _, m := range models {
+		posts = append(posts, *mapper.ToPostEntity(&m))
+	}
+	return posts, nil
 }
 
 func (r *postRepositoryImpl) Create(ctx context.Context, post *entity.Post) error {
-	return r.DB.WithContext(ctx).Create(post).Error
+	m := mapper.FromPostEntity(post)
+	return r.DB.WithContext(ctx).Create(m).Error
 }
 
 func (r *postRepositoryImpl) Update(ctx context.Context, post *entity.Post) error {
-	return r.DB.WithContext(ctx).Save(post).Error
+	m := mapper.FromPostEntity(post)
+	return r.DB.WithContext(ctx).Save(m).Error
 }
 
 func (r *postRepositoryImpl) Delete(ctx context.Context, id uint) error {
-	// 先にtracksを削除
-	err := r.DB.WithContext(ctx).Where("post_id = ?", id).Delete(&entity.Track{}).Error
-	if err != nil {
+	// Tracks 削除
+	if err := r.DB.WithContext(ctx).Where("post_id = ?", id).Delete(&model.TrackModel{}).Error; err != nil {
 		return err
 	}
-	return r.DB.WithContext(ctx).Delete(&entity.Post{}, id).Error
+	return r.DB.WithContext(ctx).Delete(&model.PostModel{}, id).Error
 }
 
 func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
-	var posts []entity.Post
+	var models []model.PostModel
 	var totalCount int64
-	r.DB.WithContext(ctx).Model(&entity.Post{}).Count(&totalCount)
+	r.DB.WithContext(ctx).Model(&model.PostModel{}).Count(&totalCount)
 
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
@@ -87,18 +96,26 @@ func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, 
 			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
 	}
 
-	err := query.Order("created_at desc").
+	if err := query.Order("created_at desc").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
-		Find(&posts).Error
-	return posts, totalCount, err
+		Find(&models).Error; err != nil {
+		return nil, 0, err
+	}
+
+	posts := make([]entity.Post, 0, len(models))
+	for _, m := range models {
+		posts = append(posts, *mapper.ToPostEntity(&m))
+	}
+
+	return posts, totalCount, nil
 }
 
 func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
-	var posts []entity.Post
+	var models []model.PostModel
 	var totalCount int64
 
-	db := r.DB.WithContext(ctx).Model(&entity.Post{}).Preload("Tracks").Preload("Tags")
+	db := r.DB.WithContext(ctx).Model(&model.PostModel{}).Preload("Tracks").Preload("Tags")
 
 	if query != "" {
 		searchQuery := fmt.Sprintf("%%%s%%", query)
@@ -124,8 +141,13 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
 	if err := db.Order("created_at DESC").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
-		Find(&posts).Error; err != nil {
+		Find(&models).Error; err != nil {
 		return nil, 0, err
+	}
+
+	posts := make([]entity.Post, 0, len(models))
+	for _, m := range models {
+		posts = append(posts, *mapper.ToPostEntity(&m))
 	}
 
 	return posts, totalCount, nil

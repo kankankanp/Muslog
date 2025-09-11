@@ -2,11 +2,11 @@ package entity
 
 import "time"
 
-// Community represents a chat community.
+// Community represents a chat community (domain entity).
 type Community struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatorID   string    `json:"creatorId"`
-	CreatedAt   time.Time `json:"createdAt"`
+	ID          string
+	Name        string
+	Description string
+	CreatorID   string
+	CreatedAt   time.Time
 }

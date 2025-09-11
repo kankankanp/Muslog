@@ -1,7 +1,7 @@
-package entity
+package model
 
-type Track struct {
-	ID            uint
+type TrackModel struct {
+	ID            uint `gorm:"primaryKey"`
 	SpotifyID     string
 	Name          string
 	ArtistName    string
