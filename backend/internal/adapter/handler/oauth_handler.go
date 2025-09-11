@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"net/http"
 	"os"
-
 	"time"
 
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/kankankanp/Muslog/pkg/utils"
 	"github.com/labstack/echo/v4"
@@ -21,56 +21,57 @@ func NewOAuthHandler(usecase usecase.OAuthUsecase) *OAuthHandler {
 	return &OAuthHandler{Usecase: usecase}
 }
 
+// Google 認証 URL を返す
 func (h *OAuthHandler) GetGoogleAuthURL(c echo.Context) error {
 	state := generateRandomState()
-
 	setStateCookie(c, state)
 
 	authURL := h.Usecase.GetAuthURL(state)
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"authURL": authURL,
+	return c.JSON(http.StatusOK, response.GoogleAuthURLResponse{
+		AuthURL: authURL,
 	})
 }
 
+// Google コールバック処理
 func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 	code := c.QueryParam("code")
 	state := c.QueryParam("state")
 
 	stateCookie, err := c.Cookie("oauth_state")
 	if err != nil || stateCookie.Value != state {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "Invalid state parameter",
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Invalid state parameter",
 		})
 	}
 
 	clearStateCookie(c)
 
 	if code == "" {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "Authorization code not provided",
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Authorization code not provided",
 		})
 	}
 
 	user, err := h.Usecase.HandleCallback(code)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "Failed to authenticate with Google",
-			"error":   err.Error(),
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to authenticate with Google",
+			Error:   err.Error(),
 		})
 	}
 
 	accessToken, err := utils.CreateToken(user.ID, time.Hour*24)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "Could not create access token",
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Could not create access token",
 		})
 	}
 
 	refreshToken, err := utils.CreateToken(user.ID, time.Hour*24*7)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "Could not create refresh token",
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Could not create refresh token",
 		})
 	}
 
@@ -79,11 +80,16 @@ func (h *OAuthHandler) GoogleCallback(c echo.Context) error {
 
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {
-		frontendURL = "http://localhost:3000" // デフォルト値
+		frontendURL = "http://localhost:3000"
 	}
 
+	// 認証後はフロントにリダイレクト
 	return c.Redirect(http.StatusTemporaryRedirect, frontendURL+"/dashboard")
 }
+
+// =======================
+// Cookie & State Utils
+// =======================
 
 func generateRandomState() string {
 	b := make([]byte, 32)

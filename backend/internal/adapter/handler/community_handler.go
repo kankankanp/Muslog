@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/request"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
@@ -17,14 +19,16 @@ func NewCommunityHandler(communityUsecase usecase.CommunityUsecase) *CommunityHa
 	return &CommunityHandler{communityUsecase: communityUsecase}
 }
 
+// =======================
+// Create Community
+// =======================
 func (h *CommunityHandler) CreateCommunity(c echo.Context) error {
-	var req struct {
-		Name        string `json:"name"`
-		Description string `json:"description"`
-	}
-
+	var req request.CreateCommunityRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request body"})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
 	}
 
 	userContext := c.Get("user").(jwt.MapClaims)
@@ -32,21 +36,39 @@ func (h *CommunityHandler) CreateCommunity(c echo.Context) error {
 
 	community, err := h.communityUsecase.CreateCommunity(c.Request().Context(), req.Name, req.Description, creatorID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create community"})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to create community",
+			Error:   err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Community created successfully", "community": community})
+	return c.JSON(http.StatusCreated, response.CreateCommunityResponse{
+		Message:   "Community created successfully",
+		Community: response.ToCommunityResponse(community),
+	})
 }
 
+// =======================
+// Get All Communities
+// =======================
 func (h *CommunityHandler) GetAllCommunities(c echo.Context) error {
 	communities, err := h.communityUsecase.GetAllCommunities(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve communities"})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to retrieve communities",
+			Error:   err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Communities retrieved successfully", "communities": communities})
+	return c.JSON(http.StatusOK, response.CommunityListResponse{
+		Message:     "Communities retrieved successfully",
+		Communities: response.ToCommunityResponses(communities),
+	})
 }
 
+// =======================
+// Search Communities
+// =======================
 func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 	query := c.QueryParam("q")
 	pageStr := c.QueryParam("page")
@@ -56,7 +78,6 @@ func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 	if err != nil || page < 1 {
 		page = 1
 	}
-
 	perPage, err := strconv.Atoi(perPageStr)
 	if err != nil || perPage < 1 {
 		perPage = 10
@@ -64,14 +85,17 @@ func (h *CommunityHandler) SearchCommunities(c echo.Context) error {
 
 	communities, totalCount, err := h.communityUsecase.SearchCommunities(c.Request().Context(), query, page, perPage)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to search communities", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to search communities",
+			Error:   err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message":     "Communities search successful",
-		"communities": communities,
-		"totalCount":  totalCount,
-		"page":        page,
-		"perPage":     perPage,
+	return c.JSON(http.StatusOK, response.CommunityListResponse{
+		Message:     "Communities search successful",
+		Communities: response.ToCommunityResponses(communities),
+		TotalCount:  totalCount,
+		Page:        page,
+		PerPage:     perPage,
 	})
 }

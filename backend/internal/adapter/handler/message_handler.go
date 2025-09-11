@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
@@ -18,21 +19,21 @@ func NewMessageHandler(u usecase.MessageUsecase) *MessageHandler {
 func (h *MessageHandler) GetMessagesByCommunityID(c echo.Context) error {
 	communityID := c.Param("communityId")
 	if communityID == "" {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "Community ID is required",
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Community ID is required",
 		})
 	}
 
 	messages, err := h.Usecase.GetMessagesByCommunityID(communityID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "Failed to retrieve messages",
-			"error":   err.Error(),
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to retrieve messages",
+			Error:   err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"message":  "Success",
-		"messages": messages,
+	return c.JSON(http.StatusOK, response.MessageListResponse{
+		Message:  "Success",
+		Messages: response.ToMessageResponses(messages),
 	})
 }

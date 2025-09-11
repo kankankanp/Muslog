@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
@@ -21,16 +22,19 @@ func (h *SpotifyHandler) SearchTracks(c echo.Context) error {
 	query := c.QueryParam("q")
 
 	if query == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "Missing search term")
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Missing search term",
+		})
 	}
 
 	tracks, err := h.spotifyUsecase.SearchTracks(query)
 	if err != nil {
-		return err // spotifyUsecase.SearchTracks already returns echo.HTTPError
+		// Usecase 側で echo.HTTPError を返しているならそのまま
+		return err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Success",
-		"tracks":  tracks,
+	return c.JSON(http.StatusOK, response.SearchTracksResponse{
+		Message: "Success",
+		Tracks:  response.ToTrackResponses(tracks),
 	})
 }

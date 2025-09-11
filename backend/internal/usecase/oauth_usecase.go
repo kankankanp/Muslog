@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/external"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 
@@ -15,8 +15,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"
 )
-
-// --- DTO ---
 
 type OAuthUsecase interface {
 	GetAuthURL(state string) string
@@ -46,51 +44,57 @@ func NewOAuthUsecase(userRepo domainRepo.UserRepository) OAuthUsecase {
 	}
 }
 
+// GetAuthURL returns the Google OAuth2 authorization URL.
 func (u *oAuthUsecaseImpl) GetAuthURL(state string) string {
 	return u.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
+// HandleCallback exchanges the code for a token and retrieves user info.
+// If the user does not exist, a new one is created.
 func (u *oAuthUsecaseImpl) HandleCallback(code string) (*entity.User, error) {
+	// 認可コードをアクセストークンに交換
 	token, err := u.config.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to exchange code: %v", err)
+		return nil, fmt.Errorf("failed to exchange code: %w", err)
 	}
 
+	// Google API クライアントを作成
 	client := u.config.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user info: %v", err)
+		return nil, fmt.Errorf("failed to get user info: %w", err)
 	}
 	defer resp.Body.Close()
 
-	var userInfo response.GoogleUserInfo
+	// レスポンスを構造体に変換
+	var userInfo external.GoogleUserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		return nil, fmt.Errorf("failed to decode user info: %v", err)
+		return nil, fmt.Errorf("failed to decode user info: %w", err)
 	}
 
+	// DB に既存ユーザーがいるか確認
 	existingUser, err := u.userRepo.FindByEmail(context.Background(), userInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// 新規作成
 			user := &entity.User{
 				Name:     userInfo.Name,
 				Email:    userInfo.Email,
 				GoogleID: &userInfo.ID,
-				Password: "", // OAuth 認証の場合はパスワードなし
+				Password: "", // OAuth 認証の場合はパスワード不要
 			}
-			createdUser, err := u.userRepo.Create(context.Background(), user)
-			if err != nil {
-				return nil, err
-			}
-			return createdUser, nil
+			return u.userRepo.Create(context.Background(), user)
 		}
 		return nil, err
 	}
 
+	// GoogleID が未登録 or 異なる場合は更新
 	if existingUser.GoogleID == nil || *existingUser.GoogleID != userInfo.ID {
 		existingUser.GoogleID = &userInfo.ID
 		if err := u.userRepo.Update(context.Background(), existingUser); err != nil {
 			return nil, err
 		}
 	}
+
 	return existingUser, nil
 }

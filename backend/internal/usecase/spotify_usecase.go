@@ -10,11 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/external"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
 )
 
 type SpotifyUsecase interface {
-	SearchTracks(query string) ([]response.FormattedTrack, error)
+	SearchTracks(query string) ([]entity.Track, error)
 }
 
 type spotifyUsecaseImpl struct {
@@ -76,7 +77,7 @@ func (s *spotifyUsecaseImpl) getAccessToken() (string, error) {
 }
 
 // トラック検索
-func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]response.FormattedTrack, error) {
+func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]entity.Track, error) {
 	token, err := s.getAccessToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Spotify access token: %w", err)
@@ -102,12 +103,12 @@ func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]response.FormattedTra
 		return nil, fmt.Errorf("failed to search tracks, status: %d, body: %s", resp.StatusCode, string(bodyBytes))
 	}
 
-	var searchResponse response.SpotifySearchResponse
+	var searchResponse external.SpotifySearchResponse
 	if err := json.NewDecoder(resp.Body).Decode(&searchResponse); err != nil {
 		return nil, fmt.Errorf("failed to decode Spotify search response: %w", err)
 	}
 
-	var formattedTracks []response.FormattedTrack
+	var tracks []entity.Track
 	for _, track := range searchResponse.Tracks.Items {
 		// アーティスト名を結合
 		artistNames := ""
@@ -124,13 +125,13 @@ func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]response.FormattedTra
 			albumImageURL = track.Album.Images[0].URL
 		}
 
-		formattedTracks = append(formattedTracks, response.FormattedTrack{
+		tracks = append(tracks, entity.Track{
 			SpotifyID:     track.ID,
 			Name:          track.Name,
 			ArtistName:    artistNames,
-			AlbumImageURL: albumImageURL,
+			AlbumImageUrl: albumImageURL,
 		})
 	}
 
-	return formattedTracks, nil
+	return tracks, nil
 }

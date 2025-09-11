@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/request"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
@@ -22,62 +24,56 @@ func NewPostHandler(usecase usecase.PostUsecase) *PostHandler {
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
 	var userID string
-	userContext := c.Get("user")
-	if userContext != nil {
-		claims, ok := userContext.(jwt.MapClaims)
-		if ok {
-			userID, _ = claims["user_id"].(string)
-		}
+	if claims, ok := c.Get("user").(jwt.MapClaims); ok {
+		userID, _ = claims["user_id"].(string)
 	}
 
 	posts, err := h.Usecase.GetAllPosts(c.Request().Context(), userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts})
+
+	return c.JSON(http.StatusOK, response.PostListResponse{
+		Message: "Success",
+		Posts:   response.ToPostResponses(posts),
+	})
 }
 
 func (h *PostHandler) GetPostByID(c echo.Context) error {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{Message: "Invalid ID"})
 	}
 
 	var userID string
-	userContext := c.Get("user")
-	if userContext != nil {
-		claims, ok := userContext.(jwt.MapClaims)
-		if ok {
-			userID, _ = claims["user_id"].(string)
-		}
+	if claims, ok := c.Get("user").(jwt.MapClaims); ok {
+		userID, _ = claims["user_id"].(string)
 	}
 
 	post, err := h.Usecase.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
+		return c.JSON(http.StatusNotFound, response.CommonResponse{Message: "Not Found"})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
+
+	return c.JSON(http.StatusOK, response.PostDetailResponse{
+		Message: "Success",
+		Post:    response.ToPostResponse(post),
+	})
 }
 
 func (h *PostHandler) CreatePost(c echo.Context) error {
-	userContext := c.Get("user").(jwt.MapClaims)
-	userID := userContext["user_id"].(string)
+	claims := c.Get("user").(jwt.MapClaims)
+	userID := claims["user_id"].(string)
 
-	type TrackInput struct {
-		SpotifyID     string `json:"spotifyId"`
-		Name          string `json:"name"`
-		ArtistName    string `json:"artistName"`
-		AlbumImageUrl string `json:"albumImageUrl"`
-	}
-	var req struct {
-		Title       string       `json:"title"`
-		Description string       `json:"description"`
-		Tracks      []TrackInput `json:"tracks"`
-	}
+	var req request.CreatePostRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Invalid request", Error: err.Error(),
+		})
 	}
+
 	post := entity.Post{
 		Title:       req.Title,
 		Description: req.Description,
@@ -85,6 +81,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
+
 	for _, t := range req.Tracks {
 		post.Tracks = append(post.Tracks, entity.Track{
 			SpotifyID:     t.SpotifyID,
@@ -93,77 +90,99 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 			AlbumImageUrl: t.AlbumImageUrl,
 		})
 	}
+
 	if err := h.Usecase.CreatePost(c.Request().Context(), &post); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
 	}
-	return c.JSON(http.StatusCreated, echo.Map{"message": "Success", "post": post})
+
+	return c.JSON(http.StatusCreated, response.PostDetailResponse{
+		Message: "Success",
+		Post:    response.ToPostResponse(&post),
+	})
 }
 
 func (h *PostHandler) UpdatePost(c echo.Context) error {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{Message: "Invalid ID"})
 	}
-	var req struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	}
+
+	var req request.UpdatePostRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request", "error": err.Error()})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{
+			Message: "Invalid request", Error: err.Error(),
+		})
 	}
-	userContext := c.Get("user").(jwt.MapClaims)
-	userID := userContext["user_id"].(string)
+
+	claims := c.Get("user").(jwt.MapClaims)
+	userID := claims["user_id"].(string)
+
 	post, err := h.Usecase.GetPostByID(c.Request().Context(), uint(id), userID)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, echo.Map{"message": "Not Found"})
+		return c.JSON(http.StatusNotFound, response.CommonResponse{Message: "Not Found"})
 	}
+
 	post.Title = req.Title
 	post.Description = req.Description
 	post.UpdatedAt = time.Now()
+
 	if err := h.Usecase.UpdatePost(c.Request().Context(), post); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "post": post})
+
+	return c.JSON(http.StatusOK, response.PostDetailResponse{
+		Message: "Success",
+		Post:    response.ToPostResponse(post),
+	})
 }
 
 func (h *PostHandler) DeletePost(c echo.Context) error {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid ID"})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{Message: "Invalid ID"})
 	}
+
 	if err := h.Usecase.DeletePost(c.Request().Context(), uint(id)); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success"})
+
+	return c.JSON(http.StatusOK, response.CommonResponse{Message: "Success"})
 }
 
 func (h *PostHandler) GetPostsByPage(c echo.Context) error {
-	pageStr := c.Param("page")
-	page, err := strconv.Atoi(pageStr)
+	page, err := strconv.Atoi(c.Param("page"))
 	if err != nil || page < 1 {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid page"})
+		return c.JSON(http.StatusBadRequest, response.CommonResponse{Message: "Invalid page"})
 	}
 	const PerPage = 4
 
 	var userID string
-	userContext := c.Get("user")
-	if userContext != nil {
-		claims, ok := userContext.(jwt.MapClaims)
-		if ok {
-			userID, _ = claims["user_id"].(string)
-		}
+	if claims, ok := c.Get("user").(jwt.MapClaims); ok {
+		userID, _ = claims["user_id"].(string)
 	}
 
 	posts, totalCount, err := h.Usecase.GetPostsByPage(c.Request().Context(), page, PerPage, userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{"message": "Success", "posts": posts, "totalCount": totalCount})
+
+	return c.JSON(http.StatusOK, response.PostListResponse{
+		Message:    "Success",
+		Posts:      response.ToPostResponses(posts),
+		TotalCount: totalCount,
+		Page:       page,
+		PerPage:    PerPage,
+	})
 }
 
-// SearchPosts handles searching for posts.
 func (h *PostHandler) SearchPosts(c echo.Context) error {
 	query := c.QueryParam("q")
 	tagsStr := c.QueryParam("tags")
@@ -175,35 +194,32 @@ func (h *PostHandler) SearchPosts(c echo.Context) error {
 		tags = strings.Split(tagsStr, ",")
 	}
 
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1 // Default to page 1
+	page, _ := strconv.Atoi(pageStr)
+	if page < 1 {
+		page = 1
 	}
-
-	perPage, err := strconv.Atoi(perPageStr)
-	if err != nil || perPage < 1 {
-		perPage = 10 // Default to 10 items per page
+	perPage, _ := strconv.Atoi(perPageStr)
+	if perPage < 1 {
+		perPage = 10
 	}
 
 	var userID string
-	userContext := c.Get("user")
-	if userContext != nil {
-		claims, ok := userContext.(jwt.MapClaims)
-		if ok {
-			userID, _ = claims["user_id"].(string)
-		}
+	if claims, ok := c.Get("user").(jwt.MapClaims); ok {
+		userID, _ = claims["user_id"].(string)
 	}
 
 	posts, totalCount, err := h.Usecase.SearchPosts(c.Request().Context(), query, tags, page, perPage, userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to search posts", "error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to search posts", Error: err.Error(),
+		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message":    "Posts search successful",
-		"posts":      posts,
-		"totalCount": totalCount,
-		"page":       page,
-		"perPage":    perPage,
+	return c.JSON(http.StatusOK, response.PostListResponse{
+		Message:    "Posts search successful",
+		Posts:      response.ToPostResponses(posts),
+		TotalCount: totalCount,
+		Page:       page,
+		PerPage:    perPage,
 	})
 }
