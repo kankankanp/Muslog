@@ -19,9 +19,10 @@ const SeedValue int64 = 20240801
 func Seed(db *gorm.DB) error {
 	log.Println("Clearing existing data...")
 
-	if err := db.Exec("TRUNCATE TABLE tracks, posts, users, post_tags, tags RESTART IDENTITY CASCADE").Error; err != nil {
-		return err
-	}
+    // 現在のテーブル名に合わせて初期化（GORM既定: *_models、many2many: post_tags）
+    if err := db.Exec("TRUNCATE TABLE post_tags, track_models, post_models, user_models, tag_models, like_models, message_models, community_models RESTART IDENTITY CASCADE").Error; err != nil {
+        return err
+    }
 
 	r := rand.New(rand.NewSource(SeedValue))
 	gf := gofakeit.New(uint64(SeedValue))

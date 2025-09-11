@@ -45,7 +45,7 @@ func (r *userRepositoryImpl) FindByID(ctx context.Context, id string) (*entity.U
 	var m model.UserModel
 	err := r.DB.WithContext(ctx).
 		Preload("Posts", func(db *gorm.DB) *gorm.DB {
-			return db.Order("posts.created_at DESC")
+			return db.Order("created_at DESC")
 		}).
 		Preload("Posts.Tracks").
 		Preload("Posts.Tags").
