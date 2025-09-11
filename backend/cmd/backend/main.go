@@ -13,7 +13,7 @@ import (
 
 	appConfig "github.com/kankankanp/Muslog/config"
 	"github.com/kankankanp/Muslog/internal/adapter/handler"
-	"github.com/kankankanp/Muslog/internal/domain/entity"
+	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/kankankanp/Muslog/internal/seeder"
@@ -70,8 +70,16 @@ func main() {
 	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
 		log.Fatalf("failed to create uuid-ossp extension: %v", err)
 	}
-
-	if err := db.AutoMigrate(&entity.User{}, &entity.Post{}, &entity.Track{}, &entity.Tag{}, &entity.PostTag{}, &entity.Like{}, &entity.Message{}, &entity.Community{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.UserModel{},
+		&model.PostModel{},
+		&model.TrackModel{},
+		&model.TagModel{},
+		&model.PostTagModel{},
+		&model.LikeModel{},
+		&model.MessageModel{},
+		&model.CommunityModel{},
+	); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
