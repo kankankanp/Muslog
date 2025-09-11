@@ -32,11 +32,11 @@ func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, us
 	var m model.PostModel
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
+    if userID != "" {
+        query = query.
+            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+    }
 
 	if err := query.First(&m, id).Error; err != nil {
 		return nil, err
@@ -48,15 +48,15 @@ func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]enti
 	var models []model.PostModel
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
+    if userID != "" {
+        query = query.
+            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+    }
 
-	if err := query.Order("created_at desc").Find(&models).Error; err != nil {
-		return nil, err
-	}
+    if err := query.Order("post_models.created_at desc").Find(&models).Error; err != nil {
+        return nil, err
+    }
 
 	posts := make([]entity.Post, 0, len(models))
 	for _, m := range models {
@@ -90,18 +90,18 @@ func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, 
 
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
-	if userID != "" {
-		query = query.
-			Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
+    if userID != "" {
+        query = query.
+            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+    }
 
-	if err := query.Order("created_at desc").
-		Offset((page - 1) * perPage).
-		Limit(perPage).
-		Find(&models).Error; err != nil {
-		return nil, 0, err
-	}
+    if err := query.Order("post_models.created_at desc").
+        Offset((page - 1) * perPage).
+        Limit(perPage).
+        Find(&models).Error; err != nil {
+        return nil, 0, err
+    }
 
 	posts := make([]entity.Post, 0, len(models))
 	for _, m := range models {
@@ -122,28 +122,28 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
 		db = db.Where("title ILIKE ? OR description ILIKE ?", searchQuery, searchQuery)
 	}
 
-	if len(tags) > 0 {
-		db = db.Joins("JOIN post_tags pt ON pt.post_id = posts.id").
-			Joins("JOIN tags t ON t.id = pt.tag_id").
-			Where("t.name IN (?)", tags).
-			Group("posts.id")
-	}
+    if len(tags) > 0 {
+        db = db.Joins("JOIN post_tags pt ON pt.post_id = post_models.id").
+            Joins("JOIN tag_models t ON t.id = pt.tag_id").
+            Where("t.name IN (?)", tags).
+            Group("post_models.id")
+    }
 
-	if userID != "" {
-		db = db.Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-			Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
-	}
+    if userID != "" {
+        db = db.Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+    }
 
 	if err := db.Count(&totalCount).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := db.Order("created_at DESC").
-		Offset((page - 1) * perPage).
-		Limit(perPage).
-		Find(&models).Error; err != nil {
-		return nil, 0, err
-	}
+    if err := db.Order("post_models.created_at DESC").
+        Offset((page - 1) * perPage).
+        Limit(perPage).
+        Find(&models).Error; err != nil {
+        return nil, 0, err
+    }
 
 	posts := make([]entity.Post, 0, len(models))
 	for _, m := range models {
