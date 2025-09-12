@@ -112,10 +112,10 @@ func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, 
 }
 
 func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
-	var models []model.PostModel
-	var totalCount int64
+    var models []model.PostModel
+    var totalCount int64
 
-	db := r.DB.WithContext(ctx).Model(&model.PostModel{}).Preload("Tracks").Preload("Tags")
+    db := r.DB.WithContext(ctx).Model(&model.PostModel{}).Preload("Tracks").Preload("Tags")
 
 	if query != "" {
 		searchQuery := fmt.Sprintf("%%%s%%", query)
@@ -134,9 +134,23 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
             Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
     }
 
-	if err := db.Count(&totalCount).Error; err != nil {
-		return nil, 0, err
-	}
+    // コンテキストが既にキャンセルされていれば早期リターン
+    select {
+    case <-ctx.Done():
+        return nil, 0, ctx.Err()
+    default:
+    }
+
+    if err := db.Count(&totalCount).Error; err != nil {
+        return nil, 0, err
+    }
+
+    // クエリ実行前にもキャンセルを再確認
+    select {
+    case <-ctx.Done():
+        return nil, 0, ctx.Err()
+    default:
+    }
 
     if err := db.Order("post_models.created_at DESC").
         Offset((page - 1) * perPage).

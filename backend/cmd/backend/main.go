@@ -1,19 +1,20 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"time"
+    "context"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "time"
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	appConfig "github.com/kankankanp/Muslog/config"
 	"github.com/kankankanp/Muslog/internal/adapter/handler"
-	"github.com/kankankanp/Muslog/internal/infrastructure/model"
+    "github.com/kankankanp/Muslog/internal/infrastructure/model"
+    dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/kankankanp/Muslog/internal/seeder"
@@ -24,7 +25,8 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
 	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+    "gorm.io/gorm"
+    glogger "gorm.io/gorm/logger"
 )
 
 // @title Simple Blog API
@@ -50,14 +52,21 @@ func main() {
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
 	)
 
-	var db *gorm.DB
-	maxRetries := 10
-	for i := 0; i < maxRetries; i++ {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err == nil {
-			fmt.Println("DB接続に成功しました")
-			break
-		}
+    var db *gorm.DB
+    baseLogger := glogger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
+        SlowThreshold:             200 * time.Millisecond,
+        LogLevel:                  glogger.Warn,
+        IgnoreRecordNotFoundError: true,
+        Colorful:                  false,
+    })
+    filteredLogger := dblogger.NewCancelFilter(baseLogger)
+    maxRetries := 10
+    for i := 0; i < maxRetries; i++ {
+        db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: filteredLogger})
+        if err == nil {
+            fmt.Println("DB接続に成功しました")
+            break
+        }
 		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
 		time.Sleep(3 * time.Second)
 	}

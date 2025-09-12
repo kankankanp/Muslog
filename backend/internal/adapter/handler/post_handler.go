@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -169,6 +171,10 @@ func (h *PostHandler) GetPostsByPage(c echo.Context) error {
 
 	posts, totalCount, err := h.Usecase.GetPostsByPage(c.Request().Context(), page, PerPage, userID)
 	if err != nil {
+		// クライアント切断やタイムアウトの場合は 500 を返さず静かに終了
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) || errors.Is(c.Request().Context().Err(), context.Canceled) {
+			return nil
+		}
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
 			Message: "Error", Error: err.Error(),
 		})
@@ -210,6 +216,10 @@ func (h *PostHandler) SearchPosts(c echo.Context) error {
 
 	posts, totalCount, err := h.Usecase.SearchPosts(c.Request().Context(), query, tags, page, perPage, userID)
 	if err != nil {
+		// クライアント切断やタイムアウトの場合は 500 を返さず静かに終了
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) || errors.Is(c.Request().Context().Err(), context.Canceled) {
+			return nil
+		}
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
 			Message: "Failed to search posts", Error: err.Error(),
 		})
