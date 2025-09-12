@@ -6,9 +6,10 @@ import (
 	"math/rand"
 	"net/url"
 
+	"github.com/kankankanp/Muslog/internal/infrastructure/model"
+
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
-	model "github.com/kankankanp/Muslog/internal/entity"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -18,9 +19,10 @@ const SeedValue int64 = 20240801
 func Seed(db *gorm.DB) error {
 	log.Println("Clearing existing data...")
 
-	if err := db.Exec("TRUNCATE TABLE tracks, posts, users, post_tags, tags RESTART IDENTITY CASCADE").Error; err != nil {
-		return err
-	}
+    // 現在のテーブル名に合わせて初期化（GORM既定: *_models、many2many: post_tags）
+    if err := db.Exec("TRUNCATE TABLE post_tags, track_models, post_models, user_models, tag_models, like_models, message_models, community_models RESTART IDENTITY CASCADE").Error; err != nil {
+        return err
+    }
 
 	r := rand.New(rand.NewSource(SeedValue))
 	gf := gofakeit.New(uint64(SeedValue))
@@ -29,7 +31,7 @@ func Seed(db *gorm.DB) error {
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
-		demo := model.User{
+		demo := model.UserModel{
 			ID:       uuid.NewString(),
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
@@ -51,8 +53,8 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		user := model.User{
-			ID: uuid.NewString(),
+		user := model.UserModel{
+			ID:       uuid.NewString(),
 			Name:     name,
 			Email:    email,
 			Password: string(hashedPassword),
@@ -61,7 +63,7 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 
-		post := model.Post{
+		post := model.PostModel{
 			Title:       gf.Sentence(6),
 			Description: gf.Paragraph(1, 3, 12, " "),
 			UserID:      user.ID,
@@ -75,7 +77,7 @@ func Seed(db *gorm.DB) error {
 			seed := fmt.Sprintf("%d-%d-%d", user.ID, i, j)
 			img := fmt.Sprintf("https://picsum.photos/seed/%s/300/300", url.PathEscape(seed))
 
-			track := model.Track{
+			track := model.TrackModel{
 				SpotifyID:     gf.UUID(),
 				Name:          gf.Word(),
 				ArtistName:    gf.Name(),

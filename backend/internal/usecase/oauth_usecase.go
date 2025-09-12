@@ -7,29 +7,26 @@ import (
 	"fmt"
 	"os"
 
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/repository"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/external"
+	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"gorm.io/gorm"
 )
 
-type OAuthService struct {
-	UserRepo *repository.UserRepository
+type OAuthUsecase interface {
+	GetAuthURL(state string) string
+	HandleCallback(code string) (*entity.User, error)
+}
+
+type oAuthUsecaseImpl struct {
+	userRepo domainRepo.UserRepository
 	config   *oauth2.Config
 }
 
-type GoogleUserInfo struct {
-	ID            string `json:"id"`
-	Email         string `json:"email"`
-	VerifiedEmail bool   `json:"verified_email"`
-	Name          string `json:"name"`
-	GivenName     string `json:"given_name"`
-	FamilyName    string `json:"family_name"`
-	Picture       string `json:"picture"`
-}
-
-func NewOAuthService(userRepo *repository.UserRepository) *OAuthService {
+func NewOAuthUsecase(userRepo domainRepo.UserRepository) OAuthUsecase {
 	config := &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
@@ -41,62 +38,63 @@ func NewOAuthService(userRepo *repository.UserRepository) *OAuthService {
 		Endpoint: google.Endpoint,
 	}
 
-	return &OAuthService{
-		UserRepo: userRepo,
+	return &oAuthUsecaseImpl{
+		userRepo: userRepo,
 		config:   config,
 	}
 }
 
-func (s *OAuthService) GetAuthURL(state string) string {
-	return s.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
+// GetAuthURL returns the Google OAuth2 authorization URL.
+func (u *oAuthUsecaseImpl) GetAuthURL(state string) string {
+	return u.config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (s *OAuthService) HandleCallback(code string) (*model.User, error) {
-	token, err := s.config.Exchange(context.Background(), code)
+// HandleCallback exchanges the code for a token and retrieves user info.
+// If the user does not exist, a new one is created.
+func (u *oAuthUsecaseImpl) HandleCallback(code string) (*entity.User, error) {
+	// 認可コードをアクセストークンに交換
+	token, err := u.config.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("failed to exchange code: %v", err)
+		return nil, fmt.Errorf("failed to exchange code: %w", err)
 	}
 
-	client := s.config.Client(context.Background(), token)
+	// Google API クライアントを作成
+	client := u.config.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user info: %v", err)
+		return nil, fmt.Errorf("failed to get user info: %w", err)
 	}
 	defer resp.Body.Close()
 
-	var userInfo GoogleUserInfo
+	// レスポンスを構造体に変換
+	var userInfo external.GoogleUserInfo
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		return nil, fmt.Errorf("failed to decode user info: %v", err)
+		return nil, fmt.Errorf("failed to decode user info: %w", err)
 	}
 
-	// 既存ユーザーを探す
-	existingUser, err := s.UserRepo.FindByEmail(context.Background(), userInfo.Email)
+	// DB に既存ユーザーがいるか確認
+	existingUser, err := u.userRepo.FindByEmail(context.Background(), userInfo.Email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// 新規ユーザーを作成
-			user := &model.User{
+			// 新規作成
+			user := &entity.User{
 				Name:     userInfo.Name,
 				Email:    userInfo.Email,
 				GoogleID: &userInfo.ID,
-				Password: "", // OAuth認証の場合はパスワードは空
+				Password: "", // OAuth 認証の場合はパスワード不要
 			}
-			createdUser, err := s.UserRepo.Create(context.Background(), user)
-			if err != nil {
-				return nil, err
-			}
-			return createdUser, nil
+			return u.userRepo.Create(context.Background(), user)
 		}
-		// その他のDBエラー
 		return nil, err
 	}
 
-	// 既存ユーザーのGoogle IDを更新
+	// GoogleID が未登録 or 異なる場合は更新
 	if existingUser.GoogleID == nil || *existingUser.GoogleID != userInfo.ID {
 		existingUser.GoogleID = &userInfo.ID
-		err := s.UserRepo.Update(context.Background(), existingUser)
-		if err != nil {
+		if err := u.userRepo.Update(context.Background(), existingUser); err != nil {
 			return nil, err
 		}
 	}
+
 	return existingUser, nil
 }

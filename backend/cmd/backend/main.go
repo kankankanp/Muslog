@@ -1,30 +1,32 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"time"
+    "context"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "time"
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	appConfig "github.com/kankankanp/Muslog/config"
-	model "github.com/kankankanp/Muslog/internal/entity"
-	"github.com/kankankanp/Muslog/internal/handler"
+	"github.com/kankankanp/Muslog/internal/adapter/handler"
+    "github.com/kankankanp/Muslog/internal/infrastructure/model"
+    dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
+	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"github.com/kankankanp/Muslog/internal/middleware"
-	"github.com/kankankanp/Muslog/internal/repository"
 	"github.com/kankankanp/Muslog/internal/seeder"
-	service "github.com/kankankanp/Muslog/internal/usecase"
+	"github.com/kankankanp/Muslog/internal/usecase"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
 	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+    "gorm.io/gorm"
+    glogger "gorm.io/gorm/logger"
 )
 
 // @title Simple Blog API
@@ -50,14 +52,21 @@ func main() {
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
 	)
 
-	var db *gorm.DB
-	maxRetries := 10
-	for i := 0; i < maxRetries; i++ {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err == nil {
-			fmt.Println("DB接続に成功しました")
-			break
-		}
+    var db *gorm.DB
+    baseLogger := glogger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
+        SlowThreshold:             200 * time.Millisecond,
+        LogLevel:                  glogger.Warn,
+        IgnoreRecordNotFoundError: true,
+        Colorful:                  false,
+    })
+    filteredLogger := dblogger.NewCancelFilter(baseLogger)
+    maxRetries := 10
+    for i := 0; i < maxRetries; i++ {
+        db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: filteredLogger})
+        if err == nil {
+            fmt.Println("DB接続に成功しました")
+            break
+        }
 		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
 		time.Sleep(3 * time.Second)
 	}
@@ -70,8 +79,16 @@ func main() {
 	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
 		log.Fatalf("failed to create uuid-ossp extension: %v", err)
 	}
-
-	if err := db.AutoMigrate(&model.User{}, &model.Post{}, &model.Track{}, &model.Tag{}, &model.PostTag{}, &model.Like{}, &model.Message{}, &model.Community{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.UserModel{},
+		&model.PostModel{},
+		&model.TrackModel{},
+		&model.TagModel{},
+		&model.PostTagModel{},
+		&model.LikeModel{},
+		&model.MessageModel{},
+		&model.CommunityModel{},
+	); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
@@ -79,7 +96,6 @@ func main() {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
 
-	// Initialize AWS S3 client
 	awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
 	if err != nil {
 		log.Fatalf("failed to load AWS SDK config: %v", err)
@@ -87,39 +103,36 @@ func main() {
 	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
-	postService := service.NewPostService(postRepo)
-	postHandler := handler.NewPostHandler(postService)
+	postUsecase := usecase.NewPostUsecase(postRepo)
+	postHandler := handler.NewPostHandler(postUsecase)
 
-	userRepo := &repository.UserRepository{DB: db}
-	userService := &service.UserService{Repo: userRepo}
-	userHandler := &handler.UserHandler{Service: userService}
+	userRepo := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepo, postRepo)
+	userHandler := handler.NewUserHandler(userUsecase)
 
 	tagRepo := repository.NewTagRepository(db)
-	tagService := service.NewTagService(tagRepo, postRepo)
-	tagHandler := handler.NewTagHandler(tagService)
+	tagUsecase := usecase.NewTagUsecase(tagRepo, postRepo)
+	tagHandler := handler.NewTagHandler(tagUsecase)
 
-	spotifyService := service.NewSpotifyService()
-	spotifyHandler := handler.NewSpotifyHandler(spotifyService)
+	spotifyUsecase := usecase.NewSpotifyUsecase()
+	spotifyHandler := handler.NewSpotifyHandler(spotifyUsecase)
 
 	likeRepo := repository.NewLikeRepository(db)
-	likeService := service.NewLikeService(likeRepo, postRepo)
-	likeHandler := handler.NewLikeHandler(likeService)
+	likeUsecase := usecase.NewLikeUsecase(likeRepo, postRepo)
+	likeHandler := handler.NewLikeHandler(likeUsecase)
 
-	oauthService := service.NewOAuthService(userRepo)
-	oauthHandler := handler.NewOAuthHandler(oauthService)
+	oauthUsecase := usecase.NewOAuthUsecase(userRepo)
+	oauthHandler := handler.NewOAuthHandler(oauthUsecase)
 
-	// Initialize Message Repository and Usecase
 	messageRepo := repository.NewMessageRepository(db)
-	messageUsecase := service.NewMessageUsecase(messageRepo)
+	messageUsecase := usecase.NewMessageUsecase(messageRepo)
 	messageHandler := handler.NewMessageHandler(messageUsecase)
 
-	// Initialize Community Repository, Usecase, and Handler
 	communityRepo := repository.NewCommunityRepository(db)
-	communityUsecase := service.NewCommunityUsecase(communityRepo)
+	communityUsecase := usecase.NewCommunityUsecase(communityRepo)
 	communityHandler := handler.NewCommunityHandler(communityUsecase)
 
-	// Initialize Image Usecase and Handler
-	imageUsecase := service.NewImageUsecase(s3Client, cfg.S3BucketName, cfg.S3Region)
+	imageUsecase := usecase.NewImageUsecase(s3Client, cfg.S3BucketName, cfg.S3Region)
 	imageHandler := handler.NewImageHandler(imageUsecase, userRepo, postRepo)
 
 	e := echo.New()
@@ -185,14 +198,14 @@ func main() {
 	tagGroup.DELETE("/posts/:postID", tagHandler.RemoveTagsFromPost)
 	tagGroup.GET("/posts/:postID", tagHandler.GetTagsByPostID)
 
-	// Community routes
+	// community
 	communityGroup := protected.Group("/communities")
 	communityGroup.GET("", communityHandler.GetAllCommunities)
 	communityGroup.POST("", communityHandler.CreateCommunity)
 	communityGroup.GET("/search", communityHandler.SearchCommunities)
 	communityGroup.GET("/:communityId/messages", messageHandler.GetMessagesByCommunityID)
 
-	// Image routes
+	// image
 	protected.POST("/posts/:postId/header-image", imageHandler.UploadPostHeaderImage)
 	protected.POST("/images/upload", imageHandler.UploadInPostImage)
 
