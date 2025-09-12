@@ -1,8 +1,41 @@
-# 概要
+# 目次
 
-Muslog は、総合的音楽プラットフォーム
+- [概要](#概要)
+  - [主な使用技術](#主な使用技術)
+  - [システム構成図](#システム構成図)
+  - [ブランチ管理](#ブランチ管理)
+- [フロントエンド環境 (web-frontend)](#フロントエンド環境-web-frontend)
+  - [前提条件](#前提条件)
+  - [パッケージのインストール](#パッケージのインストール)
+  - [API クライアントコードの自動生成](#api-クライアントコードの自動生成)
+  - [ローカルサーバーの起動](#ローカルサーバーの起動)
+  - [ディレクトリ構成](#ディレクトリ構成)
+- [バックエンド環境 (backend)](#バックエンド環境-backend)
+  - [前提条件](#前提条件-1)
+  - [ローカルサーバーの起動](#ローカルサーバーの起動-1)
+  - [ディレクトリ構成](#ディレクトリ構成-1)
+  - [API ドキュメントの確認](#api-ドキュメントの確認)
+- [コード自動整形](#コード自動整形)
+- [AWS 本番環境構築 (Terraform)](#aws-本番環境構築-terraform)
+  - [前提条件](#前提条件-2)
+  - [デプロイ手順](#デプロイ手順)
+  - [インフラ構成詳細](#インフラ構成詳細)
+    - [リクエストフロー](#リクエストフロー)
+
+# 概要
+音楽理論や作曲したオリジナル曲、ギターの演奏動画を投稿したいと思い、音楽に関する技術記事を投稿できるプラットフォームを作りました。マークダウンで記事を投稿でき、タグや SpotifyAPI から検索した曲を選択して紹介する機能も作りました。また、WebSocket 通信を用いてリアルタイムチャットのできるコミュニティ機能も作成しました。インフラ〜フロントエンドまで一度自力で開発してみたいと思い、
+AWS 構築を Terraform による IaC、GoによるAPIサーバー、Next.jsによるフロントエンド実装まで行いました。また、AWS ECS への自動デプロイなどの CI / CD も GitHub Actions を使用して実現しています。（運用コストが高く、現在は運用停止中です）
+
+フロントエンドは Figma を使用してデザイン案を構想し、Next.js での UI 実装まで行いました。初めは AWS 環境でホスティングに CloudFront を使用していたため、Next.js の強みである SSR（サーバーサイドレンダリング）を使用できないという制約の中開発を進めていましたが、結局 Lambda@Edge、OpenNext 等を使用し SSR できるようなインフラ環境に変更しました。デザインの再現には Codex や Claude Code などの AI エージェントを多用し、効率的な実装に務めました。
+
+バックエンドは Golang の Echo フレームワークを用いて、クリーンアーキテクチャを中心としたディレクトリ構造での API 開発を行いました。クリーンアーキテクチャを実際にアプリケーションコードに落とし込む技術を学ぶ非常に良い経験となりました。
+
+今後の展望：
+現状のインフラ環境では、WebSocket 通信用サーバーと RESTfulAPI 用サーバーが 1 つの ECS コンテナで稼働している状態であり、あまりスケーラブルでない構成です。
+今後、記事投稿、コミュニティに加えて、他の機能を追加するとなった場合に備えて、現状のモノリシックアーキテクチャから、gRPC をマイクロサービスへと再編成したいです。
 
 ## 主な使用技術
+
 - フロントエンド
   - 言語：TypeScript
   - フレームワーク：Next.js(App Router)
@@ -15,39 +48,9 @@ Muslog は、総合的音楽プラットフォーム
   - ORM：GORM
 - データベース：PostgreSQL (Docker Compose 経由)
 - API 仕様：Swagger (Swag)
-## システム構成図
-```
-                 ┌──────────────────────────────┐
-                 │          CloudFront          │
-                 │ (CDN / キャッシュ / HTTPS)     │ 
-                 └─────┬─────────────┬──────────┘
-                       │             │
-         HTML/CSS/JS   │             │  /api/*
-                       │             │
-     ┌─────────────────▼───┐   ┌────▼─────────────────┐
-     │ S3（フロント配信用） │   │  ALB（API用ロードバランサ）│
-     └─────────────────────┘   └──────────┬───────────┘
-                                           │
-                                 ┌─────────▼─────────┐
-                                 │ ECS (Fargate)     │
-                                 │ Go Echo APIサーバ  │
-                                 └─────────┬─────────┘
-                                           │
-                            ┌──────────────▼──────────────┐
-                            │   RDS PostgreSQL (DB)       │
-                            └────────────────────────────┘
 
-【画像アップロード/配信】
-ユーザー → (PUT: 署名付きURL) → S3（画像・音源保存）
-CloudFront → (GET) → S3（画像・音源）
-
-【コンテナ配布】
-GitHub Actions → (docker push) → ECR → ECSでpullして起動
-
-【監視/ログ】
-ALB → CloudWatch（アクセスログ・メトリクス）
-ECS → CloudWatch（アプリログ・メトリクス）
-```
+## インフラ構成図
+![インフラ構成図](document/muslog_architechture.png)
 
 ## ブランチ管理
 
@@ -59,8 +62,8 @@ ECS → CloudWatch（アプリログ・メトリクス）
 - feature
   - develop ブランチから作成するブランチ
   - 新しい機能の開発など
-  - ブランチ名は`feature/{issue番号}-{作業内容}`
-    - 例: `feature/1-create-login-page`
+  - ブランチ名は`feature/{作業内容}`
+    - 例: `feature/create-login-page`
 
 # フロントエンド環境 (web-frontend)
 
@@ -118,7 +121,6 @@ frontend/
 
 - Go
 - Docker
-- Docker Compose
 
 ## ローカルサーバーの起動
 
@@ -144,11 +146,20 @@ backend/
 └── ...
 ```
 
-## API ドキュメントの確認
+## テーブルの確認
 
-ローカルサーバーを起動後、以下の URL にアクセスすると Swagger UI で API ドキュメントを確認できます。
-
-- http://localhost:8080/swagger/index.html
+```
+# dbコンテナに直接入る
+docker-compose exec -it db bash
+# PostgreSQLに移動
+psql -U postgres -d simpleblog
+# 特定のテーブルの中身を確認
+SELECT * FROM <テーブル名>;
+# 特定のテーブルの中身を削除
+TRUNCATE TABLE <テーブル名> CASCADE;
+# テーブル一覧を確認
+\dt:
+```
 
 # コード自動整形
 
@@ -164,16 +175,11 @@ VSCode の拡張機能を検索し、
   // 共通設定
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "always",
-    "source.fixAll": "always"
+    "source.fixAll.eslint": "always"
   },
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
 
-  // Go用
-  "[go]": {
-    "editor.defaultFormatter": "golang.go"
-  },
-
-  // TypeScript/JavaScript用
+  // JS・TS用
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -185,6 +191,10 @@ VSCode の拡張機能を検索し、
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // Go用
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
   }
 }
 ```
@@ -216,6 +226,7 @@ terraform apply
 ```
 
 ## インフラ構成詳細
+
 - **CloudFront**: CDN によるキャッシュ・HTTPS 配信
 - **ALB**: API 用ロードバランサー (/api/\* へのリクエストルーティング)
 - **S3**: 静的ファイル配信 (HTML/CSS/JS) + 画像・音源保存
@@ -231,7 +242,7 @@ terraform apply
 3. **画像アップロード**: ユーザー → 署名付き URL → S3 → CloudFront 配信
 4. **コンテナデプロイ**: GitHub Actions → docker build → ECR → ECS
 
-# 開発・運用コマンド
+# その他開発・運用コマンド
 
 ### Gemini CLI の実行
 
@@ -284,10 +295,10 @@ aws rds describe-db-clusters \
 ```
 
 **注意事項:**
-- 停止: ECS の desired count が 0 になり、RDS が stopping → stopped 状態になります
-- 開始: RDS が starting → available 状態になり、ECS の desired count が 2 に戻ります  
-- RDS の停止・開始は数分かかることがあります
 
+- 停止: ECS の desired count が 0 になり、RDS が stopping → stopped 状態になります
+- 開始: RDS が starting → available 状態になり、ECS の desired count が 2 に戻ります
+- RDS の停止・開始は数分かかることがあります
 
 aws secretsmanager delete-secret --secret-id production/app_secrets --region ap-northeast-1
 
@@ -297,29 +308,3 @@ aws logs describe-log-groups --region ap-northeast-1 --log-
 group-name-prefix "/aws/lambda/production-open-next-regional"
 --query 'logGroups[].logGroupName' --output text
 
-### DB のマイグレーション・シーディング
-
-```
-# backendコンテナに直接入る
-docker-compose exec -it backend bash
-# マイグレーションファイルの作成
-
-# マイグレーションの実行
-
-# シードデータの追加
-```
-
-### テーブルの確認
-
-```
-# dbコンテナに直接入る
-docker-compose exec -it db bash
-# PostgreSQLに移動
-psql -U postgres -d simpleblog
-# 特定のテーブルの中身を確認
-SELECT * FROM <テーブル名>;
-# 特定のテーブルの中身を削除
-TRUNCATE TABLE <テーブル名> CASCADE;
-# テーブル一覧を確認
-\dt:
-```
