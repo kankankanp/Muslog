@@ -60,9 +60,7 @@ AWS 構築を Terraform による IaC、GoによるAPIサーバー、Next.jsに�
 - コミュニティ詳細ページ
 ![alt text](document/page-demo/pc/communitiydetail.png)
 
-*スマホ表示
-![alt text](document/page-demo/sp/home_sp.png)
-![alt text](document/page-demo/sp/home_sp_sidebar.png)
+*レスポンシブ対応済みです。
 ## ブランチ管理
 
 - main
