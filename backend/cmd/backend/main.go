@@ -27,6 +27,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	glogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"strings"
 )
 
 // @title Simple Blog API
@@ -62,7 +64,12 @@ func main() {
 	filteredLogger := dblogger.NewCancelFilter(baseLogger)
 	maxRetries := 10
 	for i := 0; i < maxRetries; i++ {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: filteredLogger})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: filteredLogger,
+			NamingStrategy: schema.NamingStrategy{
+				NameReplacer: strings.NewReplacer("Model", ""),
+			},
+		})
 		if err == nil {
 			fmt.Println("DB接続に成功しました")
 			break
@@ -73,6 +80,11 @@ func main() {
 
 	if err != nil {
 		panic("データベース接続失敗: " + err.Error())
+	}
+
+	// Ensure join table mapping for many2many(Post <-> Tag) uses post_tags (post_id, tag_id)
+	if err := db.SetupJoinTable(&model.PostModel{}, "Tags", &model.PostTagModel{}); err != nil {
+		log.Fatalf("failed to setup join table for Post.Tags: %v", err)
 	}
 
 	// Ensure required PostgreSQL extensions

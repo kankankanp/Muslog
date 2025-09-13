@@ -63,8 +63,6 @@ const TagModal = ({
       return;
     }
 
-    console.log("aaaa");
-
     // 新規作成
     createTag(
       { data: { name } },
@@ -75,6 +73,7 @@ const TagModal = ({
           setSelectedTagsInModal((prev) =>
             prev.includes(name) ? prev : [...prev, name]
           );
+          console.log("bbbb");
           setQuery("");
         },
         onError: () => {
