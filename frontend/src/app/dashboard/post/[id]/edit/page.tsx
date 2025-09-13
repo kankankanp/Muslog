@@ -25,6 +25,7 @@ export default function EditPostPage() {
 
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
     "split"
   );
@@ -170,6 +171,19 @@ export default function EditPostPage() {
   };
 
   const handleSubmit = () => {
+    const missingTitle = title.trim() === "";
+    const missingBody = markdown.trim() === "";
+    if (missingTitle || missingBody) {
+      const msg = missingTitle && missingBody
+        ? "タイトルと本文は必須です。"
+        : missingTitle
+          ? "タイトルは必須です。"
+          : "本文は必須です。";
+      setValidationError(msg);
+      containerRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    setValidationError(null);
     if (!userData?.id) {
       alert("ユーザー情報が取得できませんでした。ログインしてください。");
       return;
@@ -342,6 +356,11 @@ export default function EditPostPage() {
           <div
             className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
+            {validationError && (
+              <div className="mb-2 p-3 rounded bg-red-50 text-red-700 border border-red-200">
+                {validationError}
+              </div>
+            )}
             <div className="flex gap-2 mb-2 justify-end">
               <button
                 className="px-2 py-1 bg-gray-200 rounded"
