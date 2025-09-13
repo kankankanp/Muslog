@@ -300,7 +300,7 @@ export default function AddPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> ヘッダー画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
@@ -309,7 +309,7 @@ export default function AddPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> 投稿内画像を追加
+                <span className="text-xl">＋</span> 投稿内画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
