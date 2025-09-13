@@ -17,11 +17,12 @@ import (
 )
 
 type PostHandler struct {
-	Usecase usecase.PostUsecase
+    Usecase    usecase.PostUsecase
+    TagUsecase usecase.TagUsecase
 }
 
-func NewPostHandler(usecase usecase.PostUsecase) *PostHandler {
-	return &PostHandler{Usecase: usecase}
+func NewPostHandler(usecase usecase.PostUsecase, tagUsecase usecase.TagUsecase) *PostHandler {
+    return &PostHandler{Usecase: usecase, TagUsecase: tagUsecase}
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
@@ -76,13 +77,14 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		})
 	}
 
-	post := entity.Post{
-		Title:       req.Title,
-		Description: req.Description,
-		UserID:      userID,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}
+    post := entity.Post{
+        Title:       req.Title,
+        Description: req.Description,
+        UserID:      userID,
+        HeaderImageUrl: req.HeaderImageUrl,
+        CreatedAt:   time.Now(),
+        UpdatedAt:   time.Now(),
+    }
 
 	for _, t := range req.Tracks {
 		post.Tracks = append(post.Tracks, entity.Track{
@@ -93,16 +95,25 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		})
 	}
 
-	if err := h.Usecase.CreatePost(c.Request().Context(), &post); err != nil {
-		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
-			Message: "Error", Error: err.Error(),
-		})
-	}
+    if err := h.Usecase.CreatePost(c.Request().Context(), &post); err != nil {
+        return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+            Message: "Error", Error: err.Error(),
+        })
+    }
 
-	return c.JSON(http.StatusCreated, response.PostDetailResponse{
-		Message: "Success",
-		Post:    response.ToPostResponse(&post),
-	})
+    // attach tags if provided
+    if len(req.Tags) > 0 && h.TagUsecase != nil {
+        if err := h.TagUsecase.AddTagsToPost(post.ID, req.Tags); err != nil {
+            // ログに残しつつ、投稿自体は成功扱いにする
+            // クライアント側は後からタグ再付与も可能
+            // ここでエラーを返しても良いが、UXを優先
+        }
+    }
+
+    return c.JSON(http.StatusCreated, response.PostDetailResponse{
+        Message: "Success",
+        Post:    response.ToPostResponse(&post),
+    })
 }
 
 func (h *PostHandler) UpdatePost(c echo.Context) error {

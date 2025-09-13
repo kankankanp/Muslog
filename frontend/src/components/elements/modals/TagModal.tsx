@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "react-modal";
+import type { Tag } from "@/libs/api/generated/orval/model/tag";
+import { useGetTags, usePostTags } from "@/libs/api/generated/orval/tags/tags";
 
 type TagModalProps = {
   isOpen: boolean;
@@ -17,9 +19,26 @@ const TagModal = ({
   initialSelectedTags,
 }: TagModalProps): JSX.Element => {
   const [query, setQuery] = useState<string>("");
-  const [selectedTagsInModal, setSelectedTagsInModal] = useState<string[]>(initialSelectedTags || []);
+  const [selectedTagsInModal, setSelectedTagsInModal] = useState<string[]>(
+    initialSelectedTags || []
+  );
 
-  const availableTags = ["タグ1", "タグ2", "タグ3", "タグ4", "タグ5"]; // Example tags
+  // Fetch all tags
+  const { data: tagsData, isPending, error, refetch } = useGetTags();
+  const allTags: string[] = useMemo(() => {
+    const list = (tagsData?.tags as Tag[] | undefined) || [];
+    return list
+      .map((t) => t.name)
+      .filter((n): n is string => typeof n === "string");
+  }, [tagsData]);
+
+  // Create tag mutation
+  const { mutate: createTag, isPending: isCreating } = usePostTags();
+
+  // Keep selected state in sync when modal opens with different initial values
+  useEffect(() => {
+    setSelectedTagsInModal(initialSelectedTags || []);
+  }, [initialSelectedTags, isOpen]);
 
   const handleTagToggle = (tagToToggle: string) => {
     setSelectedTagsInModal((prevTags) => {
@@ -32,10 +51,37 @@ const TagModal = ({
   };
 
   const handleAddCustomTag = () => {
-    if (query.trim() && !selectedTagsInModal.includes(query.trim())) {
-      setSelectedTagsInModal((prevTags) => [...prevTags, query.trim()]);
+    const name = query.trim();
+    if (!name) return;
+
+    // 既存にあるなら選択だけ追加
+    if (allTags.includes(name)) {
+      if (!selectedTagsInModal.includes(name)) {
+        setSelectedTagsInModal((prev) => [...prev, name]);
+      }
       setQuery("");
+      return;
     }
+
+    console.log("aaaa");
+
+    // 新規作成
+    createTag(
+      { data: { name } },
+      {
+        onSuccess: async () => {
+          // 再取得してリストに反映
+          await refetch();
+          setSelectedTagsInModal((prev) =>
+            prev.includes(name) ? prev : [...prev, name]
+          );
+          setQuery("");
+        },
+        onError: () => {
+          alert("タグの作成に失敗しました");
+        },
+      }
+    );
   };
 
   return (
@@ -48,40 +94,66 @@ const TagModal = ({
     >
       <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto my-20">
         <h2 className="text-2xl font-bold mb-4">タグを選択または作成</h2>
-        <div className="flex gap-2 mb-4">
+        <form
+          className="flex gap-2 mb-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddCustomTag();
+          }}
+        >
           <input
             type="text"
             placeholder="新しいタグを作成"
             className="w-full border rounded p-2"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleAddCustomTag()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                handleAddCustomTag();
+              }
+            }}
           />
           <button
+            type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded"
-            onClick={handleAddCustomTag}
+            disabled={isCreating}
           >
             追加
           </button>
-        </div>
+        </form>
 
         <div className="mb-4">
           <h3 className="font-semibold mb-2">既存のタグ</h3>
-          <div className="flex flex-wrap gap-2">
-            {availableTags.map((tag) => (
-              <span
-                key={tag}
-                onClick={() => handleTagToggle(tag)}
-                className={`px-3 py-1 rounded-full text-sm cursor-pointer ${
-                  selectedTagsInModal.includes(tag)
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {isPending ? (
+            <div className="text-sm text-gray-500">読み込み中...</div>
+          ) : error ? (
+            <div className="text-sm text-red-600">タグの取得に失敗しました</div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {allTags
+                .filter((t) =>
+                  query.trim()
+                    ? t.toLowerCase().includes(query.trim().toLowerCase())
+                    : true
+                )
+                .map((tag) => (
+                  <span
+                    key={tag}
+                    onClick={() => handleTagToggle(tag)}
+                    className={`px-3 py-1 rounded-full text-sm cursor-pointer ${
+                      selectedTagsInModal.includes(tag)
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    {tag}
+                  </span>
+                ))}
+            </div>
+          )}
         </div>
 
         {selectedTagsInModal.length > 0 && (
@@ -106,19 +178,17 @@ const TagModal = ({
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => onSelectTags(selectedTagsInModal)}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-60"
+                disabled={isCreating}
               >
-                完了
+                {isCreating ? "保存中..." : "完了"}
               </button>
             </div>
           </div>
         )}
 
         <div className="flex justify-end gap-2 mt-4">
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={onClose}
-          >
+          <button className="px-4 py-2 bg-gray-300 rounded" onClick={onClose}>
             閉じる
           </button>
         </div>
