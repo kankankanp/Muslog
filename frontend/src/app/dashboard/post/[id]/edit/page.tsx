@@ -355,7 +355,7 @@ export default function EditPostPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-md:flex-col max-md:gap-0">
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
                 onClick={() => {
@@ -363,7 +363,7 @@ export default function EditPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> ヘッダー画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
@@ -372,7 +372,7 @@ export default function EditPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> 投稿内画像を追加
+                <span className="text-xl">＋</span> 投稿内画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
