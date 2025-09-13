@@ -191,16 +191,16 @@ func (h *UserHandler) GetUserByID(c echo.Context) error {
 }
 
 func (h *UserHandler) GetUserPosts(c echo.Context) error {
-	id := c.Param("id")
-	posts, err := h.Usecase.GetUserPosts(c.Request().Context(), id)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
-			Message: "Error",
-			Error:   err.Error(),
-		})
-	}
-	return c.JSON(http.StatusOK, response.UserPostsResponse{
-		Message: "Success",
-		Posts:   posts, // TODO: PostResponse に変換するのが望ましい
-	})
+    id := c.Param("id")
+    posts, err := h.Usecase.GetUserPosts(c.Request().Context(), id)
+    if err != nil {
+        return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+            Message: "Error",
+            Error:   err.Error(),
+        })
+    }
+    return c.JSON(http.StatusOK, response.UserPostsResponse{
+        Message: "Success",
+        Posts:   response.ToPostResponses(posts),
+    })
 }
