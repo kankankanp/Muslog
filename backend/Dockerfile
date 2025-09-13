@@ -1,3 +1,4 @@
+# --- Builder Stage ---
 FROM golang:1.24-alpine AS builder
 
 RUN apk add --no-cache git curl bash
@@ -12,6 +13,7 @@ COPY . .
 WORKDIR /app/cmd/backend
 RUN go build -o main .
 
+# --- Runner Stage ---
 FROM alpine:latest
 RUN apk add --no-cache bash
 

@@ -50,7 +50,9 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
   // WebSocket connection
   const wsUrl =
     process.env.NEXT_PUBLIC_WEBSOCKET_URL ||
-    "ws://localhost:8080/ws/community/";
+    (typeof window !== "undefined"
+      ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8080/ws/community/`
+      : "ws://localhost:8080/ws/community/");
   const { isConnected, lastMessage, sendMessage } = useWebSocket(
     `${wsUrl}${communityId}`,
     {
@@ -117,12 +119,15 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
             No messages yet. Start the conversation!
           </div>
         ) : (
-          messages.map((msg) => (
+          messages.map((msg, idx) => (
             // TODO: Replace with actual user ID from context for isOwnMessage check
             <ChatMessage
-              key={msg.id}
+              key={msg.id ?? `${msg.senderId ?? 'unknown'}-${msg.createdAt ?? idx}`}
               message={msg}
-              isOwnMessage={msg.senderId.startsWith("guest_user_")}
+              isOwnMessage={
+                typeof msg.senderId === "string" &&
+                msg.senderId.startsWith("guest_user_")
+              }
             />
           ))
         )}
