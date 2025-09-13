@@ -83,6 +83,20 @@ export default function EditPostPage() {
     // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
   }, []);
 
+  // 768px未満では分割モードを強制的に解除してエディタ表示にする
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== "undefined" && window.innerWidth < 768 && viewMode === "split") {
+        setViewMode("editor");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    // 初回マウント時にも判定して反映
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, [viewMode]);
+
   const handleZoom = (
     area: "editor" | "preview",
     type: "in" | "out" | "reset"
