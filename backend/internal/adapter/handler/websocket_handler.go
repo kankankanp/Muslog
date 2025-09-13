@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid" // For generating unique message IDs
 	"github.com/gorilla/websocket"
+	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/usecase"
 )
@@ -183,7 +184,8 @@ func (c *Client) writePump() {
 			if err != nil {
 				return
 			}
-			msgBytes, err := json.Marshal(message)
+			// Convert to API response shape to ensure proper JSON field names
+			msgBytes, err := json.Marshal(response.ToMessageResponse(&message))
 			if err != nil {
 				log.Printf("Error marshalling message: %v", err)
 				return
@@ -194,7 +196,8 @@ func (c *Client) writePump() {
 			n := len(c.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
-				queuedMsgBytes, err := json.Marshal(<-c.send)
+				m := <-c.send
+				queuedMsgBytes, err := json.Marshal(response.ToMessageResponse(&m))
 				if err != nil {
 					log.Printf("Error marshalling queued message: %v", err)
 					continue

@@ -1,20 +1,20 @@
 package main
 
 import (
-    "context"
-    "fmt"
-    "log"
-    "net/http"
-    "os"
-    "time"
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
 
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	appConfig "github.com/kankankanp/Muslog/config"
 	"github.com/kankankanp/Muslog/internal/adapter/handler"
-    "github.com/kankankanp/Muslog/internal/infrastructure/model"
-    dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
+	dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
+	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
 	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/kankankanp/Muslog/internal/seeder"
@@ -25,8 +25,10 @@ import (
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
 	"gorm.io/driver/postgres"
-    "gorm.io/gorm"
-    glogger "gorm.io/gorm/logger"
+	"gorm.io/gorm"
+	glogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"strings"
 )
 
 // @title Simple Blog API
@@ -52,27 +54,37 @@ func main() {
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
 	)
 
-    var db *gorm.DB
-    baseLogger := glogger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
-        SlowThreshold:             200 * time.Millisecond,
-        LogLevel:                  glogger.Warn,
-        IgnoreRecordNotFoundError: true,
-        Colorful:                  false,
-    })
-    filteredLogger := dblogger.NewCancelFilter(baseLogger)
-    maxRetries := 10
-    for i := 0; i < maxRetries; i++ {
-        db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: filteredLogger})
-        if err == nil {
-            fmt.Println("DB接続に成功しました")
-            break
-        }
+	var db *gorm.DB
+	baseLogger := glogger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
+		SlowThreshold:             200 * time.Millisecond,
+		LogLevel:                  glogger.Warn,
+		IgnoreRecordNotFoundError: true,
+		Colorful:                  false,
+	})
+	filteredLogger := dblogger.NewCancelFilter(baseLogger)
+	maxRetries := 10
+	for i := 0; i < maxRetries; i++ {
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: filteredLogger,
+			NamingStrategy: schema.NamingStrategy{
+				NameReplacer: strings.NewReplacer("Model", ""),
+			},
+		})
+		if err == nil {
+			fmt.Println("DB接続に成功しました")
+			break
+		}
 		fmt.Printf("DB接続リトライ中... (%d/%d): %v\n", i+1, maxRetries, err)
 		time.Sleep(3 * time.Second)
 	}
 
 	if err != nil {
 		panic("データベース接続失敗: " + err.Error())
+	}
+
+	// Ensure join table mapping for many2many(Post <-> Tag) uses post_tags (post_id, tag_id)
+	if err := db.SetupJoinTable(&model.PostModel{}, "Tags", &model.PostTagModel{}); err != nil {
+		log.Fatalf("failed to setup join table for Post.Tags: %v", err)
 	}
 
 	// Ensure required PostgreSQL extensions
@@ -103,8 +115,6 @@ func main() {
 	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
-	postUsecase := usecase.NewPostUsecase(postRepo)
-	postHandler := handler.NewPostHandler(postUsecase)
 
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo, postRepo)
@@ -113,6 +123,9 @@ func main() {
 	tagRepo := repository.NewTagRepository(db)
 	tagUsecase := usecase.NewTagUsecase(tagRepo, postRepo)
 	tagHandler := handler.NewTagHandler(tagUsecase)
+
+	postUsecase := usecase.NewPostUsecase(postRepo)
+	postHandler := handler.NewPostHandler(postUsecase, tagUsecase)
 
 	spotifyUsecase := usecase.NewSpotifyUsecase()
 	spotifyHandler := handler.NewSpotifyHandler(spotifyUsecase)

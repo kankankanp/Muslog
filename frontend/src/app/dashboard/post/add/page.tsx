@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { z } from "zod";
 import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
@@ -16,6 +17,11 @@ import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const postSchema = z.object({
+    title: z.string().min(1, "タイトルは必須です。"),
+    description: z.string().min(1, "本文は必須です。"),
+  });
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
     "split"
   );
@@ -131,6 +137,18 @@ export default function AddPostPage() {
   };
 
   const handleSubmit = () => {
+    const result = postSchema.safeParse({
+      title: title.trim(),
+      description: markdown.trim(),
+    });
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      const msg = Array.from(new Set(messages)).join("\n");
+      setValidationError(msg);
+      containerRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    setValidationError(null);
     // Placeholder for userId - needs to be replaced with actual user ID
     const userId = "some-user-id"; // TODO: Get actual userId from auth context/hook
 
@@ -265,6 +283,11 @@ export default function AddPostPage() {
           <div
             className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
+            {validationError && (
+              <div className="mb-2 p-3 rounded bg-red-50 text-red-700 border border-red-200">
+                {validationError}
+              </div>
+            )}
             <div className="flex gap-2 mb-2 justify-end">
               <button
                 className="px-2 py-1 bg-gray-200 rounded"
@@ -300,7 +323,7 @@ export default function AddPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> ヘッダー画像を追加
+                <span className="text-xl">＋</span> ヘッダー画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
@@ -309,7 +332,7 @@ export default function AddPostPage() {
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> 投稿内画像を追加
+                <span className="text-xl">＋</span> 投稿内画像
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"

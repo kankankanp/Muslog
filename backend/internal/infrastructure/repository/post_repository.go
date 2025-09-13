@@ -34,8 +34,8 @@ func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, us
 
     if userID != "" {
         query = query.
-            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+            Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
     }
 
 	if err := query.First(&m, id).Error; err != nil {
@@ -50,11 +50,11 @@ func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]enti
 
     if userID != "" {
         query = query.
-            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+            Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
     }
 
-    if err := query.Order("post_models.created_at desc").Find(&models).Error; err != nil {
+    if err := query.Order("posts.created_at desc").Find(&models).Error; err != nil {
         return nil, err
     }
 
@@ -66,8 +66,16 @@ func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]enti
 }
 
 func (r *postRepositoryImpl) Create(ctx context.Context, post *entity.Post) error {
-	m := mapper.FromPostEntity(post)
-	return r.DB.WithContext(ctx).Create(m).Error
+    m := mapper.FromPostEntity(post)
+    if err := r.DB.WithContext(ctx).Create(m).Error; err != nil {
+        return err
+    }
+    // write back generated fields so callers can use ID immediately
+    updated := mapper.ToPostEntity(m)
+    post.ID = updated.ID
+    post.CreatedAt = updated.CreatedAt
+    post.UpdatedAt = updated.UpdatedAt
+    return nil
 }
 
 func (r *postRepositoryImpl) Update(ctx context.Context, post *entity.Post) error {
@@ -92,11 +100,11 @@ func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, 
 
     if userID != "" {
         query = query.
-            Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+            Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
     }
 
-    if err := query.Order("post_models.created_at desc").
+    if err := query.Order("posts.created_at desc").
         Offset((page - 1) * perPage).
         Limit(perPage).
         Find(&models).Error; err != nil {
@@ -123,15 +131,15 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
 	}
 
     if len(tags) > 0 {
-        db = db.Joins("JOIN post_tags pt ON pt.post_id = post_models.id").
-            Joins("JOIN tag_models t ON t.id = pt.tag_id").
+        db = db.Joins("JOIN post_tags pt ON pt.post_id = posts.id").
+            Joins("JOIN tags t ON t.id = pt.tag_id").
             Where("t.name IN (?)", tags).
-            Group("post_models.id")
+            Group("posts.id")
     }
 
     if userID != "" {
-        db = db.Select("post_models.*, CASE WHEN like_models.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
-            Joins("LEFT JOIN like_models ON like_models.post_id = post_models.id AND like_models.user_id = ?", userID)
+        db = db.Select("posts.*, CASE WHEN likes.user_id IS NOT NULL THEN TRUE ELSE FALSE END as is_liked").
+            Joins("LEFT JOIN likes ON likes.post_id = posts.id AND likes.user_id = ?", userID)
     }
 
     // コンテキストが既にキャンセルされていれば早期リターン
@@ -152,7 +160,7 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
     default:
     }
 
-    if err := db.Order("post_models.created_at DESC").
+    if err := db.Order("posts.created_at DESC").
         Offset((page - 1) * perPage).
         Limit(perPage).
         Find(&models).Error; err != nil {
