@@ -26,23 +26,43 @@ AWS 構築を Terraform による IaC、GoによるAPIサーバー、Next.jsに�
 - CI/CD：GitHubActions
 
 ## インフラ構成図
-![インフラ構成図](document/muslog_architechture.png)
+![インフラ構成図](document/architechture/muslog_architechture.png)
 
 ## ページ一覧
 ログイン前
-- トップページ(LP)
 - ログイン、新規登録ページ
+![新規登録ページ](document/page-demo/pc/signup.png)
+![ログインページ](document/page-demo/pc/login.png)
 - ヘルプページ
+![ヘルプ](document/page-demo/pc/help.png)
+![利用ガイド](document/page-demo/pc/guide.png)
 
 ログイン後
 - 記事検索ページ
-- マイページ
-- 新規ページ作成ページ
-- 投稿詳細ページ
-- 投稿編集ページ
-- コミュニティ作成、検索ページ
-- コミュニティ詳細ページ
+![記事検索](document/page-demo/pc/allposts.png)
+![検索結果画面](document/page-demo/pc/posts_search_result.png)
 
+- マイページ
+![マイページ](document/page-demo/pc/mypage.png)
+- 新規ページ作成ページ
+![分割](document/page-demo/pc/newpost_split.png)
+![プレビュー](document/page-demo/pc/newpost_preview.png)
+![エディター](document/page-demo/pc/newpost_editor.png)
+![alt text](document/page-demo/pc/imguploadmodal.png)
+![alt text](document/page-demo/pc/tagmodal.png)
+![alt text](document/page-demo/pc/song_modal.png)
+- 投稿詳細ページ
+![投稿詳細ページ](document/page-demo/pc/postdetail.png)
+- 投稿編集ページ
+![投稿編集ページ](document/page-demo/pc/post_edit.png)
+- コミュニティ作成、検索ページ
+![alt text](document/page-demo/pc/allcommunities.png)
+- コミュニティ詳細ページ
+![alt text](document/page-demo/pc/communitiydetail.png)
+
+*スマホ表示
+![alt text](document/page-demo/sp/home_sp.png)
+![alt text](document/page-demo/sp/home_sp_sidebar.png)
 ## ブランチ管理
 
 - main
