@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { z } from "zod";
 import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
@@ -17,6 +18,10 @@ export default function AddPostPage() {
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const postSchema = z.object({
+    title: z.string().min(1, "タイトルは必須です。"),
+    description: z.string().min(1, "本文は必須です。"),
+  });
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
     "split"
   );
@@ -132,14 +137,13 @@ export default function AddPostPage() {
   };
 
   const handleSubmit = () => {
-    const missingTitle = title.trim() === "";
-    const missingBody = markdown.trim() === "";
-    if (missingTitle || missingBody) {
-      const msg = missingTitle && missingBody
-        ? "タイトルと本文は必須です。"
-        : missingTitle
-          ? "タイトルは必須です。"
-          : "本文は必須です。";
+    const result = postSchema.safeParse({
+      title: title.trim(),
+      description: markdown.trim(),
+    });
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      const msg = Array.from(new Set(messages)).join("\n");
       setValidationError(msg);
       containerRef.current?.scrollIntoView({ behavior: "smooth" });
       return;
