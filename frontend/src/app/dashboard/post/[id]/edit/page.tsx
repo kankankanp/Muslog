@@ -325,9 +325,8 @@ export default function EditPostPage() {
               </ReactMarkdown>
             </div>
           </div>
-          {/* 左側：エディタ */}
           <div
-            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
           >
             <div className="flex gap-2 mb-2 justify-end">
               <button
@@ -359,113 +358,103 @@ export default function EditPostPage() {
             <div className="flex gap-2">
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                onClick={() => setIsHeaderImageModalOpen(true)}
+                onClick={() => {
+                  setCurrentUploadType("header");
+                  setIsHeaderImageModalOpen(true);
+                }}
               >
                 <span className="text-xl">＋</span> ヘッダー画像を追加
               </button>
-              <div className="flex gap-2">
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                  onClick={() => {
-                    setCurrentUploadType("header");
-                    setIsHeaderImageModalOpen(true);
-                  }}
-                >
-                  <span className="text-xl">＋</span> ヘッダー画像を追加
-                </button>
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                  onClick={() => {
-                    setCurrentUploadType("in-post");
-                    setIsHeaderImageModalOpen(true);
-                  }}
-                >
-                  <span className="text-xl">＋</span> 投稿内画像を追加
-                </button>
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                  onClick={() => setIsTagModalOpen(true)}
-                >
-                  <Tag className="h-5 w-5" /> タグ
-                </button>
-                <button
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
-                  onClick={() => setIsSpotifyModalOpen(true)}
-                >
-                  <Music className="h-5 w-5" /> 曲
-                </button>
-              </div>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => {
+                  setCurrentUploadType("in-post");
+                  setIsHeaderImageModalOpen(true);
+                }}
+              >
+                <span className="text-xl">＋</span> 投稿内画像を追加
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => setIsTagModalOpen(true)}
+              >
+                <Tag className="h-5 w-5" /> タグ
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                onClick={() => setIsSpotifyModalOpen(true)}
+              >
+                <Music className="h-5 w-5" /> 曲
+              </button>
+            </div>
 
-              {finalSelectedTracks.length > 0 && (
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                  {" "}
-                  {/* Added overflow-x-auto and pb-2 for scrollbar */}
-                  {finalSelectedTracks.map((track) => (
-                    <div
-                      key={track.spotifyId}
-                      className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+            {finalSelectedTracks.length > 0 && (
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                {" "}
+                {finalSelectedTracks.map((track) => (
+                  <div
+                    key={track.spotifyId}
+                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                  >
+                    <Image
+                      src={track.albumImageUrl || "/default-image.jpg"}
+                      width={20}
+                      height={20}
+                      alt={track.name || ""}
+                      className="rounded-full mr-2"
+                    />
+                    {track.name} - {track.artistName}
+                    <button
+                      onClick={() => handleRemoveFinalTrack(track)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
                     >
-                      <Image
-                        src={track.albumImageUrl || "/default-image.jpg"}
-                        width={20}
-                        height={20}
-                        alt={track.name || ""}
-                        className="rounded-full mr-2"
-                      />
-                      {track.name} - {track.artistName}
-                      <button
-                        onClick={() => handleRemoveFinalTrack(track)}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {finalSelectedTags.length > 0 && (
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                  {" "}
-                  {/* Added overflow-x-auto and pb-2 for scrollbar */}
-                  {finalSelectedTags.map((tag) => (
-                    <div
-                      key={tag}
-                      className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
-                    >
-                      {tag}
-                      <button
-                        onClick={() => handleRemoveFinalTag(tag)}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <textarea
-                className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
-                placeholder="本文をマークダウンで入力してください"
-                value={markdown}
-                onChange={(e) => setMarkdown(e.target.value)}
-                style={{ fontSize: `${editorZoom * 16}px` }}
-              />
-              <div className="flex justify-end mt-4">
-                <button
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
-                  onClick={handleSubmit}
-                >
-                  記事を更新する
-                </button>
-                <button
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors ml-4"
-                  onClick={handleDelete}
-                >
-                  記事を削除する
-                </button>
+                      &times;
+                    </button>
+                  </div>
+                ))}
               </div>
+            )}
+
+            {finalSelectedTags.length > 0 && (
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                {" "}
+                {finalSelectedTags.map((tag) => (
+                  <div
+                    key={tag}
+                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                  >
+                    {tag}
+                    <button
+                      onClick={() => handleRemoveFinalTag(tag)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <textarea
+              className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
+              placeholder="本文をマークダウンで入力してください"
+              value={markdown}
+              onChange={(e) => setMarkdown(e.target.value)}
+              style={{ fontSize: `${editorZoom * 16}px` }}
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={handleSubmit}
+              >
+                記事を更新する
+              </button>
+              <button
+                className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors ml-4"
+                onClick={handleDelete}
+              >
+                記事を削除する
+              </button>
             </div>
           </div>
 
