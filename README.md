@@ -27,38 +27,60 @@ AWS 構築を Terraform による IaC、GoによるAPIサーバー、Next.jsに�
 
 ## インフラ構成図
 ![インフラ構成図](document/architechture/muslog_architechture.png)
+_インフラ構成図_
+
+## ER図
+![ER図](document/er/er.png)
+_ER図_
 
 ## ページ一覧
 ログイン前
 - ログイン、新規登録ページ
 ![新規登録ページ](document/page-demo/pc/signup.png)
+_新規登録ページ_
 ![ログインページ](document/page-demo/pc/login.png)
+_ログインページ_
 - ヘルプページ
-![ヘルプ](document/page-demo/pc/help.png)
+![ヘルプページ](document/page-demo/pc/help.png)
+_ヘルプページ_
 ![利用ガイド](document/page-demo/pc/guide.png)
+_利用ガイド_
 
 ログイン後
-- 記事検索ページ
-![記事検索](document/page-demo/pc/allposts.png)
-![検索結果画面](document/page-demo/pc/posts_search_result.png)
+- 記事一覧ページ
+![記事一覧ページ](document/page-demo/pc/allposts.png)
+_記事一覧ページ_
+![記事検索結果](document/page-demo/pc/posts_search_result.png)
+_記事検索結果_
 
 - マイページ
 ![マイページ](document/page-demo/pc/mypage.png)
-- 新規ページ作成ページ
+_マイページ_
+- 新規記事作成ページ
 ![分割](document/page-demo/pc/newpost_split.png)
+_新規記事作成ページ（分割）_
 ![プレビュー](document/page-demo/pc/newpost_preview.png)
+_新規記事作成ページ（プレビュー）_
 ![エディター](document/page-demo/pc/newpost_editor.png)
+_新規記事作成ページ（エディタ）_
 ![alt text](document/page-demo/pc/imguploadmodal.png)
-![alt text](document/page-demo/pc/tagmodal.png)
-![alt text](document/page-demo/pc/song_modal.png)
+_ヘッダー画像アップロード_
+![タグの追加](document/page-demo/pc/tagmodal.png)
+_タグの追加_
+![曲の挿入](document/page-demo/pc/song_modal.png)
+_曲の挿入_
 - 投稿詳細ページ
 ![投稿詳細ページ](document/page-demo/pc/postdetail.png)
+_投稿詳細ページ_
 - 投稿編集ページ
 ![投稿編集ページ](document/page-demo/pc/post_edit.png)
+_投稿編集ページ_
 - コミュニティ作成、検索ページ
-![alt text](document/page-demo/pc/allcommunities.png)
+![コミュニティ作成、検索ページ](document/page-demo/pc/allcommunities.png)
+_コミュニティ作成、検索ページ_
 - コミュニティ詳細ページ
-![alt text](document/page-demo/pc/communitiydetail.png)
+![コミュニティ詳細ページ](document/page-demo/pc/communitiydetail.png)
+_コミュニティ詳細ページ_
 
 *レスポンシブ対応済みです。
 ## ブランチ管理
