@@ -17,15 +17,15 @@ func NewTagRepository(db *gorm.DB) domainRepo.TagRepository {
 }
 
 func (r *tagRepositoryImpl) CreateTag(tag *entity.Tag) error {
-    m := mapper.FromTagEntity(tag)
-    if err := r.db.Create(m).Error; err != nil {
-        return err
-    }
-    // write back generated fields
-    tag.ID = m.ID
-    tag.CreatedAt = m.CreatedAt
-    tag.UpdatedAt = m.UpdatedAt
-    return nil
+	m := mapper.FromTagEntity(tag)
+	if err := r.db.Create(m).Error; err != nil {
+		return err
+	}
+	// write back generated fields
+	tag.ID = m.ID
+	tag.CreatedAt = m.CreatedAt
+	tag.UpdatedAt = m.UpdatedAt
+	return nil
 }
 
 func (r *tagRepositoryImpl) GetTagByID(id uint) (*entity.Tag, error) {
