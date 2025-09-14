@@ -96,7 +96,7 @@ _コミュニティ詳細ページ_
   - ブランチ名は`feature/{作業内容}`
     - 例: `feature/create-login-page`
 
-# フロントエンド環境 (web-frontend)
+# フロントエンド環境 (frontend)
 
 ## 前提条件
 
