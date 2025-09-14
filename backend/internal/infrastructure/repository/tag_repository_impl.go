@@ -66,14 +66,27 @@ func (r *tagRepositoryImpl) DeleteTag(id uint) error {
 	return r.db.Delete(&model.TagModel{}, id).Error
 }
 
-func (r *tagRepositoryImpl) AddTagsToPost(postID uint, tagIDs []uint) error {
-	// Post を model でロード
+func (r *tagRepositoryImpl) AddTagsToPost(postID uint, tagNames []string) error {
+	var tagIDs []uint
+	for _, tagName := range tagNames {
+		var m model.TagModel
+		err := r.db.Where("name = ?", tagName).First(&m).Error
+		if err != nil {
+			newTag := model.TagModel{Name: tagName}
+			if err := r.db.Create(&newTag).Error; err != nil {
+				return err
+			}
+			tagIDs = append(tagIDs, newTag.ID)
+		} else {
+			tagIDs = append(tagIDs, m.ID)
+		}
+	}
+
 	var post model.PostModel
 	if err := r.db.First(&post, postID).Error; err != nil {
 		return err
 	}
 
-	// Post と Tag の関連付け（中間テーブル post_tags）
 	var tags []model.TagModel
 	if err := r.db.Where("id IN ?", tagIDs).Find(&tags).Error; err != nil {
 		return err

@@ -11,18 +11,17 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/request"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
-	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/usecase"
 	"github.com/labstack/echo/v4"
 )
 
 type PostHandler struct {
-    Usecase    usecase.PostUsecase
-    TagUsecase usecase.TagUsecase
+	Usecase    usecase.PostUsecase
+	TagUsecase usecase.TagUsecase
 }
 
 func NewPostHandler(usecase usecase.PostUsecase, tagUsecase usecase.TagUsecase) *PostHandler {
-    return &PostHandler{Usecase: usecase, TagUsecase: tagUsecase}
+	return &PostHandler{Usecase: usecase, TagUsecase: tagUsecase}
 }
 
 func (h *PostHandler) GetAllPosts(c echo.Context) error {
@@ -77,17 +76,16 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		})
 	}
 
-    post := entity.Post{
-        Title:       req.Title,
-        Description: req.Description,
-        UserID:      userID,
-        HeaderImageUrl: req.HeaderImageUrl,
-        CreatedAt:   time.Now(),
-        UpdatedAt:   time.Now(),
-    }
+	input := usecase.CreatePostInput{
+		Title:          req.Title,
+		Description:    req.Description,
+		UserID:         userID,
+		HeaderImageUrl: req.HeaderImageUrl,
+		Tags:           req.Tags,
+	}
 
 	for _, t := range req.Tracks {
-		post.Tracks = append(post.Tracks, entity.Track{
+		input.Tracks = append(input.Tracks, usecase.TrackInput{
 			SpotifyID:     t.SpotifyID,
 			Name:          t.Name,
 			ArtistName:    t.ArtistName,
@@ -95,25 +93,14 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		})
 	}
 
-    if err := h.Usecase.CreatePost(c.Request().Context(), &post); err != nil {
-        return c.JSON(http.StatusInternalServerError, response.CommonResponse{
-            Message: "Error", Error: err.Error(),
-        })
-    }
+	post, err := h.Usecase.CreatePost(c.Request().Context(), input)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Error", Error: err.Error(),
+		})
+	}
 
-    // attach tags if provided
-    if len(req.Tags) > 0 && h.TagUsecase != nil {
-        if err := h.TagUsecase.AddTagsToPost(post.ID, req.Tags); err != nil {
-            // ログに残しつつ、投稿自体は成功扱いにする
-            // クライアント側は後からタグ再付与も可能
-            // ここでエラーを返しても良いが、UXを優先
-        }
-    }
-
-    return c.JSON(http.StatusCreated, response.PostDetailResponse{
-        Message: "Success",
-        Post:    response.ToPostResponse(&post),
-    })
+	return c.JSON(http.StatusOK, response.ToPostResponse(post))
 }
 
 func (h *PostHandler) UpdatePost(c echo.Context) error {

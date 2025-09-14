@@ -70,7 +70,6 @@ func (r *postRepositoryImpl) Create(ctx context.Context, post *entity.Post) erro
 	if err := r.DB.WithContext(ctx).Create(m).Error; err != nil {
 		return err
 	}
-	// write back generated fields so callers can use ID immediately
 	updated := mapper.ToPostEntity(m)
 	post.ID = updated.ID
 	post.CreatedAt = updated.CreatedAt

@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 
-	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
+	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 )
 
 type TagUsecase interface {
@@ -90,7 +90,7 @@ func (u *tagUsecaseImpl) AddTagsToPost(postID uint, tagNames []string) error {
 			tagIDs = append(tagIDs, tag.ID)
 		}
 	}
-	return u.tagRepo.AddTagsToPost(postID, tagIDs)
+	return u.tagRepo.AddTagsToPost(postID, tagNames)
 }
 
 func (u *tagUsecaseImpl) RemoveTagsFromPost(postID uint, tagNames []string) error {
