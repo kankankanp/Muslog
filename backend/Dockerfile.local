@@ -15,7 +15,6 @@ RUN go build -o main .
 
 # --- Runner Stage ---
 FROM alpine:latest
-RUN apk add --no-cache bash
 
 WORKDIR /app
 COPY --from=builder /app/cmd/backend/main .
@@ -23,4 +22,4 @@ COPY --from=builder /app/.env.local .
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "-c", "/wait-for-it.sh db:5432 -- ./main 2>&1"]
+ENTRYPOINT ["./main"]
