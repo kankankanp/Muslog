@@ -13,6 +13,7 @@ import (
 
 	appConfig "github.com/kankankanp/Muslog/config"
 	"github.com/kankankanp/Muslog/internal/adapter/handler"
+	infraTx "github.com/kankankanp/Muslog/internal/infrastructure/db"
 	dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
 	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
@@ -155,6 +156,7 @@ func main() {
 	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
+	txManager := infraTx.NewGormTxManager(db)
 
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo, postRepo)
@@ -164,7 +166,7 @@ func main() {
 	tagUsecase := usecase.NewTagUsecase(tagRepo, postRepo)
 	tagHandler := handler.NewTagHandler(tagUsecase)
 
-	postUsecase := usecase.NewPostUsecase(postRepo)
+	postUsecase := usecase.NewPostUsecase(postRepo, txManager)
 	postHandler := handler.NewPostHandler(postUsecase, tagUsecase)
 
 	spotifyUsecase := usecase.NewSpotifyUsecase()

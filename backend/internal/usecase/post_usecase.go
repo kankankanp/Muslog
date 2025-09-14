@@ -1,12 +1,11 @@
 package usecase
 
 import (
-	"context"
-	"time"
+    "context"
+    "time"
 
-	"github.com/kankankanp/Muslog/internal/domain/entity"
-	"github.com/kankankanp/Muslog/internal/domain/repository"
-	domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
+    "github.com/kankankanp/Muslog/internal/domain/entity"
+    domainRepo "github.com/kankankanp/Muslog/internal/domain/repository"
 )
 
 type TrackInput struct {
@@ -36,12 +35,12 @@ type PostUsecase interface {
 }
 
 type postUsecaseImpl struct {
-	repo      domainRepo.PostRepository
-	txManager repository.TransactionManager
+    repo      domainRepo.PostRepository
+    txManager domainRepo.TransactionManager
 }
 
-func NewPostUsecase(repo domainRepo.PostRepository) PostUsecase {
-	return &postUsecaseImpl{repo: repo}
+func NewPostUsecase(repo domainRepo.PostRepository, txManager domainRepo.TransactionManager) PostUsecase {
+    return &postUsecaseImpl{repo: repo, txManager: txManager}
 }
 
 func (u *postUsecaseImpl) GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error) {
@@ -53,36 +52,49 @@ func (u *postUsecaseImpl) GetPostByID(ctx context.Context, id uint, userID strin
 }
 
 func (u *postUsecaseImpl) CreatePost(ctx context.Context, input CreatePostInput) (*entity.Post, error) {
-	var createdPost *entity.Post
+    var createdPost *entity.Post
 
-	err := u.txManager.Do(ctx, func(repo repository.RepositoryProvider) error {
-		post := &entity.Post{
-			Title:          input.Title,
-			Description:    input.Description,
-			UserID:         input.UserID,
-			HeaderImageUrl: input.HeaderImageUrl,
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		}
+    err := u.txManager.Do(ctx, func(txRepo domainRepo.RepositoryProvider) error {
+        post := &entity.Post{
+            Title:          input.Title,
+            Description:    input.Description,
+            UserID:         input.UserID,
+            HeaderImageUrl: input.HeaderImageUrl,
+            CreatedAt:      time.Now(),
+            UpdatedAt:      time.Now(),
+        }
+        for _, t := range input.Tracks {
+            post.Tracks = append(post.Tracks, entity.Track{
+                SpotifyID:     t.SpotifyID,
+                Name:          t.Name,
+                ArtistName:    t.ArtistName,
+                AlbumImageUrl: t.AlbumImageUrl,
+            })
+        }
 
-		if err := u.repo.Create(ctx, post); err != nil {
-			return err
-		}
+        if err := txRepo.PostRepository().Create(ctx, post); err != nil {
+            return err
+        }
 
-		if len(input.Tags) > 0 {
-			if err := repo.TagRepository().AddTagsToPost(post.ID, input.Tags); err != nil {
-				return err
-			}
-		}
+        if len(input.Tags) > 0 {
+            if err := txRepo.TagRepository().AddTagsToPost(post.ID, input.Tags); err != nil {
+                return err
+            }
+        }
 
-		createdPost = post
-		return nil
-	})
+        createdPost = post
+        return nil
+    })
 
-	if err != nil {
-		return nil, err
-	}
-	return createdPost, nil
+    if err != nil {
+        return nil, err
+    }
+    // Return fully loaded post
+    loaded, err := u.repo.FindByID(ctx, createdPost.ID)
+    if err != nil {
+        return createdPost, nil
+    }
+    return loaded, nil
 }
 
 func (u *postUsecaseImpl) UpdatePost(ctx context.Context, post *entity.Post) error {
