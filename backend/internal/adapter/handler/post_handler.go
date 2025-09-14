@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/request"
@@ -119,16 +118,26 @@ func (h *PostHandler) UpdatePost(c echo.Context) error {
 	claims := c.Get("user").(jwt.MapClaims)
 	userID := claims["user_id"].(string)
 
-	post, err := h.Usecase.GetPostByID(c.Request().Context(), uint(id), userID)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, response.CommonResponse{Message: "Not Found"})
+	input := usecase.UpdatePostInput{
+		ID:             uint(id),
+		Title:          req.Title,
+		Description:    req.Description,
+		HeaderImageUrl: req.HeaderImageUrl,
+		UserID:         userID,
+		Tags:           req.Tags,
 	}
 
-	post.Title = req.Title
-	post.Description = req.Description
-	post.UpdatedAt = time.Now()
+	for _, t := range req.Tracks {
+		input.Tracks = append(input.Tracks, usecase.TrackInput{
+			SpotifyID:     t.SpotifyID,
+			Name:          t.Name,
+			ArtistName:    t.ArtistName,
+			AlbumImageUrl: t.AlbumImageUrl,
+		})
+	}
 
-	if err := h.Usecase.UpdatePost(c.Request().Context(), post); err != nil {
+	post, err := h.Usecase.UpdatePost(c.Request().Context(), input)
+	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
 			Message: "Error", Error: err.Error(),
 		})
