@@ -52,7 +52,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
     process.env.NEXT_PUBLIC_WEBSOCKET_URL ||
     (typeof window !== "undefined"
       ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8080/ws/community/`
-      : "ws://localhost:8080/ws/community/");
+      : "wss://localhost:8080/ws/community/");
   const { isConnected, lastMessage, sendMessage } = useWebSocket(
     `${wsUrl}${communityId}`,
     {
