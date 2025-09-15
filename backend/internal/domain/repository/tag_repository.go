@@ -9,7 +9,7 @@ type TagRepository interface {
 	GetAllTags() ([]entity.Tag, error)
 	UpdateTag(tag *entity.Tag) error
 	DeleteTag(id uint) error
-	AddTagsToPost(postID uint, tagIDs []uint) error
+	AddTagsToPost(postID uint, tagNames []string) error
 	RemoveTagsFromPost(postID uint, tagIDs []uint) error
 	GetTagsByPostID(postID uint) ([]entity.Tag, error)
 }
