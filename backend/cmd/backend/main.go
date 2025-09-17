@@ -16,6 +16,7 @@ import (
 	dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
 	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
+	"github.com/kankankanp/Muslog/internal/infrastructure/storage"
 	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/kankankanp/Muslog/internal/seeder"
 	"github.com/kankankanp/Muslog/internal/usecase"
@@ -82,77 +83,86 @@ func main() {
 		panic("データベース接続失敗: " + err.Error())
 	}
 
-    // Ensure join table mapping for many2many(Post <-> Tag) uses post_tags (post_id, tag_id)
-    if err := db.SetupJoinTable(&model.PostModel{}, "Tags", &model.PostTagModel{}); err != nil {
-        log.Fatalf("failed to setup join table for Post.Tags: %v", err)
-    }
+	// Ensure join table mapping for many2many(Post <-> Tag) uses post_tags (post_id, tag_id)
+	if err := db.SetupJoinTable(&model.PostModel{}, "Tags", &model.PostTagModel{}); err != nil {
+		log.Fatalf("failed to setup join table for Post.Tags: %v", err)
+	}
 
-    // Ensure required PostgreSQL extensions
-    if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
-        log.Fatalf("failed to create uuid-ossp extension: %v", err)
-    }
+	// Ensure required PostgreSQL extensions
+	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
+		log.Fatalf("failed to create uuid-ossp extension: %v", err)
+	}
 
-    // Align column types for foreign keys to UUID where necessary
-    // These adjustments run before AutoMigrate to avoid FK type mismatch.
+	// Align column types for foreign keys to UUID where necessary
+	// These adjustments run before AutoMigrate to avoid FK type mismatch.
 
-    // communities.id -> uuid (if previously created as text)
-    if db.Migrator().HasTable(&model.CommunityModel{}) {
-        if err := db.Exec(`ALTER TABLE "communities" ALTER COLUMN "id" TYPE uuid USING "id"::uuid;`).Error; err != nil {
-            // Fallback: replace column safely
-            tx := db.Begin()
-            _ = tx.Exec(`ALTER TABLE "communities" ADD COLUMN IF NOT EXISTS "id_tmp" uuid;`).Error
-            _ = tx.Exec(`UPDATE "communities" SET "id_tmp" = CASE WHEN "id" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "id"::uuid ELSE uuid_generate_v4() END;`).Error
-            _ = tx.Exec(`ALTER TABLE "communities" DROP CONSTRAINT IF EXISTS "communities_pkey";`).Error
-            _ = tx.Exec(`ALTER TABLE "communities" DROP COLUMN IF EXISTS "id";`).Error
-            _ = tx.Exec(`ALTER TABLE "communities" RENAME COLUMN "id_tmp" TO "id";`).Error
-            _ = tx.Exec(`ALTER TABLE "communities" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4();`).Error
-            _ = tx.Exec(`ALTER TABLE "communities" ADD PRIMARY KEY ("id");`).Error
-            _ = tx.Commit().Error
-        }
-    }
+	// communities.id -> uuid (if previously created as text)
+	if db.Migrator().HasTable(&model.CommunityModel{}) {
+		if err := db.Exec(`ALTER TABLE "communities" ALTER COLUMN "id" TYPE uuid USING "id"::uuid;`).Error; err != nil {
+			// Fallback: replace column safely
+			tx := db.Begin()
+			_ = tx.Exec(`ALTER TABLE "communities" ADD COLUMN IF NOT EXISTS "id_tmp" uuid;`).Error
+			_ = tx.Exec(`UPDATE "communities" SET "id_tmp" = CASE WHEN "id" ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN "id"::uuid ELSE uuid_generate_v4() END;`).Error
+			_ = tx.Exec(`ALTER TABLE "communities" DROP CONSTRAINT IF EXISTS "communities_pkey";`).Error
+			_ = tx.Exec(`ALTER TABLE "communities" DROP COLUMN IF EXISTS "id";`).Error
+			_ = tx.Exec(`ALTER TABLE "communities" RENAME COLUMN "id_tmp" TO "id";`).Error
+			_ = tx.Exec(`ALTER TABLE "communities" ALTER COLUMN "id" SET DEFAULT uuid_generate_v4();`).Error
+			_ = tx.Exec(`ALTER TABLE "communities" ADD PRIMARY KEY ("id");`).Error
+			_ = tx.Commit().Error
+		}
+	}
 
-    // messages.community_id -> uuid
-    if db.Migrator().HasTable(&model.MessageModel{}) && db.Migrator().HasColumn(&model.MessageModel{}, "community_id") {
-        _ = db.Exec(`ALTER TABLE "messages" ALTER COLUMN "community_id" TYPE uuid USING "community_id"::uuid;`).Error
-    }
-    // messages.sender_id -> uuid
-    if db.Migrator().HasTable(&model.MessageModel{}) && db.Migrator().HasColumn(&model.MessageModel{}, "sender_id") {
-        _ = db.Exec(`ALTER TABLE "messages" ALTER COLUMN "sender_id" TYPE uuid USING "sender_id"::uuid;`).Error
-    }
-    // likes.user_id -> uuid
-    if db.Migrator().HasTable(&model.LikeModel{}) && db.Migrator().HasColumn(&model.LikeModel{}, "user_id") {
-        _ = db.Exec(`ALTER TABLE "likes" ALTER COLUMN "user_id" TYPE uuid USING "user_id"::uuid;`).Error
-    }
-    // communities.creator_id -> uuid
-    if db.Migrator().HasTable(&model.CommunityModel{}) && db.Migrator().HasColumn(&model.CommunityModel{}, "creator_id") {
-        _ = db.Exec(`ALTER TABLE "communities" ALTER COLUMN "creator_id" TYPE uuid USING "creator_id"::uuid;`).Error
-    }
-    // posts.user_id -> uuid
-    if db.Migrator().HasTable(&model.PostModel{}) && db.Migrator().HasColumn(&model.PostModel{}, "user_id") {
-        _ = db.Exec(`ALTER TABLE "posts" ALTER COLUMN "user_id" TYPE uuid USING "user_id"::uuid;`).Error
-    }
-    if err := db.AutoMigrate(
-        &model.UserModel{},
-        &model.PostModel{},
-        &model.TrackModel{},
-        &model.TagModel{},
-        &model.PostTagModel{},
-        &model.CommunityModel{},
-        &model.MessageModel{},
-        &model.LikeModel{},
-    ); err != nil {
-        log.Fatalf("マイグレーション失敗: %v", err)
-    }
+	// messages.community_id -> uuid
+	if db.Migrator().HasTable(&model.MessageModel{}) && db.Migrator().HasColumn(&model.MessageModel{}, "community_id") {
+		_ = db.Exec(`ALTER TABLE "messages" ALTER COLUMN "community_id" TYPE uuid USING "community_id"::uuid;`).Error
+	}
+	// messages.sender_id -> uuid
+	if db.Migrator().HasTable(&model.MessageModel{}) && db.Migrator().HasColumn(&model.MessageModel{}, "sender_id") {
+		_ = db.Exec(`ALTER TABLE "messages" ALTER COLUMN "sender_id" TYPE uuid USING "sender_id"::uuid;`).Error
+	}
+	// likes.user_id -> uuid
+	if db.Migrator().HasTable(&model.LikeModel{}) && db.Migrator().HasColumn(&model.LikeModel{}, "user_id") {
+		_ = db.Exec(`ALTER TABLE "likes" ALTER COLUMN "user_id" TYPE uuid USING "user_id"::uuid;`).Error
+	}
+	// communities.creator_id -> uuid
+	if db.Migrator().HasTable(&model.CommunityModel{}) && db.Migrator().HasColumn(&model.CommunityModel{}, "creator_id") {
+		_ = db.Exec(`ALTER TABLE "communities" ALTER COLUMN "creator_id" TYPE uuid USING "creator_id"::uuid;`).Error
+	}
+	// posts.user_id -> uuid
+	if db.Migrator().HasTable(&model.PostModel{}) && db.Migrator().HasColumn(&model.PostModel{}, "user_id") {
+		_ = db.Exec(`ALTER TABLE "posts" ALTER COLUMN "user_id" TYPE uuid USING "user_id"::uuid;`).Error
+	}
+	if err := db.AutoMigrate(
+		&model.UserModel{},
+		&model.PostModel{},
+		&model.TrackModel{},
+		&model.TagModel{},
+		&model.PostTagModel{},
+		&model.CommunityModel{},
+		&model.MessageModel{},
+		&model.LikeModel{},
+	); err != nil {
+		log.Fatalf("マイグレーション失敗: %v", err)
+	}
 
 	if err := seeder.Seed(db); err != nil {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
 
-	awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
-	if err != nil {
-		log.Fatalf("failed to load AWS SDK config: %v", err)
+	var imageStorage storage.Client
+	switch cfg.StorageProvider {
+	case "s3":
+		awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
+		if err != nil {
+			log.Fatalf("failed to load AWS SDK config: %v", err)
+		}
+		s3Client := s3.NewFromConfig(awsCfg)
+		imageStorage = storage.NewS3Client(s3Client, cfg.S3BucketName, cfg.S3Region)
+	case "supabase":
+		imageStorage = storage.NewSupabaseClient(cfg.SupabaseURL, cfg.SupabaseBucket, cfg.SupabaseServiceRoleKey, nil)
+	default:
+		log.Fatalf("unsupported storage provider: %s", cfg.StorageProvider)
 	}
-	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
 
@@ -185,7 +195,7 @@ func main() {
 	communityUsecase := usecase.NewCommunityUsecase(communityRepo)
 	communityHandler := handler.NewCommunityHandler(communityUsecase)
 
-	imageUsecase := usecase.NewImageUsecase(s3Client, cfg.S3BucketName, cfg.S3Region)
+	imageUsecase := usecase.NewImageUsecase(imageStorage)
 	imageHandler := handler.NewImageHandler(imageUsecase, userRepo, postRepo)
 
 	e := echo.New()
