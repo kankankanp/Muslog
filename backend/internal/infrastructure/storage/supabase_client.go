@@ -21,8 +21,9 @@ type supabaseClient struct {
 }
 
 // NewSupabaseClient はSupabase向けのストレージクライアントを生成します。
+
 func NewSupabaseClient(baseURL, bucket, apiKey string, httpClient *http.Client) Client {
-	trimmedBase := strings.TrimRight(baseURL, "/")
+	normalizedBase := normalizeSupabaseBaseURL(baseURL)
 	trimmedBucket := strings.Trim(strings.TrimSpace(bucket), "/")
 	trimmedKey := strings.TrimSpace(apiKey)
 	client := httpClient
@@ -31,10 +32,10 @@ func NewSupabaseClient(baseURL, bucket, apiKey string, httpClient *http.Client) 
 	}
 	return &supabaseClient{
 		httpClient:      client,
-		baseURL:         trimmedBase,
+		baseURL:         normalizedBase,
 		bucket:          trimmedBucket,
 		apiKey:          trimmedKey,
-		publicURLPrefix: fmt.Sprintf("%s/storage/v1/object/public/%s/", trimmedBase, trimmedBucket),
+		publicURLPrefix: fmt.Sprintf("%s/storage/v1/object/public/%s/", normalizedBase, trimmedBucket),
 	}
 }
 
@@ -110,4 +111,20 @@ func encodeKeyForURL(key string) string {
 		encoded = append(encoded, url.PathEscape(segment))
 	}
 	return strings.Join(encoded, "/")
+}
+
+func normalizeSupabaseBaseURL(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return ""
+	}
+	parsed, err := url.Parse(trimmed)
+	if err != nil || parsed.Host == "" {
+		return strings.TrimRight(trimmed, "/")
+	}
+	scheme := parsed.Scheme
+	if scheme == "" {
+		scheme = "https"
+	}
+	return strings.TrimRight(fmt.Sprintf("%s://%s", scheme, parsed.Host), "/")
 }
