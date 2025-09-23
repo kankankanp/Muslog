@@ -30,16 +30,20 @@ const BlogCard = ({
       }`}
     >
       {safePosts.map((post: Post) => {
+        const headerImageSrc =
+          post.headerImageUrl && post.headerImageUrl.trim() !== ""
+            ? post.headerImageUrl
+            : "/default-image.jpg";
         return (
           <div
             key={post.id}
             className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg"
           >
             <Image
-              src="/default-image.jpg" // Placeholder header image
+              src={headerImageSrc}
               alt="Header Image"
-              width={600} // Adjust width as needed
-              height={300} // Adjust height as needed
+              width={600}
+              height={300}
               className="w-full h-48 object-cover rounded-md mb-4"
             />
             <h3 className="text-lg sm:text-xl font-semibold mt-2 text-gray-900 dark:text-gray-100">

@@ -92,10 +92,12 @@ export default function Page() {
       <main className="container mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <Image
-            src="/default-image.jpg" // Placeholder header image
+            src={post.headerImageUrl && post.headerImageUrl.trim() !== ""
+              ? post.headerImageUrl
+              : "/default-image.jpg"}
             alt="Header Image"
-            width={800} // Adjust width as needed
-            height={400} // Adjust height as needed
+            width={800}
+            height={400}
             className="w-full h-64 object-cover rounded-md mb-6"
           />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
