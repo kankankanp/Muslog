@@ -9,10 +9,14 @@ import { z } from "zod";
 import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
+import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { usePostImagesUpload } from "@/libs/api/generated/orval/images/images"; // New
 import { PostPostsBody } from "@/libs/api/generated/orval/model";
 import { Track } from "@/libs/api/generated/orval/model/track";
-import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
+import {
+  usePostPosts,
+  usePostPostsPostIdHeaderImage,
+} from "@/libs/api/generated/orval/posts/posts";
 
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
@@ -39,11 +43,13 @@ export default function AddPostPage() {
   const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
     undefined
   ); // New
+  const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
   const [currentUploadType, setCurrentUploadType] = useState<
     "header" | "in-post" | null
   >(null); // New
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const headerPreviewUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
@@ -62,6 +68,14 @@ export default function AddPostPage() {
 
     return () => window.removeEventListener("resize", handleResize);
   }, [viewMode]); // Re-run effect if viewMode changes
+
+  useEffect(() => {
+    return () => {
+      if (headerPreviewUrlRef.current?.startsWith("blob:")) {
+        URL.revokeObjectURL(headerPreviewUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleZoom = (
     area: "editor" | "preview",
@@ -87,24 +101,22 @@ export default function AddPostPage() {
     }
   };
 
-  const { mutate } = usePostPosts();
+  const { mutate: createPost } = usePostPosts();
   const { mutate: uploadGenericImage } = usePostImagesUpload(); // New
+  const { mutate: uploadHeaderImage } = usePostPostsPostIdHeaderImage();
+  const { data: userData, isLoading: isUserLoading } = useGetMe();
   const router = useRouter();
 
   const handleHeaderImageUpload = (file: File) => {
-    uploadGenericImage(
-      { data: { image: file } },
-      {
-        onSuccess: (response) => {
-          setHeaderImageUrl(response.imageUrl); // Store the returned URL
-          alert("ヘッダー画像を仮アップロードしました！");
-        },
-        onError: (error) => {
-          console.error("ヘッダー画像のアップロードに失敗しました:", error);
-          alert("ヘッダー画像のアップロードに失敗しました。");
-        },
-      }
-    );
+    if (headerPreviewUrlRef.current?.startsWith("blob:")) {
+      URL.revokeObjectURL(headerPreviewUrlRef.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    headerPreviewUrlRef.current = previewUrl;
+    setHeaderImageUrl(previewUrl);
+    setHeaderImageFile(file);
+    alert("ヘッダー画像を選択しました。投稿時にアップロードされます。");
   };
 
   const handleInPostImageUpload = (file: File) => {
@@ -149,22 +161,54 @@ export default function AddPostPage() {
       return;
     }
     setValidationError(null);
-    // Placeholder for userId - needs to be replaced with actual user ID
-    const userId = "some-user-id"; // TODO: Get actual userId from auth context/hook
+
+    if (isUserLoading) {
+      alert("ユーザー情報を取得中です。少し待ってから再度お試しください。");
+      return;
+    }
+    if (!userData?.id) {
+      alert("ユーザー情報の取得に失敗しました。再度ログインしてください。");
+      return;
+    }
 
     const postData: PostPostsBody = {
       title,
       description: markdown, // markdown is the description
-      userId: userId,
       tracks: finalSelectedTracks,
       tags: finalSelectedTags,
-      headerImageUrl: headerImageUrl, // New: Include header image URL
     };
 
-    mutate(
+    createPost(
       { data: postData },
       {
-        onSuccess: () => {
+        onSuccess: (response) => {
+          const newPostId = response.post?.id;
+
+          if (headerImageFile) {
+            if (newPostId === undefined) {
+              console.error("投稿IDの取得に失敗しました。");
+              alert("記事は投稿されましたが、ヘッダー画像の登録に失敗しました。");
+              router.push("/dashboard");
+              return;
+            }
+
+            uploadHeaderImage(
+              { postId: newPostId, data: { image: headerImageFile } },
+              {
+                onSuccess: () => {
+                  alert("記事とヘッダー画像を投稿しました！");
+                  router.push("/dashboard");
+                },
+                onError: (error) => {
+                  console.error("ヘッダー画像のアップロードに失敗しました:", error);
+                  alert("記事は投稿されましたが、ヘッダー画像のアップロードに失敗しました。");
+                  router.push("/dashboard");
+                },
+              }
+            );
+            return;
+          }
+
           alert("記事を投稿しました！");
           router.push("/dashboard"); // Redirect to dashboard after successful post
         },
