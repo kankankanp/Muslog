@@ -5,6 +5,7 @@ import React, { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import ChatInput from "@/components/community/ChatInput";
 import ChatMessage from "@/components/community/ChatMessage";
+import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
 import { useGetCommunitiesCommunityIdMessages } from "@/libs/api/generated/orval/communities/communities";
 import { useWebSocket } from "@/libs/websocket/client";
 
@@ -26,11 +27,12 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
     senderId: string;
     content: string;
     createdAt: string;
-    // Add other fields as needed
   }
 
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { data: me } = useGetMe();
 
   // Fetch historical messages
   const { data, isLoading, isError, error } =
@@ -122,12 +124,11 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           messages.map((msg, idx) => (
             // TODO: Replace with actual user ID from context for isOwnMessage check
             <ChatMessage
-              key={msg.id ?? `${msg.senderId ?? 'unknown'}-${msg.createdAt ?? idx}`}
-              message={msg}
-              isOwnMessage={
-                typeof msg.senderId === "string" &&
-                msg.senderId.startsWith("guest_user_")
+              key={
+                msg.id ?? `${msg.senderId ?? "unknown"}-${msg.createdAt ?? idx}`
               }
+              message={msg}
+              isOwnMessage={Boolean(me?.id) && msg.senderId === me!.id}
             />
           ))
         )}
