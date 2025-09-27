@@ -198,46 +198,52 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
-                    {posts.map((post) => (
-                      <article
-                        key={post.id}
-                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition p-4 aspect-square flex flex-col"
-                      >
-                        <Image
-                          src="/default-image.jpg" // Placeholder header image
-                          alt="Header Image"
-                          width={200} // Adjust width as needed for this card size
-                          height={100} // Adjust height as needed
-                          className="w-full h-24 object-cover rounded-md mb-2"
-                        />
-                        <h3 className="text-base text-gray-900 dark:text-gray-100 line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <div className="mt-auto pt-4 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 gap-1">
-                          <span className="flex items-center gap-1">
-                            <FontAwesomeIcon
-                              icon={faHeart}
-                              className="text-gray-400"
-                            />
-                            {post.likesCount || 0}
-                          </span>
-                          <div className="flex gap-3">
-                            <a
-                              href={`/dashboard/post/${post.id}`}
-                              className="hover:underline"
-                            >
-                              表示
-                            </a>
-                            <a
-                              href={`/dashboard/post/${post.id}/edit`}
-                              className="hover:underline"
-                            >
-                              編集
-                            </a>
+                    {posts.map((post) => {
+                      const headerImageSrc =
+                        post.headerImageUrl && post.headerImageUrl.trim() !== ""
+                          ? post.headerImageUrl
+                          : "/default-image.jpg";
+                      return (
+                        <article
+                          key={post.id}
+                          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition p-4 aspect-square flex flex-col"
+                        >
+                          <Image
+                            src={headerImageSrc}
+                            alt="Header Image"
+                            width={200}
+                            height={100}
+                            className="w-full h-24 object-cover rounded-md mb-2"
+                          />
+                          <h3 className="text-base text-gray-900 dark:text-gray-100 line-clamp-2">
+                            {post.title}
+                          </h3>
+                          <div className="mt-auto pt-4 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 gap-1">
+                            <span className="flex items-center gap-1">
+                              <FontAwesomeIcon
+                                icon={faHeart}
+                                className="text-gray-400"
+                              />
+                              {post.likesCount || 0}
+                            </span>
+                            <div className="flex gap-3">
+                              <a
+                                href={`/dashboard/post/${post.id}`}
+                                className="hover:underline"
+                              >
+                                表示
+                              </a>
+                              <a
+                                href={`/dashboard/post/${post.id}/edit`}
+                                className="hover:underline"
+                              >
+                                編集
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                      </article>
-                    ))}
+                        </article>
+                      );
+                    })}
                   </div>
                 )}
               </>

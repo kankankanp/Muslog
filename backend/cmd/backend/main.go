@@ -17,10 +17,12 @@ import (
 	dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
 	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
+	"github.com/kankankanp/Muslog/internal/infrastructure/storage"
 	"github.com/kankankanp/Muslog/internal/middleware"
 	"github.com/kankankanp/Muslog/internal/seeder"
 	"github.com/kankankanp/Muslog/internal/usecase"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -147,11 +149,20 @@ func main() {
 		log.Fatalf("シード注入失敗: %v", err)
 	}
 
-	awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
-	if err != nil {
-		log.Fatalf("failed to load AWS SDK config: %v", err)
+	var imageStorage storage.Client
+	switch cfg.StorageProvider {
+	case "s3":
+		awsCfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(cfg.S3Region))
+		if err != nil {
+			log.Fatalf("failed to load AWS SDK config: %v", err)
+		}
+		s3Client := s3.NewFromConfig(awsCfg)
+		imageStorage = storage.NewS3Client(s3Client, cfg.S3BucketName, cfg.S3Region)
+	case "supabase":
+		imageStorage = storage.NewSupabaseClient(cfg.SupabaseURL, cfg.SupabaseBucket, cfg.SupabaseServiceRoleKey, nil)
+	default:
+		log.Fatalf("unsupported storage provider: %s", cfg.StorageProvider)
 	}
-	s3Client := s3.NewFromConfig(awsCfg)
 
 	postRepo := repository.NewPostRepository(db)
 	txManager := infraTx.NewGormTxManager(db)
@@ -185,7 +196,7 @@ func main() {
 	communityUsecase := usecase.NewCommunityUsecase(communityRepo)
 	communityHandler := handler.NewCommunityHandler(communityUsecase)
 
-	imageUsecase := usecase.NewImageUsecase(s3Client, cfg.S3BucketName, cfg.S3Region)
+	imageUsecase := usecase.NewImageUsecase(imageStorage)
 	imageHandler := handler.NewImageHandler(imageUsecase, userRepo, postRepo)
 
 	e := echo.New()
@@ -276,9 +287,24 @@ func main() {
 
 	// WebSocket route
 	e.GET("/ws/community/:communityId", func(c echo.Context) error {
-		handler.ServeWs(hub, messageUsecase, c.Response(), c.Request())
-		return nil // ServeWs handles the response, so return nil
-	})
+		claims, ok := c.Get("user").(jwt.MapClaims)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		userID, ok := claims["user_id"].(string)
+		if !ok || userID == "" {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		req := c.Request().WithContext(handler.ContextWithUserID(c.Request().Context(), userID))
+		handler.ServeWs(hub, messageUsecase, c.Response(), req)
+		return nil // ServeWs handles the response
+	}, middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
+		Skipper: func(c echo.Context) bool {
+			return c.Request().Method == http.MethodOptions
+		},
+	}))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }

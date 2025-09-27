@@ -54,7 +54,7 @@ func (h *ImageHandler) UploadProfileImage(c echo.Context) error {
 
 	if user.ProfileImageUrl != "" {
 		if err := h.imageUsecase.DeleteImage(c.Request().Context(), user.ProfileImageUrl); err != nil {
-			c.Logger().Errorf("failed to delete old profile image from S3: %v", err)
+			c.Logger().Errorf("failed to delete old profile image from storage: %v", err)
 		}
 	}
 
@@ -115,7 +115,7 @@ func (h *ImageHandler) UploadPostHeaderImage(c echo.Context) error {
 
 	if post.HeaderImageUrl != "" {
 		if err := h.imageUsecase.DeleteImage(c.Request().Context(), post.HeaderImageUrl); err != nil {
-			c.Logger().Errorf("failed to delete old post header image from S3: %v", err)
+			c.Logger().Errorf("failed to delete old post header image from storage: %v", err)
 		}
 	}
 
