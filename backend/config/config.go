@@ -33,13 +33,17 @@ func LoadConfig() (*Config, error) {
 		// DBUser:       os.Getenv("DB_USER"),
 		// DBPassword:   os.Getenv("DB_PASSWORD"),
 		// DBName:       os.Getenv("DB_NAME"),
-		Port:         os.Getenv("PORT"),
-		JWTSecret:    os.Getenv("JWT_SECRET"),
-		S3Region:     os.Getenv("S3_REGION"),
-		S3BucketName: os.Getenv("S3_BUCKET_NAME"),
+		Port:                   os.Getenv("PORT"),
+		JWTSecret:              os.Getenv("JWT_SECRET"),
+		StorageProvider:        provider,
+		S3Region:               os.Getenv("S3_REGION"),
+		S3BucketName:           os.Getenv("S3_BUCKET_NAME"),
+		SupabaseURL:            os.Getenv("SUPABASE_URL"),
+		SupabaseBucket:         os.Getenv("SUPABASE_BUCKET"),
+		SupabaseServiceRoleKey: os.Getenv("SUPABASE_SERVICE_ROLE_KEY"),
 	}
-	if cfg.JWTSecret == "" || cfg.S3Region == "" || cfg.S3BucketName == "" {
-		return nil, fmt.Errorf("missing required environment variables")
+	if cfg.JWTSecret == "" {
+		return nil, fmt.Errorf("missing required environment variables: JWT_SECRET")
 	}
 
 	switch cfg.StorageProvider {
