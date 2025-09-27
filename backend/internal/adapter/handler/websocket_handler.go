@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -38,6 +39,25 @@ var upgrader = websocket.Upgrader{
 		// In production, you should restrict this to your frontend's origin.
 		return true
 	},
+}
+
+type contextKey string
+
+const (
+	userIDContextKey contextKey = "websocketUserID"
+)
+
+// ContextWithUserID は WebSocket ハンドシェイク時にリクエストコンテキストへユーザーIDを埋め込む
+func ContextWithUserID(ctx context.Context, userID string) context.Context {
+	return context.WithValue(ctx, userIDContextKey, userID)
+}
+
+func userIDFromContext(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value(userIDContextKey).(string)
+	if !ok || userID == "" {
+		return "", false
+	}
+	return userID, true
 }
 
 type Hub struct {
@@ -207,11 +227,11 @@ func ServeWs(hub *Hub, messageUsecase usecase.MessageUsecase, w http.ResponseWri
 		return
 	}
 
-	// TODO: In a real application, you would extract the userID from the request context
-	// (e.g., from a JWT token after authentication).
-	// For now, we'll use a placeholder or generate a random one.
-	// For demonstration, let's use a simple placeholder.
-	userID := "guest_user_" + uuid.New().String()[:8] // Placeholder user ID
+	userID, ok := userIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

@@ -21,6 +21,7 @@ import (
 	"github.com/kankankanp/Muslog/internal/seeder"
 	"github.com/kankankanp/Muslog/internal/usecase"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -278,9 +279,24 @@ func main() {
 
 	// WebSocket route
 	e.GET("/ws/community/:communityId", func(c echo.Context) error {
-		handler.ServeWs(hub, messageUsecase, c.Response(), c.Request())
-		return nil // ServeWs handles the response, so return nil
-	})
+		claims, ok := c.Get("user").(jwt.MapClaims)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		userID, ok := claims["user_id"].(string)
+		if !ok || userID == "" {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		req := c.Request().WithContext(handler.ContextWithUserID(c.Request().Context(), userID))
+		handler.ServeWs(hub, messageUsecase, c.Response(), req)
+		return nil // ServeWs handles the response
+	}, middleware.AuthMiddleware(middleware.AuthMiddlewareConfig{
+		Skipper: func(c echo.Context) bool {
+			return c.Request().Method == http.MethodOptions
+		},
+	}))
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }
