@@ -24,7 +24,8 @@ func SetTokenCookie(c echo.Context, name, token string) {
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Secure = true
+	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
 }
 
@@ -35,6 +36,7 @@ func ClearTokenCookie(c echo.Context, name string) {
 	cookie.Expires = time.Unix(0, 0)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Secure = true
+	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
 }

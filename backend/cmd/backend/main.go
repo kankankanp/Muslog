@@ -13,6 +13,7 @@ import (
 
 	appConfig "github.com/kankankanp/Muslog/config"
 	"github.com/kankankanp/Muslog/internal/adapter/handler"
+	infraTx "github.com/kankankanp/Muslog/internal/infrastructure/db"
 	dblogger "github.com/kankankanp/Muslog/internal/infrastructure/logger"
 	"github.com/kankankanp/Muslog/internal/infrastructure/model"
 	"github.com/kankankanp/Muslog/internal/infrastructure/repository"
@@ -26,11 +27,12 @@ import (
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 
+	"strings"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	glogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"strings"
 )
 
 // @title Simple Blog API
@@ -51,10 +53,7 @@ func main() {
 	}
 
 	// Use loaded config for DB connection
-	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
-	)
+	dsn := os.Getenv("DATABASE_URL")
 
 	var db *gorm.DB
 	baseLogger := glogger.New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
@@ -166,6 +165,7 @@ func main() {
 	}
 
 	postRepo := repository.NewPostRepository(db)
+	txManager := infraTx.NewGormTxManager(db)
 
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo, postRepo)
@@ -175,7 +175,7 @@ func main() {
 	tagUsecase := usecase.NewTagUsecase(tagRepo, postRepo)
 	tagHandler := handler.NewTagHandler(tagUsecase)
 
-	postUsecase := usecase.NewPostUsecase(postRepo)
+	postUsecase := usecase.NewPostUsecase(postRepo, txManager)
 	postHandler := handler.NewPostHandler(postUsecase, tagUsecase)
 
 	spotifyUsecase := usecase.NewSpotifyUsecase()
@@ -203,11 +203,19 @@ func main() {
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
 	e.Use(echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+		AllowOrigins:     []string{"https://muslog-git-preview-southvillages-projects.vercel.app"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowCredentials: true,
 	}))
+
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Muslog backend is running 🚀. Use /api/v1/* endpoints.")
+	})
+
+	e.GET("/health", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
 
 	public := e.Group("/api/v1")
 	public.POST("/auth/login", userHandler.Login)
