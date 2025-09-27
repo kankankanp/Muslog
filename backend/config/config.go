@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
 )
 
 type Config struct {
@@ -27,7 +26,6 @@ func LoadConfig() (*Config, error) {
 	if provider == "" {
 		provider = "s3"
 	}
-	provider = strings.ToLower(strings.TrimSpace(provider))
 
 	cfg := &Config{
 		// DBHost:       os.Getenv("DB_HOST"),
