@@ -39,7 +39,7 @@ func LoadConfig() (*Config, error) {
 		S3Region:               os.Getenv("S3_REGION"),
 		S3BucketName:           os.Getenv("S3_BUCKET_NAME"),
 		SupabaseURL:            os.Getenv("SUPABASE_URL"),
-		SupabaseBucket:         os.Getenv("SUPABASE_BUCKET"),
+		SupabaseBucket:         os.Getenv("SUPABASE_STORAGE_BUCKET"),
 		SupabaseServiceRoleKey: os.Getenv("SUPABASE_SERVICE_ROLE_KEY"),
 	}
 	if cfg.JWTSecret == "" {
