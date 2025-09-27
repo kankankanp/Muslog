@@ -41,35 +41,28 @@ var upgrader = websocket.Upgrader{
 }
 
 type Hub struct {
-	// Registered clients for each community.
-	// communityID -> map[clientID]*Client
 	clients map[string]map[string]*Client
 
-	// Inbound messages from the clients.
 	broadcast chan entity.Message
 
-	// Register requests from the clients.
 	register chan *Client
 
-	// Unregister requests from clients.
 	unregister chan *Client
 
-	// Message usecase for saving and retrieving messages.
-	messageUsecase usecase.MessageUsecase // New field
+	messageUsecase usecase.MessageUsecase
 }
 
-// NewHub creates and returns a new Hub instance.
 func NewHub(messageUsecase usecase.MessageUsecase) *Hub {
 	return &Hub{
 		broadcast:      make(chan entity.Message),
 		register:       make(chan *Client),
 		unregister:     make(chan *Client),
 		clients:        make(map[string]map[string]*Client),
-		messageUsecase: messageUsecase, // Assign new field
+		messageUsecase: messageUsecase,
 	}
 }
 
-// Run starts the hub, listening for events on its channels.
+// Hubのメインループ。接続の出入りとメッセージ配信を一元的に直列処理
 func (h *Hub) Run() {
 	for {
 		select {
@@ -113,21 +106,16 @@ func (h *Hub) Run() {
 	}
 }
 
-// Client is a middleman between the websocket connection and the hub.
 type Client struct {
 	id          string
 	hub         *Hub
 	conn        *websocket.Conn
-	send        chan entity.Message // Buffered channel of outbound messages.
+	send        chan entity.Message
 	communityID string
-	userID      string // Assuming a user ID for the sender
+	userID      string
 }
 
-// readPump pumps messages from the websocket connection to the hub.
-//
-// The application runs readPump in a goroutine for each connection. The
-// application ensures that there is at most one reader on a connection by
-// executing all reads from this goroutine.
+// WebSocketからの受信専用gorutineでクライアントの発言をHubに渡す
 func (c *Client) readPump() {
 	defer func() {
 		c.hub.unregister <- c
@@ -146,12 +134,10 @@ func (c *Client) readPump() {
 			break
 		}
 		messageContent := string(messageBytes)
-		// For simplicity, assuming the message from client is just the content string.
-		// In a real app, you might expect a JSON object with sender info etc.
 		msg := entity.Message{
 			ID:          uuid.New().String(),
 			CommunityID: c.communityID,
-			SenderID:    c.userID, // Use the client's user ID
+			SenderID:    c.userID,
 			Content:     messageContent,
 			CreatedAt:   time.Now(),
 		}
@@ -159,11 +145,7 @@ func (c *Client) readPump() {
 	}
 }
 
-// writePump pumps messages from the hub to the websocket connection.
-//
-// A goroutine running writePump is started for each connection. The
-// application ensures that there is at most one writer to a connection by
-// executing all writes from this goroutine.
+// HubからClientへの送信用gorutine
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
@@ -192,7 +174,7 @@ func (c *Client) writePump() {
 			}
 			w.Write(msgBytes)
 
-			// Add queued chat messages to the current websocket message.
+			// sendチャネルのキューをWebSocketに書き出し
 			n := len(c.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
@@ -217,10 +199,8 @@ func (c *Client) writePump() {
 	}
 }
 
-// ServeWs handles websocket requests from the peer.
+// HTTPリクエストをWebSocketにアップグレードし、Clientを作ってHubに登録、履歴を初期送信・read/write のゴルーチンを起動
 func ServeWs(hub *Hub, messageUsecase usecase.MessageUsecase, w http.ResponseWriter, r *http.Request) {
-	// Extract community ID from URL path.
-	// Assuming URL format like /ws/community/{communityId}
 	communityID := r.URL.Path[len("/ws/community/"):]
 	if communityID == "" {
 		http.Error(w, "Community ID is required", http.StatusBadRequest)
