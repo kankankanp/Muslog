@@ -39,6 +39,6 @@ type UserDetailResponse struct {
 
 // 投稿一覧レスポンス
 type UserPostsResponse struct {
-    Message string      `json:"message"`
-    Posts   []PostResponse `json:"posts"`
+	Message string         `json:"message"`
+	Posts   []PostResponse `json:"posts"`
 }

@@ -17,10 +17,10 @@ type SpotifySearchResponse struct {
 }
 
 type SpotifyTrack struct {
-	ID     string               `json:"id"`
-	Name   string               `json:"name"`
-	Album  SpotifyAlbum         `json:"album"`
-	Artists []SpotifyArtist     `json:"artists"`
+	ID      string          `json:"id"`
+	Name    string          `json:"name"`
+	Album   SpotifyAlbum    `json:"album"`
+	Artists []SpotifyArtist `json:"artists"`
 }
 
 type SpotifyAlbum struct {
