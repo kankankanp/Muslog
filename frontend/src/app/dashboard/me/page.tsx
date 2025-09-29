@@ -6,8 +6,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { GetPosts200 } from "@/libs/api/generated/orval/model";
-import { useGetPosts } from "@/libs/api/generated/orval/posts/posts";
+import { useGetUsersMeLikedPosts } from "@/libs/api/generated/orval/likes/likes";
+import {
+  GetPosts200,
+  GetUsersMeLikedPosts200,
+} from "@/libs/api/generated/orval/model";
 import {
   useGetUsersIdPosts,
   usePostUsersUserIdProfileImage,
@@ -19,17 +22,16 @@ export default function ProfilePage() {
     isPending: userLoading,
     error: userError,
   } = useGetMe();
-  console.log(currentUser);
   const {
     data: postsData,
     isPending: postsLoading,
     error: postsError,
   } = useGetUsersIdPosts<GetPosts200>(currentUser?.id || "");
   const {
-    data: allPostsData,
-    isPending: allPostsLoading,
-    error: allPostsError,
-  } = useGetPosts(); // Fetch all posts
+    data: likedPostsData,
+    isPending: likedPostsLoading,
+    error: likedPostsError,
+  } = useGetUsersMeLikedPosts<GetUsersMeLikedPosts200>();
   const [tab, setTab] = useState<"created" | "liked" | "community-history">(
     "created"
   );
@@ -100,7 +102,7 @@ export default function ProfilePage() {
   }
 
   const posts = postsData?.posts ?? [];
-  const likedPosts = allPostsData?.posts?.filter((post) => post.isLiked) ?? []; // Filter liked posts
+  const likedPosts = likedPostsData?.posts ?? [];
 
   return (
     <>
@@ -251,13 +253,13 @@ export default function ProfilePage() {
 
             {tab === "liked" && (
               <>
-                {allPostsLoading ? (
+                {likedPostsLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
                     読み込み中...
                   </div>
-                ) : allPostsError ? (
+                ) : likedPostsError ? (
                   <div className="py-16 text-center text-red-600 dark:text-red-400">
-                    記事の取得に失敗しました
+                    いいねした記事の取得に失敗しました
                   </div>
                 ) : likedPosts.length === 0 ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -284,12 +286,6 @@ export default function ProfilePage() {
                               className="hover:underline"
                             >
                               表示
-                            </a>
-                            <a
-                              href={`/dashboard/post/${post.id}/edit`}
-                              className="hover:underline"
-                            >
-                              編集
                             </a>
                           </div>
                         </div>
