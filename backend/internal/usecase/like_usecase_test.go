@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ユースケースのテスト
 func TestLikeUsecase_GetLikedPostsByUser(t *testing.T) {
 	tests := []struct {
 		name        string
