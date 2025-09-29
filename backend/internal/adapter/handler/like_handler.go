@@ -116,10 +116,11 @@ func (h *LikeHandler) GetLikedPostsByUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
 			Message: "Failed to get liked posts",
-			Error: err.Error(),
+			Error:   err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, response.PostListResponse{
-		Posts: response.ToPostResponses(posts),
+		Message: "Success",
+		Posts:   response.ToPostResponses(posts),
 	})
 }
