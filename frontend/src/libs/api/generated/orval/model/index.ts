@@ -68,3 +68,4 @@ export * from "./registerRequest";
 export * from "./tag";
 export * from "./track";
 export * from "./user";
+export * from "./getUsersMeLikedPosts200";
