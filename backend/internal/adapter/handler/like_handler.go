@@ -104,3 +104,22 @@ func (h *LikeHandler) IsPostLikedByUser(c echo.Context) error {
 		IsLiked: isLiked,
 	})
 }
+
+/*
+ログインユーザーがいいねした投稿一覧を取得
+*/
+func (h *LikeHandler) GetLikedPostsByUser(c echo.Context) error {
+	userContext := c.Get("user").(jwt.MapClaims)
+	userID := userContext["user_id"].(string)
+
+	posts, err := h.Usecase.GetLikedPostsByUser(c.Request().Context(), userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{
+			Message: "Failed to get liked posts",
+			Error: err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, response.PostListResponse{
+		Posts: response.ToPostResponses(posts),
+	})
+}

@@ -258,6 +258,7 @@ func main() {
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 	userGroup.POST("/:userId/profile-image", imageHandler.UploadProfileImage)
+	userGroup.GET("/me/liked-posts", likeHandler.GetLikedPostsByUser)
 
 	// tags
 	tagGroup := protected.Group("/tags")

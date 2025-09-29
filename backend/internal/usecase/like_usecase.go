@@ -15,6 +15,7 @@ type LikeUsecase interface {
 	UnlikePost(ctx context.Context, postID uint, userID string) error
 	IsPostLikedByUser(ctx context.Context, postID uint, userID string) (bool, error)
 	ToggleLike(ctx context.Context, postID uint, userID string) (bool, error) // true if liked, false if unliked
+	GetLikedPostsByUser(ctx context.Context, userID string) ([]*entity.Post, error)
 }
 
 type likeUsecaseImpl struct {
@@ -122,4 +123,11 @@ func (u *likeUsecaseImpl) IsPostLikedByUser(ctx context.Context, postID uint, us
 		return false, err
 	}
 	return like != nil, nil
+}
+
+/*
+ログインユーザーがいいねした投稿一覧を取得
+*/
+func (u *likeUsecaseImpl) GetLikedPostsByUser(ctx context.Context, userID string) ([]*entity.Post, error) {
+	return u.likeRepo.GetLikedPostsByUser(userID)
 }
