@@ -7,4 +7,5 @@ type LikeRepository interface {
 	DeleteLike(postID uint, userID string) error
 	GetLike(postID uint, userID string) (*entity.Like, error)
 	GetLikesCountByPostID(postID uint) (int, error)
+	GetLikedPostsByUser(userId string) ([]*entity.Post, error)
 }

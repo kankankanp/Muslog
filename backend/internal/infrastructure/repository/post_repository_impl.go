@@ -44,7 +44,7 @@ func (r *postRepositoryImpl) FindByIDWithUserID(ctx context.Context, id uint, us
 	return mapper.ToPostEntity(&m), nil
 }
 
-func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]entity.Post, error) {
+func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]*entity.Post, error) {
 	var models []model.PostModel
 	query := r.DB.WithContext(ctx).Preload("Tracks").Preload("Tags")
 
@@ -58,9 +58,9 @@ func (r *postRepositoryImpl) FindAll(ctx context.Context, userID string) ([]enti
 		return nil, err
 	}
 
-	posts := make([]entity.Post, 0, len(models))
+	posts := make([]*entity.Post, 0, len(models))
 	for _, m := range models {
-		posts = append(posts, *mapper.ToPostEntity(&m))
+		posts = append(posts, mapper.ToPostEntity(&m))
 	}
 	return posts, nil
 }
@@ -90,7 +90,7 @@ func (r *postRepositoryImpl) Delete(ctx context.Context, id uint) error {
 	return r.DB.WithContext(ctx).Delete(&model.PostModel{}, id).Error
 }
 
-func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, userID string) ([]*entity.Post, int64, error) {
 	var models []model.PostModel
 	var totalCount int64
 	r.DB.WithContext(ctx).Model(&model.PostModel{}).Count(&totalCount)
@@ -110,15 +110,15 @@ func (r *postRepositoryImpl) FindByPage(ctx context.Context, page, perPage int, 
 		return nil, 0, err
 	}
 
-	posts := make([]entity.Post, 0, len(models))
+	posts := make([]*entity.Post, 0, len(models))
 	for _, m := range models {
-		posts = append(posts, *mapper.ToPostEntity(&m))
+		posts = append(posts, mapper.ToPostEntity(&m))
 	}
 
 	return posts, totalCount, nil
 }
 
-func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]*entity.Post, int64, error) {
 	var models []model.PostModel
 	var totalCount int64
 
@@ -166,9 +166,9 @@ func (r *postRepositoryImpl) SearchPosts(ctx context.Context, query string, tags
 		return nil, 0, err
 	}
 
-	posts := make([]entity.Post, 0, len(models))
+	posts := make([]*entity.Post, 0, len(models))
 	for _, m := range models {
-		posts = append(posts, *mapper.ToPostEntity(&m))
+		posts = append(posts, mapper.ToPostEntity(&m))
 	}
 
 	return posts, totalCount, nil

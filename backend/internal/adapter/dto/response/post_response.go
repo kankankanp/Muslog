@@ -37,10 +37,10 @@ func ToPostResponse(p *entity.Post) PostResponse {
 	}
 }
 
-func ToPostResponses(posts []entity.Post) []PostResponse {
+func ToPostResponses(posts []*entity.Post) []PostResponse {
 	res := make([]PostResponse, 0, len(posts))
 	for _, p := range posts {
-		res = append(res, ToPostResponse(&p))
+		res = append(res, ToPostResponse(p))
 	}
 	return res
 }

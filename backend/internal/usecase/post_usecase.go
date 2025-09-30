@@ -35,13 +35,13 @@ type UpdatePostInput struct {
 }
 
 type PostUsecase interface {
-	GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error)
+	GetAllPosts(ctx context.Context, userID string) ([]*entity.Post, error)
 	GetPostByID(ctx context.Context, id uint, userID string) (*entity.Post, error)
 	CreatePost(ctx context.Context, input CreatePostInput) (*entity.Post, error)
 	UpdatePost(ctx context.Context, input UpdatePostInput) (*entity.Post, error)
 	DeletePost(ctx context.Context, id uint) error
-	GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error)
-	SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error)
+	GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]*entity.Post, int64, error)
+	SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]*entity.Post, int64, error)
 }
 
 type postUsecaseImpl struct {
@@ -53,7 +53,7 @@ func NewPostUsecase(repo domainRepo.PostRepository, txManager domainRepo.Transac
 	return &postUsecaseImpl{repo: repo, txManager: txManager}
 }
 
-func (u *postUsecaseImpl) GetAllPosts(ctx context.Context, userID string) ([]entity.Post, error) {
+func (u *postUsecaseImpl) GetAllPosts(ctx context.Context, userID string) ([]*entity.Post, error) {
 	return u.repo.FindAll(ctx, userID)
 }
 
@@ -168,10 +168,10 @@ func (u *postUsecaseImpl) DeletePost(ctx context.Context, id uint) error {
 	return u.repo.Delete(ctx, id)
 }
 
-func (u *postUsecaseImpl) GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (u *postUsecaseImpl) GetPostsByPage(ctx context.Context, page, perPage int, userID string) ([]*entity.Post, int64, error) {
 	return u.repo.FindByPage(ctx, page, perPage, userID)
 }
 
-func (u *postUsecaseImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]entity.Post, int64, error) {
+func (u *postUsecaseImpl) SearchPosts(ctx context.Context, query string, tags []string, page, perPage int, userID string) ([]*entity.Post, int64, error) {
 	return u.repo.SearchPosts(ctx, query, tags, page, perPage, userID)
 }

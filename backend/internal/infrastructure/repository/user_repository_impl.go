@@ -56,7 +56,7 @@ func (r *userRepositoryImpl) FindByID(ctx context.Context, id string) (*entity.U
 	return mapper.ToUserEntity(&m), nil
 }
 
-func (r *userRepositoryImpl) FindPosts(ctx context.Context, userID string) ([]entity.Post, error) {
+func (r *userRepositoryImpl) FindPosts(ctx context.Context, userID string) ([]*entity.Post, error) {
 	var models []model.PostModel
 	err := r.DB.WithContext(ctx).
 		Where("user_id = ?", userID).
@@ -68,9 +68,9 @@ func (r *userRepositoryImpl) FindPosts(ctx context.Context, userID string) ([]en
 		return nil, err
 	}
 
-	posts := make([]entity.Post, 0, len(models))
+	posts := make([]*entity.Post, 0, len(models))
 	for _, m := range models {
-		posts = append(posts, *mapper.ToPostEntity(&m))
+		posts = append(posts, mapper.ToPostEntity(&m))
 	}
 	return posts, nil
 }

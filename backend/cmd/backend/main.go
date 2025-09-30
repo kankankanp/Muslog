@@ -203,7 +203,7 @@ func main() {
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
 	e.Use(echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
-		AllowOrigins:     []string{"https://muslog-git-preview-southvillages-projects.vercel.app"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://muslog-git-preview-southvillages-projects.vercel.app"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 		AllowCredentials: true,
@@ -258,6 +258,7 @@ func main() {
 	userGroup.GET("/:id", userHandler.GetUserByID)
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 	userGroup.POST("/:userId/profile-image", imageHandler.UploadProfileImage)
+	userGroup.GET("/me/liked-posts", likeHandler.GetLikedPostsByUser)
 
 	// tags
 	tagGroup := protected.Group("/tags")

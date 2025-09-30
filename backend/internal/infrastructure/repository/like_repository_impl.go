@@ -43,3 +43,23 @@ func (r *likeRepositoryImpl) GetLikesCountByPostID(postID uint) (int, error) {
 		Count(&count).Error
 	return int(count), err
 }
+
+/*
+ログインユーザーがいいねした投稿一覧を取得
+*/
+func (r *likeRepositoryImpl) GetLikedPostsByUser(userID string) ([]*entity.Post, error) {
+	var posts []*model.PostModel
+	err := r.db.
+		Joins("JOIN likes ON likes.post_id = posts.id").
+		Where("likes.user_id = ?", userID).
+		Find(&posts).Error
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*entity.Post
+	for _, m := range posts {
+		result = append(result, mapper.ToPostEntity(m))
+	}
+	return result, nil
+}
