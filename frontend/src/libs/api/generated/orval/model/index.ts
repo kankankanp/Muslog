@@ -35,6 +35,7 @@ export * from "./getTagsPostsPostID200";
 export * from "./getUsers200";
 export * from "./getUsersId200";
 export * from "./getUsersIdPosts200";
+export * from "./getUsersMeLikedPosts200";
 export * from "./loginRequest";
 export * from "./message";
 export * from "./post";

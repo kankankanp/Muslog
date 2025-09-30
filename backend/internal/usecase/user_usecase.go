@@ -14,7 +14,7 @@ type UserUsecase interface {
 	AuthenticateUser(ctx context.Context, email, password string) (*entity.User, error)
 	GetAllUsers(ctx context.Context) ([]entity.User, error)
 	GetUserByID(ctx context.Context, id string) (*entity.User, error)
-	GetUserPosts(ctx context.Context, userID string) ([]entity.Post, error)
+	GetUserPosts(ctx context.Context, userID string) ([]*entity.Post, error)
 }
 
 type userUsecaseImpl struct {
@@ -66,6 +66,6 @@ func (u *userUsecaseImpl) GetUserByID(ctx context.Context, id string) (*entity.U
 	return u.userRepo.FindByID(ctx, id)
 }
 
-func (u *userUsecaseImpl) GetUserPosts(ctx context.Context, userID string) ([]entity.Post, error) {
+func (u *userUsecaseImpl) GetUserPosts(ctx context.Context, userID string) ([]*entity.Post, error) {
 	return u.userRepo.FindPosts(ctx, userID)
 }

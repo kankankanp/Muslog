@@ -215,6 +215,14 @@ TRUNCATE TABLE <テーブル名> CASCADE;
 \dt:
 ```
 
+## テスト
+```
+# テスト実行
+go test ./internal/usecase
+# カバレッジの表示
+go test -cover ./internal/usecase
+```
+
 # コード自動整形
 VSCode の拡張機能を検索し、
 

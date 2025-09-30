@@ -4,16 +4,25 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
 } from "@tanstack/react-query";
 
 import type {
   DeletePostsPostIDUnlike200,
+  GetUsersMeLikedPosts200,
   PostPostsPostIDLike200,
 } from ".././model";
 
@@ -174,3 +183,150 @@ export const useDeletePostsPostIDUnlike = <TError = void, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * Get all posts liked by the authenticated user.
+ * @summary Get liked posts by current user
+ */
+export const getUsersMeLikedPosts = (signal?: AbortSignal) => {
+  return customInstance<GetUsersMeLikedPosts200>({
+    url: `/users/me/liked-posts`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetUsersMeLikedPostsQueryKey = () => {
+  return [`/users/me/liked-posts`] as const;
+};
+
+export const getGetUsersMeLikedPostsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+  TError = void,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+      TError,
+      TData
+    >
+  >;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetUsersMeLikedPostsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getUsersMeLikedPosts>>
+  > = ({ signal }) => getUsersMeLikedPosts(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetUsersMeLikedPostsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUsersMeLikedPosts>>
+>;
+export type GetUsersMeLikedPostsQueryError = void;
+
+export function useGetUsersMeLikedPosts<
+  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+          TError,
+          Awaited<ReturnType<typeof getUsersMeLikedPosts>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetUsersMeLikedPosts<
+  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+          TError,
+          Awaited<ReturnType<typeof getUsersMeLikedPosts>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetUsersMeLikedPosts<
+  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get liked posts by current user
+ */
+
+export function useGetUsersMeLikedPosts<
+  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetUsersMeLikedPostsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}

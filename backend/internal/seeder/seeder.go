@@ -29,10 +29,12 @@ func Seed(db *gorm.DB) error {
 
 	log.Println("Running deterministic seeding...")
 
+	const guestUUID = "c88793d0-7afd-4acc-b15c-9a11dd4382a0"
+
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 		demo := model.UserModel{
-			ID:       uuid.NewString(),
+			ID:       guestUUID,
 			Name:     "ゲストユーザー",
 			Email:    "user@example.com",
 			Password: string(hashed),
