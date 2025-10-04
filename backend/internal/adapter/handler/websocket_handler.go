@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid" // For generating unique message IDs
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/kankankanp/Muslog/internal/adapter/dto/response"
 	"github.com/kankankanp/Muslog/internal/domain/entity"
@@ -15,10 +15,8 @@ import (
 )
 
 const (
-	// Time allowed to write a message to the peer.
 	writeWait = 10 * time.Second
 
-	// Time allowed to read the next pong message from the peer.
 	pongWait = 300 * time.Second
 
 	pingPeriod = (pongWait * 9) / 10
@@ -28,16 +26,15 @@ const (
 
 var (
 	newline = []byte{' '}
-	space   = []byte{' '}
 )
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		// Allow all origins for simplicity during development.
-		// In production, you should restrict this to your frontend's origin.
-		return true
+		// 本番では正規Originのみ許可
+		origin := r.Header.Get("Origin")
+		return origin == "https://muslog-git-preview-southvillages-projects.vercel.app"
 	},
 }
 
