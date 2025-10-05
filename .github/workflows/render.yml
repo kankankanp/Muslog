@@ -1,6 +1,9 @@
 name: render
 
 on:
+  pull_request:
+    branches:
+      - preview
   workflow_run:
     workflows:
       - docker
@@ -8,13 +11,59 @@ on:
       - completed
 
 jobs:
+  validate-render:
+    name: Validate Render Configuration
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Render secrets
+        id: secrets-check
+        run: |
+          if [ -z "${RENDER_API_KEY}" ] || [ -z "${RENDER_SERVICE_ID}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+
+      - name: Validate Render API access
+        if: steps.secrets-check.outputs.configured == 'true'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          curl -fsS "https://api.render.com/v1/services/${RENDER_SERVICE_ID}" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -o render-service.json
+
+      - name: Publish validation summary
+        env:
+          CONFIGURED: ${{ steps.secrets-check.outputs.configured }}
+        run: |
+          echo "## Render デプロイ準備確認" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CONFIGURED" != "true" ]; then
+            echo "- Renderのシークレットが未設定のためデプロイは実行されません" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "- Render API へのアクセスに成功しました" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f render-service.json ]; then
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo '\`render-service.json\`:' >> "$GITHUB_STEP_SUMMARY"
+            cat render-service.json >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   trigger-render-deploy:
     name: Trigger Render Deploy
-    runs-on: ubuntu-latest
     if: >-
-      ${{ github.event.workflow_run.conclusion == 'success' &&
-          github.event.workflow_run.event == 'pull_request' &&
-          github.event.workflow_run.pull_requests[0].base.ref == 'preview' }}
+      ${{ github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'preview' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Ensure Render secrets are available
         id: secrets-check

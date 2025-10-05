@@ -1,29 +1,20 @@
 name: docker
 
 on:
-  workflow_run:
-    workflows:
-      - backend
-    types:
-      - completed
+  push:
+    branches:
+      - preview
 
 jobs:
   docker-build:
     name: Build Docker Image
     runs-on: ubuntu-latest
-    if: >-
-      ${{ github.event.workflow_run.conclusion == 'success' &&
-          github.event.workflow_run.event == 'pull_request' &&
-          github.event.workflow_run.pull_requests[0].base.ref == 'preview' }}
     defaults:
       run:
         working-directory: backend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
