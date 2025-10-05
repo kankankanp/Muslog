@@ -21,7 +21,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22.5
+          go-version-file: backend/go.mod
           cache: true
 
       - name: Verify gofmt compliance
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22.5
+          go-version-file: backend/go.mod
           cache: true
 
       - name: Run go vet
@@ -78,7 +78,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22.5
+          go-version-file: backend/go.mod
           cache: true
 
       - name: Run unit tests (internal/usecase)
