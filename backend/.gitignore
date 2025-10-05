@@ -2,3 +2,7 @@
 .env.preview
 .env.local
 .gocache
+
+# Air hot reload
+tmp/
+build-errors.log
