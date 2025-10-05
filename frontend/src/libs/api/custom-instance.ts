@@ -7,16 +7,13 @@ const instance = Axios.create({
 });
 
 // レスポンスインターセプターを設定
-instance.interceptors.response.use(
-  (response) => response,
-  handleApiError
-);
+instance.interceptors.response.use((response) => response, handleApiError);
 
 export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
   const source = Axios.CancelToken.source();
-  const promise = instance.request({ ...config, cancelToken: source.token }).then(
-    ({ data }) => data
-  );
+  const promise = instance
+    .request({ ...config, cancelToken: source.token })
+    .then(({ data }) => data);
 
   // @ts-ignore
   promise.cancel = () => {

@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef } from "react";
 import { X, UploadCloud } from "lucide-react";
 import Image from "next/image";
+import React, { useState, useCallback, useRef } from "react";
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -57,7 +57,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
   if (!isOpen) return null;
 
-  const imageUrl = selectedFile ? URL.createObjectURL(selectedFile) : currentImageUrl;
+  const imageUrl = selectedFile
+    ? URL.createObjectURL(selectedFile)
+    : currentImageUrl;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -68,7 +70,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         >
           <X size={24} />
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">画像を追加・変更</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          画像を追加・変更
+        </h2>
 
         <div
           className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900" : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"}`}
@@ -87,7 +91,12 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
           />
           {imageUrl ? (
             <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
-              <Image src={imageUrl} alt="Preview" layout="fill" objectFit="contain" />
+              <Image
+                src={imageUrl}
+                alt="Preview"
+                layout="fill"
+                objectFit="contain"
+              />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">

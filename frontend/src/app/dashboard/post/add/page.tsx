@@ -27,7 +27,7 @@ export default function AddPostPage() {
     description: z.string().min(1, "本文は必須です。"),
   });
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
-    "split"
+    "split",
   );
   const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
   const [editorZoom, setEditorZoom] = useState(1.0);
@@ -41,7 +41,7 @@ export default function AddPostPage() {
 
   const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
   const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
-    undefined
+    undefined,
   ); // New
   const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
   const [currentUploadType, setCurrentUploadType] = useState<
@@ -79,7 +79,7 @@ export default function AddPostPage() {
 
   const handleZoom = (
     area: "editor" | "preview",
-    type: "in" | "out" | "reset"
+    type: "in" | "out" | "reset",
   ) => {
     const step = 0.1;
     const minZoom = 0.5;
@@ -127,7 +127,7 @@ export default function AddPostPage() {
           // Insert the image URL into the markdown content
           setMarkdown(
             (prevMarkdown) =>
-              `${prevMarkdown}\n![image](${response.imageUrl})\n`
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`,
           );
           alert("画像を投稿内に挿入しました！");
         },
@@ -135,7 +135,7 @@ export default function AddPostPage() {
           console.error("投稿内画像のアップロードに失敗しました:", error);
           alert("投稿内画像のアップロードに失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -187,7 +187,9 @@ export default function AddPostPage() {
           if (headerImageFile) {
             if (newPostId === undefined) {
               console.error("投稿IDの取得に失敗しました。");
-              alert("記事は投稿されましたが、ヘッダー画像の登録に失敗しました。");
+              alert(
+                "記事は投稿されましたが、ヘッダー画像の登録に失敗しました。",
+              );
               router.push("/dashboard");
               return;
             }
@@ -200,11 +202,16 @@ export default function AddPostPage() {
                   router.push("/dashboard");
                 },
                 onError: (error) => {
-                  console.error("ヘッダー画像のアップロードに失敗しました:", error);
-                  alert("記事は投稿されましたが、ヘッダー画像のアップロードに失敗しました。");
+                  console.error(
+                    "ヘッダー画像のアップロードに失敗しました:",
+                    error,
+                  );
+                  alert(
+                    "記事は投稿されましたが、ヘッダー画像のアップロードに失敗しました。",
+                  );
                   router.push("/dashboard");
                 },
-              }
+              },
             );
             return;
           }
@@ -216,7 +223,7 @@ export default function AddPostPage() {
           console.error("Failed to post article:", err);
           alert("記事の投稿に失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -228,7 +235,7 @@ export default function AddPostPage() {
 
   const handleRemoveFinalTrack = (trackToRemove: Track) => {
     setFinalSelectedTracks((prevTracks) =>
-      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId),
     );
   };
 
@@ -239,7 +246,7 @@ export default function AddPostPage() {
 
   const handleRemoveFinalTag = (tagToRemove: string) => {
     setFinalSelectedTags((prevTags) =>
-      prevTags.filter((tag) => tag !== tagToRemove)
+      prevTags.filter((tag) => tag !== tagToRemove),
     );
   };
 

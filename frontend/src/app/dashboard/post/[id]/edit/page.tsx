@@ -32,7 +32,7 @@ export default function EditPostPage() {
     description: z.string().min(1, "本文は必須です。"),
   });
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
-    "split"
+    "split",
   );
   const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
   const [editorZoom, setEditorZoom] = useState(1.0);
@@ -46,7 +46,7 @@ export default function EditPostPage() {
 
   const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
   const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
-    undefined
+    undefined,
   ); // New
   const [currentUploadType, setCurrentUploadType] = useState<
     "header" | "in-post" | null
@@ -79,7 +79,7 @@ export default function EditPostPage() {
       setFinalSelectedTags(
         postData?.post?.tags
           ?.map((tag) => tag.name)
-          .filter((name): name is string => typeof name === "string") || []
+          .filter((name): name is string => typeof name === "string") || [],
       );
       setHeaderImageUrl(postData?.post?.headerImageUrl ?? undefined); // Initialize header image URL
     }
@@ -109,7 +109,7 @@ export default function EditPostPage() {
 
   const handleZoom = (
     area: "editor" | "preview",
-    type: "in" | "out" | "reset"
+    type: "in" | "out" | "reset",
   ) => {
     const step = 0.1;
     const minZoom = 0.5;
@@ -143,7 +143,7 @@ export default function EditPostPage() {
           console.error("ヘッダー画像の更新に失敗しました:", error);
           alert("ヘッダー画像の更新に失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -158,7 +158,7 @@ export default function EditPostPage() {
           // Insert the image URL into the markdown content
           setMarkdown(
             (prevMarkdown) =>
-              `${prevMarkdown}\n![image](${response.imageUrl})\n`
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`,
           );
           alert("画像を投稿内に挿入しました！");
         },
@@ -166,7 +166,7 @@ export default function EditPostPage() {
           console.error("投稿内画像のアップロードに失敗しました:", error);
           alert("投稿内画像のアップロードに失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -219,7 +219,7 @@ export default function EditPostPage() {
           console.error("Failed to update article:", err);
           alert("記事の更新に失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -237,7 +237,7 @@ export default function EditPostPage() {
           console.error("Delete error:", error);
           alert("削除に失敗しました。");
         },
-      }
+      },
     );
   };
 
@@ -248,7 +248,7 @@ export default function EditPostPage() {
 
   const handleRemoveFinalTrack = (trackToRemove: Track) => {
     setFinalSelectedTracks((prevTracks) =>
-      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId),
     );
   };
 
@@ -259,7 +259,7 @@ export default function EditPostPage() {
 
   const handleRemoveFinalTag = (tagToRemove: string) => {
     setFinalSelectedTags((prevTags) =>
-      prevTags.filter((tag) => tag !== tagToRemove)
+      prevTags.filter((tag) => tag !== tagToRemove),
     );
   };
 

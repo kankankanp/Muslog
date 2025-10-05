@@ -13,7 +13,7 @@ const DashboardContainer = dynamic(
   {
     ssr: false,
     loading: () => <Skeleton />,
-  }
+  },
 );
 
 export default function DashboardLayout({

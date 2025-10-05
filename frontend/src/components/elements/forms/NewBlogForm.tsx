@@ -98,7 +98,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
         onError: (error: any) => {
           toast.error(error.message || "ブログの作成に失敗しました");
         },
-      }
+      },
     );
   };
 
@@ -179,11 +179,11 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
                 field.onChange(
                   selectedOptions
                     ? selectedOptions.map((option) => option.value)
-                    : []
+                    : [],
                 )
               }
               value={tagOptions.filter((option) =>
-                (field.value || []).includes(option.value)
+                (field.value || []).includes(option.value),
               )}
             />
           )}

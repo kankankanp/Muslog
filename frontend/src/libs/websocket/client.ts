@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface WebSocketOptions {
   onOpen?: (event: Event) => void;
@@ -16,7 +16,7 @@ export const useWebSocket = (url: string, options?: WebSocketOptions) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(message);
     } else {
-      console.warn('WebSocket is not open. Message not sent:', message);
+      console.warn("WebSocket is not open. Message not sent:", message);
     }
   }, []);
 
@@ -29,7 +29,7 @@ export const useWebSocket = (url: string, options?: WebSocketOptions) => {
     ws.onopen = (event) => {
       setIsConnected(true);
       options?.onOpen?.(event);
-      console.log('WebSocket opened:', url);
+      console.log("WebSocket opened:", url);
     };
 
     ws.onmessage = (event) => {
@@ -40,12 +40,12 @@ export const useWebSocket = (url: string, options?: WebSocketOptions) => {
     ws.onclose = (event) => {
       setIsConnected(false);
       options?.onClose?.(event);
-      console.log('WebSocket closed:', url, event);
+      console.log("WebSocket closed:", url, event);
     };
 
     ws.onerror = (event) => {
       options?.onError?.(event);
-      console.error('WebSocket error:', url, event);
+      console.error("WebSocket error:", url, event);
     };
 
     return () => {
@@ -53,7 +53,7 @@ export const useWebSocket = (url: string, options?: WebSocketOptions) => {
         wsRef.current.close();
       }
     };
-  }, [url]);
+  }, [options, url]);
 
   return { ws: wsRef.current, isConnected, lastMessage, sendMessage };
 };

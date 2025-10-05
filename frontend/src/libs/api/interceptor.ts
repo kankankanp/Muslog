@@ -27,7 +27,7 @@ export const setupApiInterceptors = (instance: any) => {
   // レスポンスインターセプター
   instance.interceptors.response.use(
     (response: any) => response,
-    handleApiError
+    handleApiError,
   );
 
   return instance;

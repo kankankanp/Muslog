@@ -8,14 +8,15 @@
 
 ## 依存パッケージのインストール
 
-```npm install```
+`npm install`
 
 ## ローカルサーバーの起動
 
-```npm run dev```
+`npm run dev`
 サーバーを起動後、http://localhost:3000 でアクセスしてください。
 
 # 利用者向け情報
+
 ![日記](/public/readme/intro1.png)
 ![ブログ検索画面](/public/readme/intro2.png)
 この Web アプリケーションは、「1 日を象徴する音楽を添えた日記」を投稿できるブログサイトです。

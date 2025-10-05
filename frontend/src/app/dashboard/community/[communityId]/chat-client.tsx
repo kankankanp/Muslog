@@ -72,7 +72,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
       onClose: (event) => {
         console.log("Disconnected from chat. Please refresh.", event);
       },
-    }
+    },
   );
 
   // Scroll to bottom on new messages
@@ -96,7 +96,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
 
   if (isError) {
     toast.error(
-      `Error loading chat history: ${error?.message || "Unknown error"}`
+      `Error loading chat history: ${error?.message || "Unknown error"}`,
     );
     return (
       <div className="text-center text-red-600">

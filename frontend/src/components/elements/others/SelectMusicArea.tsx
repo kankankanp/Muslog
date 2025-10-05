@@ -11,21 +11,28 @@ type SelectMusicAreaProps = {
   initialSelectedTracks?: Track[]; // New prop
 };
 
-const SelectMusicArea = ({ onSelect, initialSelectedTracks }: SelectMusicAreaProps): JSX.Element => { // Destructure new prop
+const SelectMusicArea = ({
+  onSelect,
+  initialSelectedTracks,
+}: SelectMusicAreaProps): JSX.Element => {
+  // Destructure new prop
   const [query, setQuery] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [buttonLoading, setButtonLoading] = useState<boolean>(false); // New state for button loading
-  const [selectedTracksInModal, setSelectedTracksInModal] = useState<Track[]>(initialSelectedTracks || []); // Initialize with prop
+  const [selectedTracksInModal, setSelectedTracksInModal] = useState<Track[]>(
+    initialSelectedTracks || [],
+  ); // Initialize with prop
 
   const { data, isPending, error } = useGetSpotifySearch(
     { q: searchQuery },
-    { query: { enabled: !!searchQuery } }
+    { query: { enabled: !!searchQuery } },
   );
 
   // Use useEffect to watch for changes in isPending from the hook
   // and update buttonLoading accordingly
   React.useEffect(() => {
-    if (!isPending && buttonLoading) { // If API call is no longer pending and button was loading
+    if (!isPending && buttonLoading) {
+      // If API call is no longer pending and button was loading
       setButtonLoading(false); // Reset button loading
     }
   }, [isPending, buttonLoading]);
@@ -43,7 +50,9 @@ const SelectMusicArea = ({ onSelect, initialSelectedTracks }: SelectMusicAreaPro
     setSelectedTracksInModal((prevTracks) => {
       if (prevTracks.some((t) => t.spotifyId === trackToToggle.spotifyId)) {
         // Remove track if already selected
-        return prevTracks.filter((t) => t.spotifyId !== trackToToggle.spotifyId);
+        return prevTracks.filter(
+          (t) => t.spotifyId !== trackToToggle.spotifyId,
+        );
       } else {
         // Add track if not selected
         return [...prevTracks, trackToToggle];
@@ -60,7 +69,7 @@ const SelectMusicArea = ({ onSelect, initialSelectedTracks }: SelectMusicAreaPro
       toast.error(
         (error as any)?.response?.data?.message ||
           (error as any)?.message ||
-          "検索中にエラーが発生しました"
+          "検索中にエラーが発生しました",
       );
     }
   }, [error]);

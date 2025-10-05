@@ -92,9 +92,11 @@ export default function Page() {
       <main className="container mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <Image
-            src={post.headerImageUrl && post.headerImageUrl.trim() !== ""
-              ? post.headerImageUrl
-              : "/default-image.jpg"}
+            src={
+              post.headerImageUrl && post.headerImageUrl.trim() !== ""
+                ? post.headerImageUrl
+                : "/default-image.jpg"
+            }
             alt="Header Image"
             width={800}
             height={400}
@@ -116,9 +118,9 @@ export default function Page() {
                     className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center space-x-4"
                   >
                     {track.albumImageUrl && (
-                      <img
+                      <Image
                         src={track.albumImageUrl}
-                        alt={track.name}
+                        alt={track.name || "トラック画像"}
                         className="w-16 h-16 rounded-md object-cover"
                       />
                     )}

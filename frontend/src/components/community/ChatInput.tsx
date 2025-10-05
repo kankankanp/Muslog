@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -6,18 +6,21 @@ interface ChatInputProps {
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim() && !disabled) {
       onSendMessage(message.trim());
-      setMessage('');
+      setMessage("");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+    >
       <input
         type="text"
         value={message}

@@ -20,7 +20,7 @@ const TagModal = ({
 }: TagModalProps): JSX.Element => {
   const [query, setQuery] = useState<string>("");
   const [selectedTagsInModal, setSelectedTagsInModal] = useState<string[]>(
-    initialSelectedTags || []
+    initialSelectedTags || [],
   );
 
   // Fetch all tags
@@ -71,7 +71,7 @@ const TagModal = ({
           // 再取得してリストに反映
           await refetch();
           setSelectedTagsInModal((prev) =>
-            prev.includes(name) ? prev : [...prev, name]
+            prev.includes(name) ? prev : [...prev, name],
           );
           console.log("bbbb");
           setQuery("");
@@ -79,7 +79,7 @@ const TagModal = ({
         onError: () => {
           alert("タグの作成に失敗しました");
         },
-      }
+      },
     );
   };
 
@@ -136,7 +136,7 @@ const TagModal = ({
                 .filter((t) =>
                   query.trim()
                     ? t.toLowerCase().includes(query.trim().toLowerCase())
-                    : true
+                    : true,
                 )
                 .map((tag) => (
                   <span

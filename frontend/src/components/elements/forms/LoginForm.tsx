@@ -64,7 +64,7 @@ export default function LoginForm() {
           console.error("login error:", error);
           toast.error("ログインに失敗しました");
         },
-      }
+      },
     );
   };
 
