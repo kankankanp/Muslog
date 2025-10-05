@@ -21,7 +21,7 @@ func (r *messageRepositoryImpl) Save(message *entity.Message) error {
 	return r.DB.Create(m).Error
 }
 
-func (r *messageRepositoryImpl) FindByCommunityID(communityID string) ([]entity.Message, error) {
+func (r *messageRepositoryImpl) FindByCommunityID(communityID string) ([]*entity.Message, error) {
 	var models []model.MessageModel
 	if err := r.DB.Where("community_id = ?", communityID).
 		Order("created_at ASC").
@@ -29,9 +29,9 @@ func (r *messageRepositoryImpl) FindByCommunityID(communityID string) ([]entity.
 		return nil, err
 	}
 
-	messages := make([]entity.Message, 0, len(models))
+	messages := make([]*entity.Message, 0, len(models))
 	for _, m := range models {
-		messages = append(messages, *mapper.ToMessageEntity(&m))
+		messages = append(messages, mapper.ToMessageEntity(&m))
 	}
 	return messages, nil
 }

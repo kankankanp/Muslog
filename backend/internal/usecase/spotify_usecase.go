@@ -15,7 +15,7 @@ import (
 )
 
 type SpotifyUsecase interface {
-	SearchTracks(query string) ([]entity.Track, error)
+	SearchTracks(query string) ([]*entity.Track, error)
 }
 
 type spotifyUsecaseImpl struct {
@@ -77,7 +77,7 @@ func (s *spotifyUsecaseImpl) getAccessToken() (string, error) {
 }
 
 // トラック検索
-func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]entity.Track, error) {
+func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]*entity.Track, error) {
 	token, err := s.getAccessToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Spotify access token: %w", err)
@@ -108,7 +108,7 @@ func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]entity.Track, error) 
 		return nil, fmt.Errorf("failed to decode Spotify search response: %w", err)
 	}
 
-	var tracks []entity.Track
+	var tracks []*entity.Track
 	for _, track := range searchResponse.Tracks.Items {
 		// アーティスト名を結合
 		artistNames := ""
@@ -125,7 +125,7 @@ func (s *spotifyUsecaseImpl) SearchTracks(query string) ([]entity.Track, error) 
 			albumImageURL = track.Album.Images[0].URL
 		}
 
-		tracks = append(tracks, entity.Track{
+		tracks = append(tracks, &entity.Track{
 			SpotifyID:     track.ID,
 			Name:          track.Name,
 			ArtistName:    artistNames,

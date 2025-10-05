@@ -24,7 +24,7 @@ func (r *communityRepositoryImpl) Save(ctx context.Context, community *entity.Co
 	return r.DB.WithContext(ctx).Create(m).Error
 }
 
-func (r *communityRepositoryImpl) FindAll(ctx context.Context) ([]entity.Community, error) {
+func (r *communityRepositoryImpl) FindAll(ctx context.Context) ([]*entity.Community, error) {
 	var models []model.CommunityModel
 	if err := r.DB.WithContext(ctx).
 		Order("created_at DESC").
@@ -32,9 +32,9 @@ func (r *communityRepositoryImpl) FindAll(ctx context.Context) ([]entity.Communi
 		return nil, err
 	}
 
-	communities := make([]entity.Community, 0, len(models))
+	communities := make([]*entity.Community, 0, len(models))
 	for _, m := range models {
-		communities = append(communities, *mapper.ToCommunityEntity(&m))
+		communities = append(communities, mapper.ToCommunityEntity(&m))
 	}
 	return communities, nil
 }
@@ -49,7 +49,7 @@ func (r *communityRepositoryImpl) FindByID(ctx context.Context, id string) (*ent
 	return mapper.ToCommunityEntity(&m), nil
 }
 
-func (r *communityRepositoryImpl) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error) {
+func (r *communityRepositoryImpl) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]*entity.Community, int64, error) {
 	var models []model.CommunityModel
 	var totalCount int64
 
@@ -71,9 +71,9 @@ func (r *communityRepositoryImpl) SearchCommunities(ctx context.Context, query s
 		return nil, 0, err
 	}
 
-	communities := make([]entity.Community, 0, len(models))
+	communities := make([]*entity.Community, 0, len(models))
 	for _, m := range models {
-		communities = append(communities, *mapper.ToCommunityEntity(&m))
+		communities = append(communities, mapper.ToCommunityEntity(&m))
 	}
 
 	return communities, totalCount, nil

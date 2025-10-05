@@ -23,7 +23,7 @@ func ToTrackResponse(t *entity.Track) TrackResponse {
 	}
 }
 
-func ToTrackResponses(tracks []entity.Track) []TrackResponse {
+func ToTrackResponses(tracks []*entity.Track) []TrackResponse {
 	res := make([]TrackResponse, 0, len(tracks))
 	for _, t := range tracks {
 		res = append(res, ToTrackResponse(&t))

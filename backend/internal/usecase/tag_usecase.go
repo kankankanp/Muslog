@@ -11,12 +11,12 @@ type TagUsecase interface {
 	CreateTag(name string) (*entity.Tag, error)
 	GetTagByID(id uint) (*entity.Tag, error)
 	GetTagByName(name string) (*entity.Tag, error)
-	GetAllTags() ([]entity.Tag, error)
+	GetAllTags() ([]*entity.Tag, error)
 	UpdateTag(id uint, name string) (*entity.Tag, error)
 	DeleteTag(id uint) error
 	AddTagsToPost(postID uint, tagNames []string) error
 	RemoveTagsFromPost(postID uint, tagNames []string) error
-	GetTagsByPostID(postID uint) ([]entity.Tag, error)
+	GetTagsByPostID(postID uint) ([]*entity.Tag, error)
 }
 
 type tagUsecaseImpl struct {
@@ -51,7 +51,7 @@ func (u *tagUsecaseImpl) GetTagByName(name string) (*entity.Tag, error) {
 	return u.tagRepo.GetTagByName(name)
 }
 
-func (u *tagUsecaseImpl) GetAllTags() ([]entity.Tag, error) {
+func (u *tagUsecaseImpl) GetAllTags() ([]*entity.Tag, error) {
 	return u.tagRepo.GetAllTags()
 }
 
@@ -105,6 +105,6 @@ func (u *tagUsecaseImpl) RemoveTagsFromPost(postID uint, tagNames []string) erro
 	return u.tagRepo.RemoveTagsFromPost(postID, tagIDs)
 }
 
-func (u *tagUsecaseImpl) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
+func (u *tagUsecaseImpl) GetTagsByPostID(postID uint) ([]*entity.Tag, error) {
 	return u.tagRepo.GetTagsByPostID(postID)
 }

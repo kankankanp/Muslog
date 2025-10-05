@@ -27,16 +27,16 @@ func (r *userRepositoryImpl) FindByEmail(ctx context.Context, email string) (*en
 	return mapper.ToUserEntity(&m), nil
 }
 
-func (r *userRepositoryImpl) FindAll(ctx context.Context) ([]entity.User, error) {
+func (r *userRepositoryImpl) FindAll(ctx context.Context) ([]*entity.User, error) {
 	var models []model.UserModel
 	err := r.DB.WithContext(ctx).Find(&models).Error
 	if err != nil {
 		return nil, err
 	}
 
-	users := make([]entity.User, 0, len(models))
+	users := make([]*entity.User, 0, len(models))
 	for _, m := range models {
-		users = append(users, *mapper.ToUserEntity(&m))
+		users = append(users, mapper.ToUserEntity(&m))
 	}
 	return users, nil
 }
