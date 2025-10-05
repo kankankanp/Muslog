@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { components } from "@/app/libs/api/generated/openapi-types";
+import { components } from "@/libs/api/generated/openapi-types";
 
 type Community = components["schemas"]["Community"];
 
