@@ -25,10 +25,10 @@ func ToMessageResponse(m *entity.Message) MessageResponse {
 	}
 }
 
-func ToMessageResponses(messages []entity.Message) []MessageResponse {
+func ToMessageResponses(messages []*entity.Message) []MessageResponse {
 	res := make([]MessageResponse, 0, len(messages))
 	for _, m := range messages {
-		res = append(res, ToMessageResponse(&m))
+		res = append(res, ToMessageResponse(m))
 	}
 	return res
 }

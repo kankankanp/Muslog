@@ -7,7 +7,7 @@ import (
 
 type MessageUsecase interface {
 	SaveMessage(message *entity.Message) error
-	GetMessagesByCommunityID(communityID string) ([]entity.Message, error)
+	GetMessagesByCommunityID(communityID string) ([]*entity.Message, error)
 }
 
 type messageUsecaseImpl struct {
@@ -22,6 +22,6 @@ func (u *messageUsecaseImpl) SaveMessage(message *entity.Message) error {
 	return u.repo.Save(message)
 }
 
-func (u *messageUsecaseImpl) GetMessagesByCommunityID(communityID string) ([]entity.Message, error) {
+func (u *messageUsecaseImpl) GetMessagesByCommunityID(communityID string) ([]*entity.Message, error) {
 	return u.repo.FindByCommunityID(communityID)
 }

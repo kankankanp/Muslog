@@ -11,9 +11,9 @@ import (
 
 type CommunityUsecase interface {
 	CreateCommunity(ctx context.Context, name, description, creatorID string) (*entity.Community, error)
-	GetAllCommunities(ctx context.Context) ([]entity.Community, error)
+	GetAllCommunities(ctx context.Context) ([]*entity.Community, error)
 	GetCommunityByID(ctx context.Context, id string) (*entity.Community, error)
-	SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error)
+	SearchCommunities(ctx context.Context, query string, page, perPage int) ([]*entity.Community, int64, error)
 }
 
 type communityUsecaseImpl struct {
@@ -39,7 +39,7 @@ func (u *communityUsecaseImpl) CreateCommunity(ctx context.Context, name, descri
 	return community, nil
 }
 
-func (u *communityUsecaseImpl) GetAllCommunities(ctx context.Context) ([]entity.Community, error) {
+func (u *communityUsecaseImpl) GetAllCommunities(ctx context.Context) ([]*entity.Community, error) {
 	return u.repo.FindAll(ctx)
 }
 
@@ -47,6 +47,6 @@ func (u *communityUsecaseImpl) GetCommunityByID(ctx context.Context, id string) 
 	return u.repo.FindByID(ctx, id)
 }
 
-func (u *communityUsecaseImpl) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]entity.Community, int64, error) {
+func (u *communityUsecaseImpl) SearchCommunities(ctx context.Context, query string, page, perPage int) ([]*entity.Community, int64, error) {
 	return u.repo.SearchCommunities(ctx, query, page, perPage)
 }

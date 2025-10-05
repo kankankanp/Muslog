@@ -168,7 +168,7 @@ func (h *UserHandler) GetAllUsers(c echo.Context) error {
 
 	userResponses := make([]response.UserResponse, 0, len(users))
 	for _, user := range users {
-		userResponses = append(userResponses, response.ToUserResponse(&user))
+		userResponses = append(userResponses, response.ToUserResponse(user))
 	}
 
 	return c.JSON(http.StatusOK, response.UserListResponse{

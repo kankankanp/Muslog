@@ -43,14 +43,14 @@ func ToPostEntity(m *model.PostModel) *entity.Post {
 	if m == nil {
 		return nil
 	}
-	tracks := make([]entity.Track, 0, len(m.Tracks))
+	tracks := make([]*entity.Track, 0, len(m.Tracks))
 	for _, t := range m.Tracks {
-		tracks = append(tracks, *ToTrackEntity(&t))
+		tracks = append(tracks, ToTrackEntity(&t))
 	}
 
-	tags := make([]entity.Tag, 0, len(m.Tags))
+	tags := make([]*entity.Tag, 0, len(m.Tags))
 	for _, tg := range m.Tags {
-		tags = append(tags, *ToTagEntity(&tg))
+		tags = append(tags, ToTagEntity(&tg))
 	}
 
 	return &entity.Post{
@@ -74,12 +74,12 @@ func FromPostEntity(e *entity.Post) *model.PostModel {
 	}
 	tracks := make([]model.TrackModel, 0, len(e.Tracks))
 	for _, t := range e.Tracks {
-		tracks = append(tracks, *FromTrackEntity(&t))
+		tracks = append(tracks, *FromTrackEntity(t))
 	}
 
 	tags := make([]model.TagModel, 0, len(e.Tags))
 	for _, tg := range e.Tags {
-		tags = append(tags, *FromTagEntity(&tg))
+		tags = append(tags, *FromTagEntity(tg))
 	}
 
 	return &model.PostModel{

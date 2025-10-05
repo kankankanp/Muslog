@@ -12,7 +12,7 @@ import (
 type UserUsecase interface {
 	CreateUser(ctx context.Context, name, email, password string) (*entity.User, error)
 	AuthenticateUser(ctx context.Context, email, password string) (*entity.User, error)
-	GetAllUsers(ctx context.Context) ([]entity.User, error)
+	GetAllUsers(ctx context.Context) ([]*entity.User, error)
 	GetUserByID(ctx context.Context, id string) (*entity.User, error)
 	GetUserPosts(ctx context.Context, userID string) ([]*entity.Post, error)
 }
@@ -58,7 +58,7 @@ func (u *userUsecaseImpl) AuthenticateUser(ctx context.Context, email, password 
 	return user, nil
 }
 
-func (u *userUsecaseImpl) GetAllUsers(ctx context.Context) ([]entity.User, error) {
+func (u *userUsecaseImpl) GetAllUsers(ctx context.Context) ([]*entity.User, error) {
 	return u.userRepo.FindAll(ctx)
 }
 

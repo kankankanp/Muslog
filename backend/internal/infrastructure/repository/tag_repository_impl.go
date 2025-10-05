@@ -44,15 +44,15 @@ func (r *tagRepositoryImpl) GetTagByName(name string) (*entity.Tag, error) {
 	return mapper.ToTagEntity(&m), nil
 }
 
-func (r *tagRepositoryImpl) GetAllTags() ([]entity.Tag, error) {
+func (r *tagRepositoryImpl) GetAllTags() ([]*entity.Tag, error) {
 	var models []model.TagModel
 	if err := r.db.Find(&models).Error; err != nil {
 		return nil, err
 	}
 
-	tags := make([]entity.Tag, 0, len(models))
+	tags := make([]*entity.Tag, 0, len(models))
 	for _, m := range models {
-		tags = append(tags, *mapper.ToTagEntity(&m))
+		tags = append(tags, mapper.ToTagEntity(&m))
 	}
 	return tags, nil
 }
@@ -109,15 +109,15 @@ func (r *tagRepositoryImpl) RemoveTagsFromPost(postID uint, tagIDs []uint) error
 	return r.db.Model(&post).Association("Tags").Delete(&tags)
 }
 
-func (r *tagRepositoryImpl) GetTagsByPostID(postID uint) ([]entity.Tag, error) {
+func (r *tagRepositoryImpl) GetTagsByPostID(postID uint) ([]*entity.Tag, error) {
 	var post model.PostModel
 	if err := r.db.Preload("Tags").First(&post, postID).Error; err != nil {
 		return nil, err
 	}
 
-	tags := make([]entity.Tag, 0, len(post.Tags))
+	tags := make([]*entity.Tag, 0, len(post.Tags))
 	for _, m := range post.Tags {
-		tags = append(tags, *mapper.ToTagEntity(&m))
+		tags = append(tags, mapper.ToTagEntity(&m))
 	}
 	return tags, nil
 }
