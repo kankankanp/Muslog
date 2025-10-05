@@ -74,7 +74,7 @@ func (u *postUsecaseImpl) CreatePost(ctx context.Context, input CreatePostInput)
 			UpdatedAt:      time.Now(),
 		}
 		for _, t := range input.Tracks {
-			post.Tracks = append(post.Tracks, entity.Track{
+			post.Tracks = append(post.Tracks, &entity.Track{
 				SpotifyID:     t.SpotifyID,
 				Name:          t.Name,
 				ArtistName:    t.ArtistName,
@@ -124,9 +124,9 @@ func (u *postUsecaseImpl) UpdatePost(ctx context.Context, input UpdatePostInput)
 		post.UpdatedAt = time.Now()
 
 		// Tracks を差し替え（既存削除 → 新規追加）
-		post.Tracks = []entity.Track{}
+		post.Tracks = []*entity.Track{}
 		for _, t := range input.Tracks {
-			post.Tracks = append(post.Tracks, entity.Track{
+			post.Tracks = append(post.Tracks, &entity.Track{
 				SpotifyID:     t.SpotifyID,
 				Name:          t.Name,
 				ArtistName:    t.ArtistName,

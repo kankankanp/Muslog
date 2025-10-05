@@ -20,7 +20,7 @@ func ToTagResponse(t *entity.Tag) TagResponse {
 func ToTagResponses(tags []*entity.Tag) []TagResponse {
 	res := make([]TagResponse, 0, len(tags))
 	for _, t := range tags {
-		res = append(res, ToTagResponse(&t))
+		res = append(res, ToTagResponse(t))
 	}
 	return res
 }

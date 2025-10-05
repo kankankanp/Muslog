@@ -28,7 +28,7 @@ func ToCommunityResponse(c *entity.Community) CommunityResponse {
 func ToCommunityResponses(communities []*entity.Community) []CommunityResponse {
 	res := make([]CommunityResponse, 0, len(communities))
 	for _, c := range communities {
-		res = append(res, ToCommunityResponse(&c))
+		res = append(res, ToCommunityResponse(c))
 	}
 	return res
 }

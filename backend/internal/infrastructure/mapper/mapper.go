@@ -59,7 +59,7 @@ func ToPostEntity(m *model.PostModel) *entity.Post {
 		Description:    m.Description,
 		UserID:         m.UserID,
 		HeaderImageUrl: m.HeaderImageUrl,
-		Tracks:         &tracks,
+		Tracks:         tracks,
 		Tags:           tags,
 		LikesCount:     m.LikesCount,
 		IsLiked:        m.IsLiked,
@@ -74,12 +74,12 @@ func FromPostEntity(e *entity.Post) *model.PostModel {
 	}
 	tracks := make([]model.TrackModel, 0, len(e.Tracks))
 	for _, t := range e.Tracks {
-		tracks = append(tracks, *FromTrackEntity(&t))
+		tracks = append(tracks, *FromTrackEntity(t))
 	}
 
 	tags := make([]model.TagModel, 0, len(e.Tags))
 	for _, tg := range e.Tags {
-		tags = append(tags, *FromTagEntity(&tg))
+		tags = append(tags, *FromTagEntity(tg))
 	}
 
 	return &model.PostModel{

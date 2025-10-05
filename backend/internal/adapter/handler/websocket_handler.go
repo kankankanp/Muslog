@@ -256,7 +256,7 @@ func ServeWs(hub *Hub, messageUsecase usecase.MessageUsecase, w http.ResponseWri
 	} else {
 		for _, msg := range messages {
 			select {
-			case client.send <- msg:
+			case client.send <- *msg:
 			default:
 				// If client's send buffer is full, skip sending historical messages
 				log.Printf("Client %s send buffer full, skipping historical message: %+v", client.id, msg)
