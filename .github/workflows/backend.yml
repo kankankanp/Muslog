@@ -1,0 +1,54 @@
+name: backend
+
+on:
+  workflow_run:
+    workflows:
+      - frontend
+    types:
+      - completed
+
+jobs:
+  backend:
+    name: Backend Format, Lint & Tests
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'pull_request' &&
+          github.event.workflow_run.pull_requests[0].base.ref == 'preview' }}
+    env:
+      GOTOOLCHAIN: local
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.5
+          cache: true
+
+      - name: Verify gofmt compliance
+        run: |
+          go_files=$(git ls-files '*.go')
+          if [ -z "$go_files" ]; then
+            exit 0
+          fi
+
+          unformatted=$(gofmt -l $go_files)
+          if [ -n "$unformatted" ]; then
+            echo "The following files are not formatted:" >&2
+            echo "$unformatted" >&2
+            exit 1
+          fi
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run unit tests (internal/usecase)
+        run: go test ./internal/usecase/...
