@@ -3,7 +3,7 @@
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import CommunityCard from "@/components/community/CommunityCard";
+import CommunityCard from "@/components/elements/cards/CommunityCard";
 import CreateCommunityModal from "@/components/elements/modals/CreateCommunityModal";
 import Spinner from "@/components/layouts/Spinner";
 import { useGetCommunitiesSearch } from "@/libs/api/generated/orval/communities/communities";

@@ -1,4 +1,3 @@
-// app/help/page.tsx または pages/help.tsx
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
