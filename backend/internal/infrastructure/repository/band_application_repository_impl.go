@@ -94,3 +94,27 @@ func (r *bandApplicationRepositoryImpl) FindAppliedRecruitmentIDs(ctx context.Co
 
 	return result, nil
 }
+
+func (r *bandApplicationRepositoryImpl) FindRecruitmentsByApplicant(ctx context.Context, applicantID string) ([]*entity.BandRecruitment, error) {
+	if applicantID == "" {
+		return []*entity.BandRecruitment{}, nil
+	}
+
+	var models []model.BandRecruitmentModel
+	if err := r.DB.WithContext(ctx).
+		Model(&model.BandRecruitmentModel{}).
+		Distinct("band_recruitments.*").
+		Joins("JOIN band_applications ON band_applications.band_recruitment_id = band_recruitments.id").
+		Where("band_applications.applicant_id = ?", applicantID).
+		Order("band_recruitments.created_at DESC").
+		Find(&models).Error; err != nil {
+		return nil, err
+	}
+
+	recruitments := make([]*entity.BandRecruitment, 0, len(models))
+	for i := range models {
+		recruitments = append(recruitments, mapper.ToBandRecruitmentEntity(&models[i]))
+	}
+
+	return recruitments, nil
+}

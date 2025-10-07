@@ -193,6 +193,94 @@ export const usePostBandRecruitments = <TError = unknown,
       return useMutation(mutationOptions , queryClient);
     }
     /**
+ * Retrieve band recruitments the authenticated user has applied to.
+ * @summary Get applied band recruitments
+ */
+export const getBandRecruitmentsAppliedMe = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<BandRecruitmentListResponse>(
+      {url: `/band-recruitments/applied/me`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetBandRecruitmentsAppliedMeQueryKey = () => {
+    return [`/band-recruitments/applied/me`] as const;
+    }
+
+    
+export const getGetBandRecruitmentsAppliedMeQueryOptions = <TData = Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBandRecruitmentsAppliedMeQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>> = ({ signal }) => getBandRecruitmentsAppliedMe(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBandRecruitmentsAppliedMeQueryResult = NonNullable<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>>
+export type GetBandRecruitmentsAppliedMeQueryError = unknown
+
+
+export function useGetBandRecruitmentsAppliedMe<TData = Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>,
+          TError,
+          Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBandRecruitmentsAppliedMe<TData = Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>,
+          TError,
+          Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBandRecruitmentsAppliedMe<TData = Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get applied band recruitments
+ */
+
+export function useGetBandRecruitmentsAppliedMe<TData = Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBandRecruitmentsAppliedMe>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBandRecruitmentsAppliedMeQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * Retrieve a band recruitment by ID.
  * @summary Get band recruitment detail
  */

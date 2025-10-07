@@ -288,6 +288,7 @@ func main() {
 	// band recruitments
 	bandRecruitmentGroup := protected.Group("/band-recruitments")
 	bandRecruitmentGroup.GET("", bandRecruitmentHandler.ListBandRecruitments)
+	bandRecruitmentGroup.GET("/applied/me", bandRecruitmentHandler.GetAppliedBandRecruitments)
 	bandRecruitmentGroup.GET("/:id", bandRecruitmentHandler.GetBandRecruitment)
 	bandRecruitmentGroup.POST("", bandRecruitmentHandler.CreateBandRecruitment)
 	bandRecruitmentGroup.PUT("/:id", bandRecruitmentHandler.UpdateBandRecruitment)

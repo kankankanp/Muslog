@@ -1055,6 +1055,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+  /band-recruitments/applied/me:
+    get:
+      summary: Get applied band recruitments
+      description: Retrieve band recruitments the authenticated user has applied to.
+      tags:
+        - bandRecruitments
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentListResponse'
   /band-recruitments/{id}:
     get:
       summary: Get band recruitment detail

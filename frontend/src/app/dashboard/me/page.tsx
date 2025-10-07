@@ -5,7 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState, useRef } from "react";
+import BandRecruitmentCard from "@/components/bandRecruitment/BandRecruitmentCard";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
+import { useGetBandRecruitmentsAppliedMe } from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
 import { useGetUsersMeLikedPosts } from "@/libs/api/generated/orval/likes/likes";
 import {
   GetPosts200,
@@ -32,9 +34,14 @@ export default function ProfilePage() {
     isPending: likedPostsLoading,
     error: likedPostsError,
   } = useGetUsersMeLikedPosts<GetUsersMeLikedPosts200>();
-  const [tab, setTab] = useState<"created" | "liked" | "community-history">(
-    "created",
-  );
+  const {
+    data: appliedRecruitmentsData,
+    isPending: appliedLoading,
+    error: appliedError,
+  } = useGetBandRecruitmentsAppliedMe();
+  const [tab, setTab] = useState<
+    "created" | "liked" | "applied" | "community-history"
+  >("created");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
@@ -149,6 +156,7 @@ export default function ProfilePage() {
             {[
               { k: "created", label: "作成した記事" },
               { k: "liked", label: "いいねした記事" },
+              { k: "applied", label: "応募済みのバンド" },
               // TODO: コミュニティのアクセス履歴を今後実装する
               // { k: "community-history", label: "アクセスしたコミュニティ" },
             ].map(({ k, label }) => {
@@ -290,6 +298,33 @@ export default function ProfilePage() {
                           </div>
                         </div>
                       </article>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "applied" && (
+              <>
+                {appliedLoading ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    読み込み中...
+                  </div>
+                ) : appliedError ? (
+                  <div className="py-16 text-center text-red-600 dark:text-red-400">
+                    応募済みバンドの取得に失敗しました
+                  </div>
+                ) : (appliedRecruitmentsData?.recruitments?.length || 0) === 0 ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    応募済みのバンドはありません。
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
+                    {appliedRecruitmentsData?.recruitments?.map((recruitment) => (
+                      <BandRecruitmentCard
+                        key={recruitment.id}
+                        recruitment={recruitment}
+                      />
                     ))}
                   </div>
                 )}

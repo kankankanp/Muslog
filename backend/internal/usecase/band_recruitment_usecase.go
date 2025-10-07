@@ -66,6 +66,7 @@ type BandRecruitmentUsecase interface {
 	CreateBandRecruitment(ctx context.Context, input CreateBandRecruitmentInput) (*entity.BandRecruitment, error)
 	UpdateBandRecruitment(ctx context.Context, input UpdateBandRecruitmentInput) (*entity.BandRecruitment, error)
 	ApplyToBandRecruitment(ctx context.Context, input ApplyBandRecruitmentInput) error
+	GetAppliedBandRecruitments(ctx context.Context, userID string) ([]*entity.BandRecruitment, error)
 }
 
 type bandRecruitmentUsecaseImpl struct {
@@ -238,6 +239,17 @@ func (u *bandRecruitmentUsecaseImpl) ApplyToBandRecruitment(ctx context.Context,
 
 		return txRepo.BandApplicationRepository().Create(ctx, application)
 	})
+}
+
+func (u *bandRecruitmentUsecaseImpl) GetAppliedBandRecruitments(ctx context.Context, userID string) ([]*entity.BandRecruitment, error) {
+	recruitments, err := u.applicationRepo.FindRecruitmentsByApplicant(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if err := u.enrichRecruitments(ctx, recruitments, userID); err != nil {
+		return nil, err
+	}
+	return recruitments, nil
 }
 
 func (u *bandRecruitmentUsecaseImpl) enrichRecruitments(ctx context.Context, recruitments []*entity.BandRecruitment, userID string) error {

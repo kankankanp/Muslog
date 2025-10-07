@@ -230,6 +230,27 @@ func (h *BandRecruitmentHandler) ApplyToBandRecruitment(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.CommonResponse{Message: "Applied"})
 }
 
+func (h *BandRecruitmentHandler) GetAppliedBandRecruitments(c echo.Context) error {
+	userID := getUserIDFromContext(c)
+	if strings.TrimSpace(userID) == "" {
+		return c.JSON(http.StatusUnauthorized, response.CommonResponse{Message: "Unauthorized"})
+	}
+
+	recruitments, err := h.Usecase.GetAppliedBandRecruitments(c.Request().Context(), userID)
+	if err != nil {
+		log.Printf("[BandRecruitments][Applied] error: %v (userID=%s)", err, userID)
+		return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, response.BandRecruitmentListResponse{
+		Message:      "Success",
+		Recruitments: response.ToBandRecruitmentResponses(recruitments),
+		TotalCount:   int64(len(recruitments)),
+		Page:         1,
+		PerPage:      len(recruitments),
+	})
+}
+
 func parseDeadline(value *string) (*time.Time, error) {
 	if value == nil {
 		return nil, nil
