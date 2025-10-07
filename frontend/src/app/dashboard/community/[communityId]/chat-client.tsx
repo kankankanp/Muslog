@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import toast from "react-hot-toast";
 import ChatInput from "@/components/community/ChatInput";
 import ChatMessage from "@/components/community/ChatMessage";
@@ -55,10 +55,9 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
     (typeof window !== "undefined"
       ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8080/ws/community/`
       : "wss://localhost:8080/ws/community/");
-  const { isConnected, lastMessage, sendMessage } = useWebSocket(
-    `${wsUrl}${communityId}`,
-    {
-      onMessage: (event) => {
+  const websocketHandlers = useMemo(
+    () => ({
+      onMessage: (event: MessageEvent) => {
         try {
           const newMessage = JSON.parse(event.data);
           setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -66,13 +65,19 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           console.error("Failed to parse WebSocket message:", e);
         }
       },
-      onError: (event) => {
+      onError: (event: Event) => {
         console.error("WebSocket error. Please check console.", event);
       },
-      onClose: (event) => {
+      onClose: (event: CloseEvent) => {
         console.log("Disconnected from chat. Please refresh.", event);
       },
-    },
+    }),
+    [],
+  );
+
+  const { isConnected, lastMessage, sendMessage } = useWebSocket(
+    `${wsUrl}${communityId}`,
+    websocketHandlers,
   );
 
   // Scroll to bottom on new messages
