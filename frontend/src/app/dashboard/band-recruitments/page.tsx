@@ -6,26 +6,51 @@ import { useMemo, useState } from "react";
 import BandRecruitmentCard from "@/components/bandRecruitment/BandRecruitmentCard";
 import Spinner from "@/components/layouts/Spinner";
 import { useGetBandRecruitments } from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
+import type { GetBandRecruitmentsParams } from "@/libs/api/generated/orval/model/getBandRecruitmentsParams";
 
 const PER_PAGE = 9;
 
+const DEFAULT_FILTERS = {
+  keyword: "",
+  genre: "",
+  location: "",
+  status: "all",
+};
+
 const BandRecruitmentsPage = () => {
-  const [keyword, setKeyword] = useState("");
-  const [genre, setGenre] = useState("");
-  const [location, setLocation] = useState("");
-  const [status, setStatus] = useState("all");
+  const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
 
   const queryParams = useMemo(
-    () => ({
-      keyword: keyword || undefined,
-      genre: genre || undefined,
-      location: location || undefined,
-      status: status === "all" ? undefined : status,
-      page,
-      perPage: PER_PAGE,
-    }),
-    [keyword, genre, location, status, page],
+    () => {
+      const params: GetBandRecruitmentsParams = {
+        page,
+        perPage: PER_PAGE,
+      };
+
+      const trimmedKeyword = appliedFilters.keyword.trim();
+      if (trimmedKeyword) {
+        params.keyword = trimmedKeyword;
+      }
+
+      const trimmedGenre = appliedFilters.genre.trim();
+      if (trimmedGenre) {
+        params.genre = trimmedGenre;
+      }
+
+      const trimmedLocation = appliedFilters.location.trim();
+      if (trimmedLocation) {
+        params.location = trimmedLocation;
+      }
+
+      if (appliedFilters.status !== "all") {
+        params.status = appliedFilters.status;
+      }
+
+      return params;
+    },
+    [appliedFilters.keyword, appliedFilters.genre, appliedFilters.location, appliedFilters.status, page],
   );
 
   const { data, isLoading, isError, error } = useGetBandRecruitments(queryParams);
@@ -34,11 +59,14 @@ const BandRecruitmentsPage = () => {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
 
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...draftFilters });
+    setPage(1);
+  };
+
   const resetFilters = () => {
-    setKeyword("");
-    setGenre("");
-    setLocation("");
-    setStatus("all");
+    setDraftFilters({ ...DEFAULT_FILTERS });
+    setAppliedFilters({ ...DEFAULT_FILTERS });
     setPage(1);
   };
 
@@ -79,11 +107,13 @@ const BandRecruitmentsPage = () => {
             <label className="block text-sm font-medium text-slate-600">キーワード</label>
             <input
               type="text"
-              value={keyword}
-              onChange={(e) => {
-                setKeyword(e.target.value);
-                setPage(1);
-              }}
+              value={draftFilters.keyword}
+              onChange={(e) =>
+                setDraftFilters((prev) => ({
+                  ...prev,
+                  keyword: e.target.value,
+                }))
+              }
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="タイトル・本文から検索"
             />
@@ -92,11 +122,13 @@ const BandRecruitmentsPage = () => {
             <label className="block text-sm font-medium text-slate-600">ジャンル</label>
             <input
               type="text"
-              value={genre}
-              onChange={(e) => {
-                setGenre(e.target.value);
-                setPage(1);
-              }}
+              value={draftFilters.genre}
+              onChange={(e) =>
+                setDraftFilters((prev) => ({
+                  ...prev,
+                  genre: e.target.value,
+                }))
+              }
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="例: ロック"
             />
@@ -105,11 +137,13 @@ const BandRecruitmentsPage = () => {
             <label className="block text-sm font-medium text-slate-600">活動地域</label>
             <input
               type="text"
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-                setPage(1);
-              }}
+              value={draftFilters.location}
+              onChange={(e) =>
+                setDraftFilters((prev) => ({
+                  ...prev,
+                  location: e.target.value,
+                }))
+              }
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="例: 東京 / オンライン"
             />
@@ -117,11 +151,13 @@ const BandRecruitmentsPage = () => {
           <div>
             <label className="block text-sm font-medium text-slate-600">ステータス</label>
             <select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setPage(1);
-              }}
+              value={draftFilters.status}
+              onChange={(e) =>
+                setDraftFilters((prev) => ({
+                  ...prev,
+                  status: e.target.value,
+                }))
+              }
               className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="all">すべて</option>
@@ -131,6 +167,13 @@ const BandRecruitmentsPage = () => {
           </div>
         </div>
         <div className="mt-4 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={handleApplyFilters}
+            className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          >
+            絞り込む
+          </button>
           <button
             type="button"
             onClick={resetFilters}
