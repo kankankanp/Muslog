@@ -44,7 +44,7 @@ export default function SignupForm() {
           toast.error("登録に失敗しました。");
           console.error("Signup failed:", error);
         },
-      }
+      },
     );
   };
 
@@ -76,9 +76,7 @@ export default function SignupForm() {
         )}
 
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">
-            名前
-          </label>
+          <label className="block text-gray-700 dark:text-gray-300">名前</label>
           <input
             className="w-full mt-1 p-2 max-md:px-[52px] border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="text"
@@ -106,7 +104,7 @@ export default function SignupForm() {
           />
         </div>
         <div className="flex flex-col gap-4 w-[60%] mx-auto font-bold max-md:text-sm">
-          <LoadingButton 
+          <LoadingButton
             label={"登録する"}
             color={"green"}
             isPending={isPending}

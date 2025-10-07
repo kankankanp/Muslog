@@ -1,0 +1,114 @@
+name: render
+
+on:
+  pull_request:
+    branches:
+      - preview
+  workflow_run:
+    workflows:
+      - docker
+    types:
+      - completed
+
+jobs:
+  validate-render:
+    name: Validate Render Configuration
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Render secrets
+        id: secrets-check
+        run: |
+          if [ -z "${RENDER_API_KEY}" ] || [ -z "${RENDER_SERVICE_ID}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+
+      - name: Validate Render API access
+        if: steps.secrets-check.outputs.configured == 'true'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          curl -fsS "https://api.render.com/v1/services/${RENDER_SERVICE_ID}" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -o render-service.json
+
+      - name: Publish validation summary
+        env:
+          CONFIGURED: ${{ steps.secrets-check.outputs.configured }}
+        run: |
+          echo "## Render デプロイ準備確認" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CONFIGURED" != "true" ]; then
+            echo "- Renderのシークレットが未設定のためデプロイは実行されません" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "- Render API へのアクセスに成功しました" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f render-service.json ]; then
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo '\`render-service.json\`:' >> "$GITHUB_STEP_SUMMARY"
+            cat render-service.json >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  trigger-render-deploy:
+    name: Trigger Render Deploy
+    if: >-
+      ${{ github.event_name == 'pull_request' ||
+          (github.event_name == 'workflow_run' &&
+           github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.event == 'push' &&
+           github.event.workflow_run.head_branch == 'preview') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure Render secrets are available
+        id: secrets-check
+        run: |
+          if [ -z "${RENDER_API_KEY}" ] || [ -z "${RENDER_SERVICE_ID}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+
+      - name: Skip deploy when secrets are missing
+        if: steps.secrets-check.outputs.configured != 'true'
+        run: echo "Render secrets are not configured. Skipping deploy." && exit 0
+
+      - name: Trigger Render deploy
+        if: github.event_name == 'workflow_run'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          response=$(curl -fsS -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"branch\":\"${RENDER_BRANCH}\"}")
+          echo "Render response: $response"
+          echo "${response}" > render-response.json
+
+      - name: Record deploy skip on PR
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## Render デプロイ" >> "$GITHUB_STEP_SUMMARY"
+          echo "- PR上では実デプロイは実行しません" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish deploy summary
+        if: github.event_name == 'workflow_run'
+        run: |
+          echo "## Render Deploy Triggered" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: \\`${{ github.event.workflow_run.head_branch }}\\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Service ID: \\`${{ secrets.RENDER_SERVICE_ID }}\\`" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo '\`render-response.json\`:' >> "$GITHUB_STEP_SUMMARY"
+          cat render-response.json >> "$GITHUB_STEP_SUMMARY"

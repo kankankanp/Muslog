@@ -33,7 +33,7 @@ export default function ProfilePage() {
     error: likedPostsError,
   } = useGetUsersMeLikedPosts<GetUsersMeLikedPosts200>();
   const [tab, setTab] = useState<"created" | "liked" | "community-history">(
-    "created"
+    "created",
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export default function ProfilePage() {
   const { mutate: uploadProfileImage } = usePostUsersUserIdProfileImage();
 
   const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -65,7 +65,7 @@ export default function ProfilePage() {
           console.error("プロフィール画像の更新に失敗しました:", error);
           alert("プロフィール画像の更新に失敗しました。");
         },
-      }
+      },
     );
   };
 

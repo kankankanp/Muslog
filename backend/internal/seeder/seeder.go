@@ -76,7 +76,7 @@ func Seed(db *gorm.DB) error {
 
 		numTracks := r.Intn(3) + 3
 		for j := 0; j < numTracks; j++ {
-			seed := fmt.Sprintf("%d-%d-%d", user.ID, i, j)
+			seed := fmt.Sprintf("%s-%d-%d", user.ID, i, j)
 			img := fmt.Sprintf("https://picsum.photos/seed/%s/300/300", url.PathEscape(seed))
 
 			track := model.TrackModel{

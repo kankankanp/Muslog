@@ -3,11 +3,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/login-or-signup',
+        source: "/",
+        destination: "/login-or-signup",
         permanent: true,
       },
-    ]
+    ];
   },
   eslint: {
     ignoreDuringBuilds: true,

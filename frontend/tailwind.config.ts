@@ -15,7 +15,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [require("@tailwindcss/typography")],
   darkMode: "class",
   safelist: [
     "z-[70]",

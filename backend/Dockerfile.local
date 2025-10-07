@@ -1,29 +1,31 @@
-# --- Builder Stage ---
-FROM golang:1.24-alpine AS builder
+# --- Hot Reload Development Stage ---
+FROM golang:1.24-alpine
 
 RUN apk add --no-cache git curl bash
 
+# Install air for hot reloading (using v1.60.0 for Go 1.24 compatibility)
+RUN go install github.com/air-verse/air@v1.60.0
+
 WORKDIR /app
+
+# Copy go.mod and go.sum first for better layer caching
 COPY go.mod .
 COPY go.sum .
-RUN go clean --modcache && go mod download && go get -d ./...
+RUN go mod download
 
+# Copy the rest of the source code
 COPY . .
 
-WORKDIR /app/cmd/backend
-RUN go build -o main .
+# Copy air configuration
+COPY .air.toml .
 
-# --- Runner Stage ---
-FROM alpine:latest
-RUN apk add --no-cache bash
-
-WORKDIR /app
-COPY --from=builder /app/cmd/backend/main .
-COPY --from=builder /app/.env.local .
+# Create tmp directory for air binary
+RUN mkdir -p tmp
 
 EXPOSE 8080
 
 COPY scripts/wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-ENTRYPOINT ["/bin/bash", "-c", "/wait-for-it.sh db:5432 -- ./main 2>&1"]
+# Use air for hot reloading
+ENTRYPOINT ["/bin/bash", "-c", "/wait-for-it.sh db:5432 -- air -c .air.toml"]

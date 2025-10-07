@@ -33,10 +33,7 @@ const SpotifySearchModal = ({
           initialSelectedTracks={initialSelectedTracks}
         />
         <div className="flex justify-end mt-4">
-          <button
-            className="px-4 py-2 bg-gray-300 rounded"
-            onClick={onClose}
-          >
+          <button className="px-4 py-2 bg-gray-300 rounded" onClick={onClose}>
             閉じる
           </button>
         </div>

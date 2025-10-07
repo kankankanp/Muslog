@@ -50,7 +50,10 @@ const CommunityPage: React.FC = () => {
   if (isError) {
     return (
       <div className="text-center text-red-600">
-        Error: {typeof error !== "undefined" && error ? String(error) : "Failed to load communities"}
+        Error:{" "}
+        {typeof error !== "undefined" && error
+          ? String(error)
+          : "Failed to load communities"}
       </div>
     );
   }

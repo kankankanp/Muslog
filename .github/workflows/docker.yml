@@ -1,0 +1,23 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - preview
+
+jobs:
+  docker-build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build preview Docker image
+        run: docker build -f Dockerfile.preview -t muslog-preview-ci .

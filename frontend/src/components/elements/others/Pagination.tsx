@@ -34,7 +34,7 @@ const Pagination = ({ totalCount }: PaginationProps) => {
               {number}
             </Link>
           </li>
-        )
+        ),
       )}
     </ul>
   );

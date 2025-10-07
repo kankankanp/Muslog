@@ -13,7 +13,7 @@ export const Book = ({ posts }: BookProps) => {
   const pageCount = 20;
   const pages = useMemo(
     () => Array.from({ length: pageCount }, (_, i) => 99 - i),
-    [pageCount]
+    [pageCount],
   );
 
   const playAudio = useCallback(() => {
@@ -23,7 +23,7 @@ export const Book = ({ posts }: BookProps) => {
 
   const postPages = useMemo(
     () => pages.map((_, idx) => posts[idx - 1] || null),
-    [posts, pages]
+    [posts, pages],
   );
 
   return (

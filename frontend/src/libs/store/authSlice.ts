@@ -14,25 +14,25 @@ const initialState: AuthState = {
   accessToken: undefined,
   isAuthenticated: false,
   isInitialized: false,
-  tokenExpiry: undefined
+  tokenExpiry: undefined,
 };
 
 // localStorage操作のヘルパー関数
 const saveAuthToStorage = (state: AuthState) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const authData = {
       user: state.user,
       isAuthenticated: state.isAuthenticated,
       tokenExpiry: state.tokenExpiry,
-      timestamp: Date.now() // 保存時刻を記録
+      timestamp: Date.now(), // 保存時刻を記録
     };
-    localStorage.setItem('auth', JSON.stringify(authData));
+    localStorage.setItem("auth", JSON.stringify(authData));
   }
 };
 
 const clearAuthFromStorage = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('auth');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("auth");
   }
 };
 
@@ -40,11 +40,15 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login(state, action: PayloadAction<AuthResponse & { tokenExpiry?: number }>) {
+    login(
+      state,
+      action: PayloadAction<AuthResponse & { tokenExpiry?: number }>,
+    ) {
       state.user = action.payload;
       state.isAuthenticated = true;
       state.isInitialized = true;
-      state.tokenExpiry = action.payload.tokenExpiry || Date.now() + (24 * 60 * 60 * 1000); // デフォルト24時間
+      state.tokenExpiry =
+        action.payload.tokenExpiry || Date.now() + 24 * 60 * 60 * 1000; // デフォルト24時間
       saveAuthToStorage(state);
     },
     logout(state) {
@@ -54,7 +58,13 @@ const authSlice = createSlice({
       state.tokenExpiry = undefined;
       clearAuthFromStorage();
     },
-    initializeAuth(state, action: PayloadAction<{ user: AuthResponse | null; tokenExpiry?: number }>) {
+    initializeAuth(
+      state,
+      action: PayloadAction<{
+        user: AuthResponse | null;
+        tokenExpiry?: number;
+      }>,
+    ) {
       state.user = action.payload.user;
       state.isAuthenticated = !!action.payload.user;
       state.isInitialized = true;
