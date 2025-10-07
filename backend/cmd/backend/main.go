@@ -147,8 +147,17 @@ func main() {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
 
-	if err := seeder.Seed(db); err != nil {
-		log.Fatalf("シード注入失敗: %v", err)
+	seedMode := strings.ToLower(strings.TrimSpace(os.Getenv("DB_SEED_MODE")))
+	switch seedMode {
+	case "skip", "off", "disabled":
+		log.Printf("Skipping database seeding (DB_SEED_MODE=%s)\n", seedMode)
+	default:
+		if seedMode == "" {
+			log.Println("DB_SEED_MODE not set. defaulting to 'always'")
+		}
+		if err := seeder.Seed(db); err != nil {
+			log.Fatalf("シード注入失敗: %v", err)
+		}
 	}
 
 	var imageStorage storage.Client
