@@ -21,7 +21,6 @@ const SeedValue int64 = 20240801
 func Seed(db *gorm.DB) error {
 	log.Println("Clearing existing data...")
 
-	// 現在のテーブル名に合わせて初期化（従来名 + many2many: post_tags）
 	if err := db.Exec("TRUNCATE TABLE band_applications, band_recruitments, post_tags, tracks, posts, users, tags, likes, messages, communities RESTART IDENTITY CASCADE").Error; err != nil {
 		return err
 	}
@@ -64,8 +63,6 @@ func Seed(db *gorm.DB) error {
 		name := gf.Name()
 		email := gf.Email()
 
-		// パスワードのハッシュはソルトで毎回変わる（正常）。
-		// 平文は固定にしておく（必要なら "password-XX" などに）
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 		if err != nil {
 			return err
@@ -146,32 +143,47 @@ func Seed(db *gorm.DB) error {
 	}
 
 	log.Println("Seeding communities and messages...")
+	if len(users) < 2 {
+		return fmt.Errorf("need at least two users to seed communities")
+	}
 	communityCount := 12
 	communities := make([]model.CommunityModel, 0, communityCount)
+	messageTemplates := []string{
+		"みなさんこんにちは！最近聴いているおすすめ曲を共有しましょう。",
+		"次のセッションは週末の夜でどうでしょうか？",
+		"ギターのコード進行で悩んでいるのでアドバイス欲しいです。",
+		"録音したデモ音源をアップしました。感想をください！",
+		"ライブ情報をまとめたので確認をお願いします。",
+	}
 	for i := 0; i < communityCount; i++ {
 		creator := users[r.Intn(len(users))]
+		createdAt := time.Now().Add(-time.Duration((communityCount-i)*6) * time.Hour)
 		community := model.CommunityModel{
 			ID:          uuid.NewString(),
 			Name:        fmt.Sprintf("%sコミュニティ", gf.Company()),
-			Description: gf.Paragraph(1, 2, 18, " "),
+			Description: "バンド活動や音楽制作について話し合うためのコミュニティです。",
 			CreatorID:   creator.ID,
-			CreatedAt:   time.Now().Add(-time.Duration(r.Intn(1440)) * time.Minute),
+			CreatedAt:   createdAt,
 		}
 		if err := db.Create(&community).Error; err != nil {
 			return err
 		}
 		communities = append(communities, community)
 	}
+
+	participants := []model.UserModel{users[0], users[1]}
+	timeOffsets := []time.Duration{0, 5 * time.Minute, 10 * time.Minute, 15 * time.Minute, 20 * time.Minute}
 	for _, community := range communities {
-		messageCount := r.Intn(10) + 5
-		for j := 0; j < messageCount; j++ {
-			sender := users[r.Intn(len(users))]
+		base := community.CreatedAt
+		for idx, content := range messageTemplates {
+			sender := participants[idx%len(participants)]
+			createdAt := base.Add(timeOffsets[idx])
 			message := model.MessageModel{
 				ID:          uuid.NewString(),
 				CommunityID: community.ID,
 				SenderID:    sender.ID,
-				Content:     gf.Sentence(12),
-				CreatedAt:   time.Now().Add(-time.Duration(r.Intn(720)) * time.Hour),
+				Content:     content,
+				CreatedAt:   createdAt,
 			}
 			if err := db.Create(&message).Error; err != nil {
 				return err
