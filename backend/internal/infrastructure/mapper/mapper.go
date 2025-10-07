@@ -3,6 +3,7 @@ package mapper
 import (
 	"github.com/kankankanp/Muslog/internal/domain/entity"
 	"github.com/kankankanp/Muslog/internal/infrastructure/model"
+	"github.com/lib/pq"
 )
 
 // User
@@ -249,5 +250,80 @@ func FromCommunityEntity(e *entity.Community) *model.CommunityModel {
 		Description: e.Description,
 		CreatorID:   e.CreatorID,
 		CreatedAt:   e.CreatedAt,
+	}
+}
+
+// BandRecruitment
+func ToBandRecruitmentEntity(m *model.BandRecruitmentModel) *entity.BandRecruitment {
+	if m == nil {
+		return nil
+	}
+	parts := make([]string, len(m.RecruitingParts))
+	copy(parts, []string(m.RecruitingParts))
+
+	return &entity.BandRecruitment{
+		ID:              m.ID,
+		Title:           m.Title,
+		Description:     m.Description,
+		Genre:           m.Genre,
+		Location:        m.Location,
+		RecruitingParts: parts,
+		SkillLevel:      m.SkillLevel,
+		Contact:         m.Contact,
+		Deadline:        m.Deadline,
+		Status:          m.Status,
+		UserID:          m.UserID,
+		CreatedAt:       m.CreatedAt,
+		UpdatedAt:       m.UpdatedAt,
+	}
+}
+
+func FromBandRecruitmentEntity(e *entity.BandRecruitment) *model.BandRecruitmentModel {
+	if e == nil {
+		return nil
+	}
+	parts := append([]string(nil), e.RecruitingParts...)
+
+	return &model.BandRecruitmentModel{
+		ID:              e.ID,
+		Title:           e.Title,
+		Description:     e.Description,
+		Genre:           e.Genre,
+		Location:        e.Location,
+		RecruitingParts: pq.StringArray(parts),
+		SkillLevel:      e.SkillLevel,
+		Contact:         e.Contact,
+		Deadline:        e.Deadline,
+		Status:          e.Status,
+		UserID:          e.UserID,
+		CreatedAt:       e.CreatedAt,
+		UpdatedAt:       e.UpdatedAt,
+	}
+}
+
+// BandApplication
+func ToBandApplicationEntity(m *model.BandApplicationModel) *entity.BandApplication {
+	if m == nil {
+		return nil
+	}
+	return &entity.BandApplication{
+		ID:                m.ID,
+		BandRecruitmentID: m.BandRecruitmentID,
+		ApplicantID:       m.ApplicantID,
+		Message:           m.Message,
+		CreatedAt:         m.CreatedAt,
+	}
+}
+
+func FromBandApplicationEntity(e *entity.BandApplication) *model.BandApplicationModel {
+	if e == nil {
+		return nil
+	}
+	return &model.BandApplicationModel{
+		ID:                e.ID,
+		BandRecruitmentID: e.BandRecruitmentID,
+		ApplicantID:       e.ApplicantID,
+		Message:           e.Message,
+		CreatedAt:         e.CreatedAt,
 	}
 }

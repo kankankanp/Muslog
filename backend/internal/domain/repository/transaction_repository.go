@@ -13,4 +13,6 @@ type RepositoryProvider interface {
 	MessageRepository() MessageRepository
 	CommunityRepository() CommunityRepository
 	LikeRepository() LikeRepository
+	BandRecruitmentRepository() BandRecruitmentRepository
+	BandApplicationRepository() BandApplicationRepository
 }

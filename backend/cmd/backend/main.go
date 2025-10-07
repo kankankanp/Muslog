@@ -141,6 +141,8 @@ func main() {
 		&model.CommunityModel{},
 		&model.MessageModel{},
 		&model.LikeModel{},
+		&model.BandRecruitmentModel{},
+		&model.BandApplicationModel{},
 	); err != nil {
 		log.Fatalf("マイグレーション失敗: %v", err)
 	}
@@ -195,6 +197,11 @@ func main() {
 	communityRepo := repository.NewCommunityRepository(db)
 	communityUsecase := usecase.NewCommunityUsecase(communityRepo)
 	communityHandler := handler.NewCommunityHandler(communityUsecase)
+
+	bandRecruitmentRepo := repository.NewBandRecruitmentRepository(db)
+	bandApplicationRepo := repository.NewBandApplicationRepository(db)
+	bandRecruitmentUsecase := usecase.NewBandRecruitmentUsecase(bandRecruitmentRepo, bandApplicationRepo, txManager)
+	bandRecruitmentHandler := handler.NewBandRecruitmentHandler(bandRecruitmentUsecase)
 
 	imageUsecase := usecase.NewImageUsecase(imageStorage)
 	imageHandler := handler.NewImageHandler(imageUsecase, userRepo, postRepo)
@@ -277,6 +284,14 @@ func main() {
 	communityGroup.POST("", communityHandler.CreateCommunity)
 	communityGroup.GET("/search", communityHandler.SearchCommunities)
 	communityGroup.GET("/:communityId/messages", messageHandler.GetMessagesByCommunityID)
+
+	// band recruitments
+	bandRecruitmentGroup := protected.Group("/band-recruitments")
+	bandRecruitmentGroup.GET("", bandRecruitmentHandler.ListBandRecruitments)
+	bandRecruitmentGroup.GET("/:id", bandRecruitmentHandler.GetBandRecruitment)
+	bandRecruitmentGroup.POST("", bandRecruitmentHandler.CreateBandRecruitment)
+	bandRecruitmentGroup.PUT("/:id", bandRecruitmentHandler.UpdateBandRecruitment)
+	bandRecruitmentGroup.POST("/:id/apply", bandRecruitmentHandler.ApplyToBandRecruitment)
 
 	// image
 	protected.POST("/posts/:postId/header-image", imageHandler.UploadPostHeaderImage)

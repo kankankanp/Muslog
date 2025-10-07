@@ -4,7 +4,10 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,8 +20,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   DeleteTagsId200,
@@ -30,832 +33,598 @@ import type {
   PostTagsBody,
   PostTagsPostsPostIDBody,
   PutTagsId200,
-  PutTagsIdBody,
-} from ".././model";
+  PutTagsIdBody
+} from '.././model';
 
-import { customInstance } from "../../../custom-instance";
+import { customInstance } from '../../../custom-instance';
+
+
+
 
 /**
  * Create a new tag
  * @summary Create a new tag
  */
-export const postTags = (postTagsBody: PostTagsBody, signal?: AbortSignal) => {
-  return customInstance<PostTags201>({
-    url: `/tags`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: postTagsBody,
-    signal,
-  });
-};
+export const postTags = (
+    postTagsBody: PostTagsBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostTags201>(
+      {url: `/tags`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: postTagsBody, signal
+    },
+      );
+    }
+  
 
-export const getPostTagsMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postTags>>,
-    TError,
-    { data: PostTagsBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postTags>>,
-  TError,
-  { data: PostTagsBody },
-  TContext
-> => {
-  const mutationKey = ["postTags"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postTags>>,
-    { data: PostTagsBody }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostTagsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTags>>, TError,{data: PostTagsBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postTags>>, TError,{data: PostTagsBody}, TContext> => {
 
-    return postTags(data);
-  };
+const mutationKey = ['postTags'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostTagsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postTags>>
->;
-export type PostTagsMutationBody = PostTagsBody;
-export type PostTagsMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postTags>>, {data: PostTagsBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postTags(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostTagsMutationResult = NonNullable<Awaited<ReturnType<typeof postTags>>>
+    export type PostTagsMutationBody = PostTagsBody
+    export type PostTagsMutationError = unknown
+
+    /**
  * @summary Create a new tag
  */
-export const usePostTags = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postTags>>,
-      TError,
-      { data: PostTagsBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postTags>>,
-  TError,
-  { data: PostTagsBody },
-  TContext
-> => {
-  const mutationOptions = getPostTagsMutationOptions(options);
+export const usePostTags = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTags>>, TError,{data: PostTagsBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postTags>>,
+        TError,
+        {data: PostTagsBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostTagsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Get all tags
  * @summary Get all tags
  */
-export const getTags = (signal?: AbortSignal) => {
-  return customInstance<GetTags200>({ url: `/tags`, method: "GET", signal });
-};
+export const getTags = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetTags200>(
+      {url: `/tags`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 export const getGetTagsQueryKey = () => {
-  return [`/tags`] as const;
-};
+    return [`/tags`] as const;
+    }
 
-export const getGetTagsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTags>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getGetTagsQueryOptions = <TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetTagsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTags>>> = ({
-    signal,
-  }) => getTags(signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetTagsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getTags>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetTagsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTags>>
->;
-export type GetTagsQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTags>>> = ({ signal }) => getTags(signal);
 
-export function useGetTags<
-  TData = Awaited<ReturnType<typeof getTags>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetTagsQueryResult = NonNullable<Awaited<ReturnType<typeof getTags>>>
+export type GetTagsQueryError = unknown
+
+
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTags>>,
           TError,
           Awaited<ReturnType<typeof getTags>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTags<
-  TData = Awaited<ReturnType<typeof getTags>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTags>>,
           TError,
           Awaited<ReturnType<typeof getTags>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTags<
-  TData = Awaited<ReturnType<typeof getTags>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all tags
  */
 
-export function useGetTags<
-  TData = Awaited<ReturnType<typeof getTags>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetTagsQueryOptions(options);
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetTagsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Get a single tag by its ID
  * @summary Get a tag by ID
  */
-export const getTagsId = (id: number, signal?: AbortSignal) => {
-  return customInstance<GetTagsId200>({
-    url: `/tags/${id}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getGetTagsIdQueryKey = (id: number) => {
-  return [`/tags/${id}`] as const;
-};
-
-export const getGetTagsIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTagsId>>,
-  TError = void,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>
-    >;
-  },
+export const getTagsId = (
+    id: number,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
+      
+      
+      return customInstance<GetTagsId200>(
+      {url: `/tags/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-  const queryKey = queryOptions?.queryKey ?? getGetTagsIdQueryKey(id);
+export const getGetTagsIdQueryKey = (id: number,) => {
+    return [`/tags/${id}`] as const;
+    }
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsId>>> = ({
-    signal,
-  }) => getTagsId(id, signal);
+    
+export const getGetTagsIdQueryOptions = <TData = Awaited<ReturnType<typeof getTagsId>>, TError = void>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>>, }
+) => {
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
-};
+const {query: queryOptions} = options ?? {};
 
-export type GetTagsIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTagsId>>
->;
-export type GetTagsIdQueryError = void;
+  const queryKey =  queryOptions?.queryKey ?? getGetTagsIdQueryKey(id);
 
-export function useGetTagsId<
-  TData = Awaited<ReturnType<typeof getTagsId>>,
-  TError = void,
->(
-  id: number,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>
-    > &
-      Pick<
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsId>>> = ({ signal }) => getTagsId(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetTagsIdQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsId>>>
+export type GetTagsIdQueryError = void
+
+
+export function useGetTagsId<TData = Awaited<ReturnType<typeof getTagsId>>, TError = void>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsId>>,
           TError,
           Awaited<ReturnType<typeof getTagsId>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTagsId<
-  TData = Awaited<ReturnType<typeof getTagsId>>,
-  TError = void,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTagsId<TData = Awaited<ReturnType<typeof getTagsId>>, TError = void>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsId>>,
           TError,
           Awaited<ReturnType<typeof getTagsId>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTagsId<
-  TData = Awaited<ReturnType<typeof getTagsId>>,
-  TError = void,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTagsId<TData = Awaited<ReturnType<typeof getTagsId>>, TError = void>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a tag by ID
  */
 
-export function useGetTagsId<
-  TData = Awaited<ReturnType<typeof getTagsId>>,
-  TError = void,
->(
-  id: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetTagsIdQueryOptions(id, options);
+export function useGetTagsId<TData = Awaited<ReturnType<typeof getTagsId>>, TError = void>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsId>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetTagsIdQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Update an existing tag
  * @summary Update a tag
  */
-export const putTagsId = (id: number, putTagsIdBody: PutTagsIdBody) => {
-  return customInstance<PutTagsId200>({
-    url: `/tags/${id}`,
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    data: putTagsIdBody,
-  });
-};
+export const putTagsId = (
+    id: number,
+    putTagsIdBody: PutTagsIdBody,
+ ) => {
+      
+      
+      return customInstance<PutTagsId200>(
+      {url: `/tags/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: putTagsIdBody
+    },
+      );
+    }
+  
 
-export const getPutTagsIdMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof putTagsId>>,
-    TError,
-    { id: number; data: PutTagsIdBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof putTagsId>>,
-  TError,
-  { id: number; data: PutTagsIdBody },
-  TContext
-> => {
-  const mutationKey = ["putTagsId"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof putTagsId>>,
-    { id: number; data: PutTagsIdBody }
-  > = (props) => {
-    const { id, data } = props ?? {};
+export const getPutTagsIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putTagsId>>, TError,{id: number;data: PutTagsIdBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putTagsId>>, TError,{id: number;data: PutTagsIdBody}, TContext> => {
 
-    return putTagsId(id, data);
-  };
+const mutationKey = ['putTagsId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PutTagsIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof putTagsId>>
->;
-export type PutTagsIdMutationBody = PutTagsIdBody;
-export type PutTagsIdMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putTagsId>>, {id: number;data: PutTagsIdBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  putTagsId(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutTagsIdMutationResult = NonNullable<Awaited<ReturnType<typeof putTagsId>>>
+    export type PutTagsIdMutationBody = PutTagsIdBody
+    export type PutTagsIdMutationError = void
+
+    /**
  * @summary Update a tag
  */
-export const usePutTagsId = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof putTagsId>>,
-      TError,
-      { id: number; data: PutTagsIdBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof putTagsId>>,
-  TError,
-  { id: number; data: PutTagsIdBody },
-  TContext
-> => {
-  const mutationOptions = getPutTagsIdMutationOptions(options);
+export const usePutTagsId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putTagsId>>, TError,{id: number;data: PutTagsIdBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putTagsId>>,
+        TError,
+        {id: number;data: PutTagsIdBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPutTagsIdMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Delete a tag by its ID
  * @summary Delete a tag
  */
-export const deleteTagsId = (id: number) => {
-  return customInstance<DeleteTagsId200>({
-    url: `/tags/${id}`,
-    method: "DELETE",
-  });
-};
+export const deleteTagsId = (
+    id: number,
+ ) => {
+      
+      
+      return customInstance<DeleteTagsId200>(
+      {url: `/tags/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getDeleteTagsIdMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteTagsId>>,
-    TError,
-    { id: number },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteTagsId>>,
-  TError,
-  { id: number },
-  TContext
-> => {
-  const mutationKey = ["deleteTagsId"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteTagsId>>,
-    { id: number }
-  > = (props) => {
-    const { id } = props ?? {};
+export const getDeleteTagsIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsId>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTagsId>>, TError,{id: number}, TContext> => {
 
-    return deleteTagsId(id);
-  };
+const mutationKey = ['deleteTagsId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type DeleteTagsIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteTagsId>>
->;
 
-export type DeleteTagsIdMutationError = unknown;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTagsId>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
 
-/**
+          return  deleteTagsId(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteTagsIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTagsId>>>
+    
+    export type DeleteTagsIdMutationError = unknown
+
+    /**
  * @summary Delete a tag
  */
-export const useDeleteTagsId = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteTagsId>>,
-      TError,
-      { id: number },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteTagsId>>,
-  TError,
-  { id: number },
-  TContext
-> => {
-  const mutationOptions = getDeleteTagsIdMutationOptions(options);
+export const useDeleteTagsId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsId>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTagsId>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeleteTagsIdMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Add tags to a specific post
  * @summary Add tags to a post
  */
 export const postTagsPostsPostID = (
-  postID: number,
-  postTagsPostsPostIDBody: PostTagsPostsPostIDBody,
-  signal?: AbortSignal,
+    postID: number,
+    postTagsPostsPostIDBody: PostTagsPostsPostIDBody,
+ signal?: AbortSignal
 ) => {
-  return customInstance<void>({
-    url: `/tags/posts/${postID}`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: postTagsPostsPostIDBody,
-    signal,
-  });
-};
+      
+      
+      return customInstance<void>(
+      {url: `/tags/posts/${postID}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: postTagsPostsPostIDBody, signal
+    },
+      );
+    }
+  
 
-export const getPostTagsPostsPostIDMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postTagsPostsPostID>>,
-    TError,
-    { postID: number; data: PostTagsPostsPostIDBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postTagsPostsPostID>>,
-  TError,
-  { postID: number; data: PostTagsPostsPostIDBody },
-  TContext
-> => {
-  const mutationKey = ["postTagsPostsPostID"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postTagsPostsPostID>>,
-    { postID: number; data: PostTagsPostsPostIDBody }
-  > = (props) => {
-    const { postID, data } = props ?? {};
+export const getPostTagsPostsPostIDMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsPostsPostID>>, TError,{postID: number;data: PostTagsPostsPostIDBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postTagsPostsPostID>>, TError,{postID: number;data: PostTagsPostsPostIDBody}, TContext> => {
 
-    return postTagsPostsPostID(postID, data);
-  };
+const mutationKey = ['postTagsPostsPostID'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostTagsPostsPostIDMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postTagsPostsPostID>>
->;
-export type PostTagsPostsPostIDMutationBody = PostTagsPostsPostIDBody;
-export type PostTagsPostsPostIDMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postTagsPostsPostID>>, {postID: number;data: PostTagsPostsPostIDBody}> = (props) => {
+          const {postID,data} = props ?? {};
+
+          return  postTagsPostsPostID(postID,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostTagsPostsPostIDMutationResult = NonNullable<Awaited<ReturnType<typeof postTagsPostsPostID>>>
+    export type PostTagsPostsPostIDMutationBody = PostTagsPostsPostIDBody
+    export type PostTagsPostsPostIDMutationError = unknown
+
+    /**
  * @summary Add tags to a post
  */
-export const usePostTagsPostsPostID = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postTagsPostsPostID>>,
-      TError,
-      { postID: number; data: PostTagsPostsPostIDBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postTagsPostsPostID>>,
-  TError,
-  { postID: number; data: PostTagsPostsPostIDBody },
-  TContext
-> => {
-  const mutationOptions = getPostTagsPostsPostIDMutationOptions(options);
+export const usePostTagsPostsPostID = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsPostsPostID>>, TError,{postID: number;data: PostTagsPostsPostIDBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postTagsPostsPostID>>,
+        TError,
+        {postID: number;data: PostTagsPostsPostIDBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostTagsPostsPostIDMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Remove tags from a specific post
  * @summary Remove tags from a post
  */
 export const deleteTagsPostsPostID = (
-  postID: number,
-  deleteTagsPostsPostIDBody: DeleteTagsPostsPostIDBody,
-) => {
-  return customInstance<void>({
-    url: `/tags/posts/${postID}`,
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    data: deleteTagsPostsPostIDBody,
-  });
-};
+    postID: number,
+    deleteTagsPostsPostIDBody: DeleteTagsPostsPostIDBody,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/tags/posts/${postID}`, method: 'DELETE',
+      headers: {'Content-Type': 'application/json', },
+      data: deleteTagsPostsPostIDBody
+    },
+      );
+    }
+  
 
-export const getDeleteTagsPostsPostIDMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
-    TError,
-    { postID: number; data: DeleteTagsPostsPostIDBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
-  TError,
-  { postID: number; data: DeleteTagsPostsPostIDBody },
-  TContext
-> => {
-  const mutationKey = ["deleteTagsPostsPostID"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
-    { postID: number; data: DeleteTagsPostsPostIDBody }
-  > = (props) => {
-    const { postID, data } = props ?? {};
+export const getDeleteTagsPostsPostIDMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsPostsPostID>>, TError,{postID: number;data: DeleteTagsPostsPostIDBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTagsPostsPostID>>, TError,{postID: number;data: DeleteTagsPostsPostIDBody}, TContext> => {
 
-    return deleteTagsPostsPostID(postID, data);
-  };
+const mutationKey = ['deleteTagsPostsPostID'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type DeleteTagsPostsPostIDMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteTagsPostsPostID>>
->;
-export type DeleteTagsPostsPostIDMutationBody = DeleteTagsPostsPostIDBody;
-export type DeleteTagsPostsPostIDMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTagsPostsPostID>>, {postID: number;data: DeleteTagsPostsPostIDBody}> = (props) => {
+          const {postID,data} = props ?? {};
+
+          return  deleteTagsPostsPostID(postID,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteTagsPostsPostIDMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTagsPostsPostID>>>
+    export type DeleteTagsPostsPostIDMutationBody = DeleteTagsPostsPostIDBody
+    export type DeleteTagsPostsPostIDMutationError = unknown
+
+    /**
  * @summary Remove tags from a post
  */
-export const useDeleteTagsPostsPostID = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
-      TError,
-      { postID: number; data: DeleteTagsPostsPostIDBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
-  TError,
-  { postID: number; data: DeleteTagsPostsPostIDBody },
-  TContext
-> => {
-  const mutationOptions = getDeleteTagsPostsPostIDMutationOptions(options);
+export const useDeleteTagsPostsPostID = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsPostsPostID>>, TError,{postID: number;data: DeleteTagsPostsPostIDBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTagsPostsPostID>>,
+        TError,
+        {postID: number;data: DeleteTagsPostsPostIDBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeleteTagsPostsPostIDMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Get all tags associated with a specific post
  * @summary Get tags by post ID
  */
-export const getTagsPostsPostID = (postID: number, signal?: AbortSignal) => {
-  return customInstance<GetTagsPostsPostID200>({
-    url: `/tags/posts/${postID}`,
-    method: "GET",
-    signal,
-  });
-};
-
-export const getGetTagsPostsPostIDQueryKey = (postID: number) => {
-  return [`/tags/posts/${postID}`] as const;
-};
-
-export const getGetTagsPostsPostIDQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTagsPostsPostID>>,
-  TError = unknown,
->(
-  postID: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getTagsPostsPostID>>,
-        TError,
-        TData
-      >
-    >;
-  },
+export const getTagsPostsPostID = (
+    postID: number,
+ signal?: AbortSignal
 ) => {
-  const { query: queryOptions } = options ?? {};
+      
+      
+      return customInstance<GetTagsPostsPostID200>(
+      {url: `/tags/posts/${postID}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetTagsPostsPostIDQueryKey(postID);
+export const getGetTagsPostsPostIDQueryKey = (postID: number,) => {
+    return [`/tags/posts/${postID}`] as const;
+    }
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getTagsPostsPostID>>
-  > = ({ signal }) => getTagsPostsPostID(postID, signal);
+    
+export const getGetTagsPostsPostIDQueryOptions = <TData = Awaited<ReturnType<typeof getTagsPostsPostID>>, TError = unknown>(postID: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData>>, }
+) => {
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!postID,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getTagsPostsPostID>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+const {query: queryOptions} = options ?? {};
 
-export type GetTagsPostsPostIDQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTagsPostsPostID>>
->;
-export type GetTagsPostsPostIDQueryError = unknown;
+  const queryKey =  queryOptions?.queryKey ?? getGetTagsPostsPostIDQueryKey(postID);
 
-export function useGetTagsPostsPostID<
-  TData = Awaited<ReturnType<typeof getTagsPostsPostID>>,
-  TError = unknown,
->(
-  postID: number,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getTagsPostsPostID>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsPostsPostID>>> = ({ signal }) => getTagsPostsPostID(postID, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(postID), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetTagsPostsPostIDQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsPostsPostID>>>
+export type GetTagsPostsPostIDQueryError = unknown
+
+
+export function useGetTagsPostsPostID<TData = Awaited<ReturnType<typeof getTagsPostsPostID>>, TError = unknown>(
+ postID: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsPostsPostID>>,
           TError,
           Awaited<ReturnType<typeof getTagsPostsPostID>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTagsPostsPostID<
-  TData = Awaited<ReturnType<typeof getTagsPostsPostID>>,
-  TError = unknown,
->(
-  postID: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getTagsPostsPostID>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTagsPostsPostID<TData = Awaited<ReturnType<typeof getTagsPostsPostID>>, TError = unknown>(
+ postID: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsPostsPostID>>,
           TError,
           Awaited<ReturnType<typeof getTagsPostsPostID>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTagsPostsPostID<
-  TData = Awaited<ReturnType<typeof getTagsPostsPostID>>,
-  TError = unknown,
->(
-  postID: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getTagsPostsPostID>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTagsPostsPostID<TData = Awaited<ReturnType<typeof getTagsPostsPostID>>, TError = unknown>(
+ postID: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get tags by post ID
  */
 
-export function useGetTagsPostsPostID<
-  TData = Awaited<ReturnType<typeof getTagsPostsPostID>>,
-  TError = unknown,
->(
-  postID: number,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getTagsPostsPostID>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetTagsPostsPostIDQueryOptions(postID, options);
+export function useGetTagsPostsPostID<TData = Awaited<ReturnType<typeof getTagsPostsPostID>>, TError = unknown>(
+ postID: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsPostsPostID>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetTagsPostsPostIDQueryOptions(postID,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+

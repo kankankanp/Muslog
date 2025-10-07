@@ -994,6 +994,153 @@ paths:
                       $ref: "#/components/schemas/Message"
         "404":
           description: Community not found.
+  /band-recruitments:
+    get:
+      summary: Get band recruitments
+      description: Retrieve a paginated list of band recruitments with optional filters.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Search keyword for title or description.
+        - in: query
+          name: genre
+          schema:
+            type: string
+        - in: query
+          name: location
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentListResponse'
+    post:
+      summary: Create a band recruitment
+      description: Create a new band recruitment post.
+      tags:
+        - bandRecruitments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBandRecruitmentRequest'
+      responses:
+        "201":
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+  /band-recruitments/{id}:
+    get:
+      summary: Get band recruitment detail
+      description: Retrieve a band recruitment by ID.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+        "404":
+          description: Not found
+    put:
+      summary: Update a band recruitment
+      description: Update an existing band recruitment.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBandRecruitmentRequest'
+      responses:
+        "200":
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+  /band-recruitments/{id}/apply:
+    post:
+      summary: Apply to a band recruitment
+      description: Submit an application to a band recruitment.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyBandRecruitmentRequest'
+      responses:
+        "200":
+          description: Applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Invalid request
+        "404":
+          description: Not found
+        "409":
+          description: Conflict
 components:
   schemas:
     Post:
@@ -1177,6 +1324,136 @@ components:
         createdAt:
           type: string
           format: date-time
+    BandRecruitment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        applicationsCount:
+          type: integer
+          format: int64
+        hasApplied:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateBandRecruitmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+      required:
+        - title
+        - description
+        - contact
+    UpdateBandRecruitmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+      required:
+        - title
+        - description
+        - contact
+    ApplyBandRecruitmentRequest:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    BandRecruitmentListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        recruitments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BandRecruitment'
+        totalCount:
+          type: integer
+          format: int64
+        page:
+          type: integer
+        perPage:
+          type: integer
+    BandRecruitmentDetailResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        recruitment:
+          $ref: '#/components/schemas/BandRecruitment'
   securitySchemes:
     cookieAuth:
       type: apiKey

@@ -4,103 +4,93 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation } from "@tanstack/react-query";
+import {
+  useMutation
+} from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryClient,
   UseMutationOptions,
-  UseMutationResult,
-} from "@tanstack/react-query";
+  UseMutationResult
+} from '@tanstack/react-query';
 
-import type { PostImagesUpload200, PostImagesUploadBody } from ".././model";
+import type {
+  PostImagesUpload200,
+  PostImagesUploadBody
+} from '.././model';
 
-import { customInstance } from "../../../custom-instance";
+import { customInstance } from '../../../custom-instance';
+
+
+
 
 /**
  * Upload a generic image for use within content (e.g., in-post images)
  * @summary Upload a generic image
  */
 export const postImagesUpload = (
-  postImagesUploadBody: PostImagesUploadBody,
-  signal?: AbortSignal,
+    postImagesUploadBody: PostImagesUploadBody,
+ signal?: AbortSignal
 ) => {
-  const formData = new FormData();
-  if (postImagesUploadBody.image !== undefined) {
-    formData.append(`image`, postImagesUploadBody.image);
-  }
+      
+      const formData = new FormData();
+if(postImagesUploadBody.image !== undefined) {
+ formData.append(`image`, postImagesUploadBody.image)
+ }
 
-  return customInstance<PostImagesUpload200>({
-    url: `/images/upload`,
-    method: "POST",
-    headers: { "Content-Type": "multipart/form-data" },
-    data: formData,
-    signal,
-  });
-};
+      return customInstance<PostImagesUpload200>(
+      {url: `/images/upload`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+  
 
-export const getPostImagesUploadMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postImagesUpload>>,
-    TError,
-    { data: PostImagesUploadBody },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postImagesUpload>>,
-  TError,
-  { data: PostImagesUploadBody },
-  TContext
-> => {
-  const mutationKey = ["postImagesUpload"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postImagesUpload>>,
-    { data: PostImagesUploadBody }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostImagesUploadMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postImagesUpload>>, TError,{data: PostImagesUploadBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postImagesUpload>>, TError,{data: PostImagesUploadBody}, TContext> => {
 
-    return postImagesUpload(data);
-  };
+const mutationKey = ['postImagesUpload'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostImagesUploadMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postImagesUpload>>
->;
-export type PostImagesUploadMutationBody = PostImagesUploadBody;
-export type PostImagesUploadMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postImagesUpload>>, {data: PostImagesUploadBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postImagesUpload(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostImagesUploadMutationResult = NonNullable<Awaited<ReturnType<typeof postImagesUpload>>>
+    export type PostImagesUploadMutationBody = PostImagesUploadBody
+    export type PostImagesUploadMutationError = void
+
+    /**
  * @summary Upload a generic image
  */
-export const usePostImagesUpload = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postImagesUpload>>,
-      TError,
-      { data: PostImagesUploadBody },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postImagesUpload>>,
-  TError,
-  { data: PostImagesUploadBody },
-  TContext
-> => {
-  const mutationOptions = getPostImagesUploadMutationOptions(options);
+export const usePostImagesUpload = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postImagesUpload>>, TError,{data: PostImagesUploadBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postImagesUpload>>,
+        TError,
+        {data: PostImagesUploadBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getPostImagesUploadMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
