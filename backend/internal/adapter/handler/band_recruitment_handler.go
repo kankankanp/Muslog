@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -47,6 +48,7 @@ func (h *BandRecruitmentHandler) ListBandRecruitments(c echo.Context) error {
 
 	recruitments, total, err := h.Usecase.SearchBandRecruitments(c.Request().Context(), filter, userID)
 	if err != nil {
+		log.Printf("[BandRecruitments][List] error: %v (filter=%+v userID=%s)", err, filter, userID)
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
 	}
 
@@ -71,6 +73,7 @@ func (h *BandRecruitmentHandler) GetBandRecruitment(c echo.Context) error {
 		case errors.Is(err, usecase.ErrRecruitmentNotFound):
 			return c.JSON(http.StatusNotFound, response.CommonResponse{Message: "Not Found"})
 		default:
+			log.Printf("[BandRecruitments][Get] error: %v (id=%s)", err, id)
 			return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
 		}
 	}
@@ -116,6 +119,7 @@ func (h *BandRecruitmentHandler) CreateBandRecruitment(c echo.Context) error {
 
 	recruitment, err := h.Usecase.CreateBandRecruitment(c.Request().Context(), input)
 	if err != nil {
+		log.Printf("[BandRecruitments][Create] error: %v (userID=%s input=%+v)", err, userID, input)
 		return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
 	}
 
@@ -172,6 +176,7 @@ func (h *BandRecruitmentHandler) UpdateBandRecruitment(c echo.Context) error {
 		case errors.Is(err, usecase.ErrRecruitmentNotFound):
 			return c.JSON(http.StatusNotFound, response.CommonResponse{Message: "Not Found"})
 		default:
+			log.Printf("[BandRecruitments][Update] error: %v (input=%+v)", err, input)
 			return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
 		}
 	}
@@ -217,6 +222,7 @@ func (h *BandRecruitmentHandler) ApplyToBandRecruitment(c echo.Context) error {
 		case errors.Is(err, usecase.ErrAlreadyApplied):
 			return c.JSON(http.StatusConflict, response.CommonResponse{Message: "Already applied"})
 		default:
+			log.Printf("[BandRecruitments][Apply] error: %v (id=%s applicant=%s)", err, id, userID)
 			return c.JSON(http.StatusInternalServerError, response.CommonResponse{Message: "Error", Error: err.Error()})
 		}
 	}

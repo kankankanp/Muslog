@@ -101,12 +101,13 @@ func (r *bandRecruitmentRepositoryImpl) Search(ctx context.Context, filter domai
 	}
 
 	var total int64
-	if err := query.Session(&gorm.Session{NewDB: true}).Count(&total).Error; err != nil {
+	if err := query.Session(&gorm.Session{NewDB: true}).Model(&model.BandRecruitmentModel{}).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	var models []model.BandRecruitmentModel
-	if err := query.Order("created_at DESC").
+	if err := query.Session(&gorm.Session{NewDB: true}).Model(&model.BandRecruitmentModel{}).
+		Order("created_at DESC").
 		Offset((page - 1) * perPage).
 		Limit(perPage).
 		Find(&models).Error; err != nil {
