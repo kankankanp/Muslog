@@ -1,7 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import toast from "react-hot-toast";
 import ChatInput from "@/components/community/ChatInput";
 import ChatMessage from "@/components/community/ChatMessage";
@@ -31,6 +37,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageIdsRef = useRef<Set<string>>(new Set());
 
   const { data: me } = useGetMe();
 
@@ -45,9 +52,68 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
 
   useEffect(() => {
     if (data?.messages) {
+      const ids = new Set<string>();
+      data.messages.forEach((msg) => {
+        if (msg.id) {
+          ids.add(msg.id);
+        }
+      });
+      messageIdsRef.current = ids;
       setMessages(data.messages);
     }
   }, [data]);
+
+  const parseWebSocketPayload = useCallback((payload: string): Message[] => {
+    const trimmed = payload.trim();
+    if (!trimmed) return [];
+
+    const results: Message[] = [];
+    let buffer = "";
+    let depth = 0;
+    let inString = false;
+    let escape = false;
+
+    for (let i = 0; i < trimmed.length; i++) {
+      const char = trimmed[i];
+      buffer += char;
+
+      if (inString) {
+        if (escape) {
+          escape = false;
+        } else if (char === "\\") {
+          escape = true;
+        } else if (char === "\"") {
+          inString = false;
+        }
+        continue;
+      }
+
+      if (char === "\"") {
+        inString = true;
+      } else if (char === "{") {
+        depth++;
+      } else if (char === "}") {
+        depth--;
+      }
+
+      if (depth == 0) {
+        const candidate = buffer.trim();
+        if (candidate) {
+          try {
+            results.push(JSON.parse(candidate));
+          } catch (parseError) {
+            console.error("Failed to parse WebSocket message chunk:", {
+              candidate,
+              parseError,
+            });
+          }
+        }
+        buffer = "";
+      }
+    }
+
+    return results;
+  }, []);
 
   // WebSocket connection
   const wsUrl =
@@ -58,11 +124,35 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
   const websocketHandlers = useMemo(
     () => ({
       onMessage: (event: MessageEvent) => {
-        try {
-          const newMessage = JSON.parse(event.data);
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
-        } catch (e) {
-          console.error("Failed to parse WebSocket message:", e);
+        const handlePayload = (payload: string) => {
+          const parsed = parseWebSocketPayload(payload);
+          if (parsed.length > 0) {
+            const deduped: Message[] = [];
+            parsed.forEach((msg) => {
+              const key = msg.id || `${msg.senderId ?? "unknown"}-${msg.createdAt ?? ""}`;
+              if (!key || messageIdsRef.current.has(key)) {
+                return;
+              }
+              messageIdsRef.current.add(key);
+              deduped.push({ ...msg, id: msg.id || key });
+            });
+            if (deduped.length > 0) {
+              setMessages((prevMessages) => [...prevMessages, ...deduped]);
+            }
+          }
+        };
+
+        if (typeof event.data === "string") {
+          handlePayload(event.data);
+        } else if (event.data instanceof Blob) {
+          event.data
+            .text()
+            .then(handlePayload)
+            .catch((blobError) =>
+              console.error("Failed to read Blob WebSocket message:", blobError),
+            );
+        } else {
+          console.warn("Unsupported WebSocket payload type", event.data);
         }
       },
       onError: (event: Event) => {
@@ -72,7 +162,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
         console.log("Disconnected from chat. Please refresh.", event);
       },
     }),
-    [],
+    [parseWebSocketPayload],
   );
 
   const { isConnected, lastMessage, sendMessage } = useWebSocket(
