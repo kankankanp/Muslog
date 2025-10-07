@@ -34,6 +34,8 @@ func Seed(db *gorm.DB) error {
 	const guestUUID = "c88793d0-7afd-4acc-b15c-9a11dd4382a0"
 
 	users := make([]model.UserModel, 0, 60)
+	var tagModels []model.TagModel
+	posts := make([]model.PostModel, 0, 50)
 
 	{
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
@@ -47,6 +49,15 @@ func Seed(db *gorm.DB) error {
 			return err
 		}
 		users = append(users, demo)
+	}
+
+	tagNames := []string{"ロック", "ポップス", "ジャズ", "メタル", "ヒップホップ", "クラシック", "エレクトロ", "アコースティック"}
+	tagModels = make([]model.TagModel, len(tagNames))
+	for i, name := range tagNames {
+		tagModels[i] = model.TagModel{Name: name}
+	}
+	if err := db.Create(&tagModels).Error; err != nil {
+		return err
 	}
 
 	for i := 0; i < 50; i++ {
@@ -71,14 +82,23 @@ func Seed(db *gorm.DB) error {
 		}
 		users = append(users, user)
 
+		tagCount := r.Intn(3) + 1
+		indices := r.Perm(len(tagModels))[:tagCount]
+		selectedTags := make([]model.TagModel, 0, tagCount)
+		for _, idx := range indices {
+			selectedTags = append(selectedTags, tagModels[idx])
+		}
+
 		post := model.PostModel{
 			Title:       gf.Sentence(6),
 			Description: gf.Paragraph(1, 3, 12, " "),
 			UserID:      user.ID,
+			Tags:        selectedTags,
 		}
 		if err := db.Create(&post).Error; err != nil {
 			return err
 		}
+		posts = append(posts, post)
 
 		numTracks := r.Intn(3) + 3
 		for j := 0; j < numTracks; j++ {
@@ -93,6 +113,67 @@ func Seed(db *gorm.DB) error {
 				PostID:        post.ID,
 			}
 			if err := db.Create(&track).Error; err != nil {
+				return err
+			}
+		}
+	}
+
+	log.Println("Seeding likes...")
+	if len(posts) > 0 {
+		likeTargets := len(posts) * 3
+		likeKeys := make(map[string]struct{}, likeTargets)
+		postLikeCounts := make(map[uint]int)
+		attempts := 0
+		for len(likeKeys) < likeTargets && attempts < likeTargets*5 {
+			attempts++
+			post := posts[r.Intn(len(posts))]
+			user := users[r.Intn(len(users))]
+			key := fmt.Sprintf("%s-%d", user.ID, post.ID)
+			if _, exists := likeKeys[key]; exists {
+				continue
+			}
+			if err := db.Create(&model.LikeModel{PostID: post.ID, UserID: user.ID}).Error; err != nil {
+				return err
+			}
+			likeKeys[key] = struct{}{}
+			postLikeCounts[post.ID]++
+		}
+		for postID, cnt := range postLikeCounts {
+			if err := db.Model(&model.PostModel{}).Where("id = ?", postID).Update("likes_count", cnt).Error; err != nil {
+				return err
+			}
+		}
+	}
+
+	log.Println("Seeding communities and messages...")
+	communityCount := 12
+	communities := make([]model.CommunityModel, 0, communityCount)
+	for i := 0; i < communityCount; i++ {
+		creator := users[r.Intn(len(users))]
+		community := model.CommunityModel{
+			ID:          uuid.NewString(),
+			Name:        fmt.Sprintf("%sコミュニティ", gf.Company()),
+			Description: gf.Paragraph(1, 2, 18, " "),
+			CreatorID:   creator.ID,
+			CreatedAt:   time.Now().Add(-time.Duration(r.Intn(1440)) * time.Minute),
+		}
+		if err := db.Create(&community).Error; err != nil {
+			return err
+		}
+		communities = append(communities, community)
+	}
+	for _, community := range communities {
+		messageCount := r.Intn(10) + 5
+		for j := 0; j < messageCount; j++ {
+			sender := users[r.Intn(len(users))]
+			message := model.MessageModel{
+				ID:          uuid.NewString(),
+				CommunityID: community.ID,
+				SenderID:    sender.ID,
+				Content:     gf.Sentence(12),
+				CreatedAt:   time.Now().Add(-time.Duration(r.Intn(720)) * time.Hour),
+			}
+			if err := db.Create(&message).Error; err != nil {
 				return err
 			}
 		}
@@ -131,6 +212,7 @@ func Seed(db *gorm.DB) error {
 		}
 
 		recruitment := model.BandRecruitmentModel{
+			ID:              uuid.NewString(),
 			Title:           gf.Sentence(4),
 			Description:     gf.Paragraph(1, 2, 20, " "),
 			Genre:           genres[r.Intn(len(genres))],
@@ -158,6 +240,7 @@ func Seed(db *gorm.DB) error {
 			}
 			createdApplicants[applicant.ID] = struct{}{}
 			application := model.BandApplicationModel{
+				ID:                uuid.NewString(),
 				BandRecruitmentID: recruitment.ID,
 				ApplicantID:       applicant.ID,
 				Message:           gf.Sentence(10),
