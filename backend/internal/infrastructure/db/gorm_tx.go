@@ -43,6 +43,14 @@ func (p *gormRepositoryProvider) CommunityRepository() repository.CommunityRepos
 	return infraRepo.NewCommunityRepository(p.db)
 }
 
+func (p *gormRepositoryProvider) BandRecruitmentRepository() repository.BandRecruitmentRepository {
+	return infraRepo.NewBandRecruitmentRepository(p.db)
+}
+
+func (p *gormRepositoryProvider) BandApplicationRepository() repository.BandApplicationRepository {
+	return infraRepo.NewBandApplicationRepository(p.db)
+}
+
 func (p *gormRepositoryProvider) UserRepository() repository.UserRepository {
 	return infraRepo.NewUserRepository(p.db)
 }

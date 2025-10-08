@@ -4,7 +4,7 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { Post } from "./post";
+import type { Post } from './post';
 
 export type GetPosts200 = {
   message?: string;

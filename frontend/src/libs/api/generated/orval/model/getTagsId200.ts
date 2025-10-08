@@ -4,7 +4,7 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { Tag } from "./tag";
+import type { Tag } from './tag';
 
 export type GetTagsId200 = {
   message?: string;

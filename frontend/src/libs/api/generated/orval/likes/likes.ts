@@ -4,7 +4,10 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,316 +20,230 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   DeletePostsPostIDUnlike200,
   GetUsersMeLikedPosts200,
-  PostPostsPostIDLike200,
-} from ".././model";
+  PostPostsPostIDLike200
+} from '.././model';
 
-import { customInstance } from "../../../custom-instance";
+import { customInstance } from '../../../custom-instance';
+
+
+
 
 /**
  * Like a post by its ID
  * @summary Like a post
  */
-export const postPostsPostIDLike = (postID: number, signal?: AbortSignal) => {
-  return customInstance<PostPostsPostIDLike200>({
-    url: `/posts/${postID}/like`,
-    method: "POST",
-    signal,
-  });
-};
+export const postPostsPostIDLike = (
+    postID: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostPostsPostIDLike200>(
+      {url: `/posts/${postID}/like`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getPostPostsPostIDLikeMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postPostsPostIDLike>>,
-    TError,
-    { postID: number },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postPostsPostIDLike>>,
-  TError,
-  { postID: number },
-  TContext
-> => {
-  const mutationKey = ["postPostsPostIDLike"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postPostsPostIDLike>>,
-    { postID: number }
-  > = (props) => {
-    const { postID } = props ?? {};
+export const getPostPostsPostIDLikeMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsPostIDLike>>, TError,{postID: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postPostsPostIDLike>>, TError,{postID: number}, TContext> => {
 
-    return postPostsPostIDLike(postID);
-  };
+const mutationKey = ['postPostsPostIDLike'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostPostsPostIDLikeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postPostsPostIDLike>>
->;
 
-export type PostPostsPostIDLikeMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postPostsPostIDLike>>, {postID: number}> = (props) => {
+          const {postID} = props ?? {};
 
-/**
+          return  postPostsPostIDLike(postID,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostPostsPostIDLikeMutationResult = NonNullable<Awaited<ReturnType<typeof postPostsPostIDLike>>>
+    
+    export type PostPostsPostIDLikeMutationError = void
+
+    /**
  * @summary Like a post
  */
-export const usePostPostsPostIDLike = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postPostsPostIDLike>>,
-      TError,
-      { postID: number },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postPostsPostIDLike>>,
-  TError,
-  { postID: number },
-  TContext
-> => {
-  const mutationOptions = getPostPostsPostIDLikeMutationOptions(options);
+export const usePostPostsPostIDLike = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsPostIDLike>>, TError,{postID: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postPostsPostIDLike>>,
+        TError,
+        {postID: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostPostsPostIDLikeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Unlike a post by its ID
  * @summary Unlike a post
  */
-export const deletePostsPostIDUnlike = (postID: number) => {
-  return customInstance<DeletePostsPostIDUnlike200>({
-    url: `/posts/${postID}/unlike`,
-    method: "DELETE",
-  });
-};
+export const deletePostsPostIDUnlike = (
+    postID: number,
+ ) => {
+      
+      
+      return customInstance<DeletePostsPostIDUnlike200>(
+      {url: `/posts/${postID}/unlike`, method: 'DELETE'
+    },
+      );
+    }
+  
 
-export const getDeletePostsPostIDUnlikeMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
-    TError,
-    { postID: number },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
-  TError,
-  { postID: number },
-  TContext
-> => {
-  const mutationKey = ["deletePostsPostIDUnlike"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
-    { postID: number }
-  > = (props) => {
-    const { postID } = props ?? {};
+export const getDeletePostsPostIDUnlikeMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsPostIDUnlike>>, TError,{postID: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deletePostsPostIDUnlike>>, TError,{postID: number}, TContext> => {
 
-    return deletePostsPostIDUnlike(postID);
-  };
+const mutationKey = ['deletePostsPostIDUnlike'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type DeletePostsPostIDUnlikeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deletePostsPostIDUnlike>>
->;
 
-export type DeletePostsPostIDUnlikeMutationError = void;
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePostsPostIDUnlike>>, {postID: number}> = (props) => {
+          const {postID} = props ?? {};
 
-/**
+          return  deletePostsPostIDUnlike(postID,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePostsPostIDUnlikeMutationResult = NonNullable<Awaited<ReturnType<typeof deletePostsPostIDUnlike>>>
+    
+    export type DeletePostsPostIDUnlikeMutationError = void
+
+    /**
  * @summary Unlike a post
  */
-export const useDeletePostsPostIDUnlike = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
-      TError,
-      { postID: number },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
-  TError,
-  { postID: number },
-  TContext
-> => {
-  const mutationOptions = getDeletePostsPostIDUnlikeMutationOptions(options);
+export const useDeletePostsPostIDUnlike = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsPostIDUnlike>>, TError,{postID: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deletePostsPostIDUnlike>>,
+        TError,
+        {postID: number},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeletePostsPostIDUnlikeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Get all posts liked by the authenticated user.
  * @summary Get liked posts by current user
  */
-export const getUsersMeLikedPosts = (signal?: AbortSignal) => {
-  return customInstance<GetUsersMeLikedPosts200>({
-    url: `/users/me/liked-posts`,
-    method: "GET",
-    signal,
-  });
-};
+export const getUsersMeLikedPosts = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetUsersMeLikedPosts200>(
+      {url: `/users/me/liked-posts`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 export const getGetUsersMeLikedPostsQueryKey = () => {
-  return [`/users/me/liked-posts`] as const;
-};
+    return [`/users/me/liked-posts`] as const;
+    }
 
-export const getGetUsersMeLikedPostsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-  TError = void,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-      TError,
-      TData
-    >
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getGetUsersMeLikedPostsQueryOptions = <TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData>>, }
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetUsersMeLikedPostsQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getUsersMeLikedPosts>>
-  > = ({ signal }) => getUsersMeLikedPosts(signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetUsersMeLikedPostsQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetUsersMeLikedPostsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getUsersMeLikedPosts>>
->;
-export type GetUsersMeLikedPostsQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersMeLikedPosts>>> = ({ signal }) => getUsersMeLikedPosts(signal);
 
-export function useGetUsersMeLikedPosts<
-  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-  TError = void,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUsersMeLikedPostsQueryResult = NonNullable<Awaited<ReturnType<typeof getUsersMeLikedPosts>>>
+export type GetUsersMeLikedPostsQueryError = void
+
+
+export function useGetUsersMeLikedPosts<TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
           TError,
           Awaited<ReturnType<typeof getUsersMeLikedPosts>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsersMeLikedPosts<
-  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersMeLikedPosts<TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
           TError,
           Awaited<ReturnType<typeof getUsersMeLikedPosts>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetUsersMeLikedPosts<
-  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersMeLikedPosts<TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get liked posts by current user
  */
 
-export function useGetUsersMeLikedPosts<
-  TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getUsersMeLikedPosts>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetUsersMeLikedPostsQueryOptions(options);
+export function useGetUsersMeLikedPosts<TData = Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeLikedPosts>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetUsersMeLikedPostsQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+

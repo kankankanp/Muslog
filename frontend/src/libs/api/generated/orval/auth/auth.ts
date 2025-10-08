@@ -4,7 +4,10 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,8 +20,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   GetAuthGoogle200,
@@ -28,575 +31,443 @@ import type {
   PostLogout200,
   PostRefresh200,
   RegisterRequest,
-  User,
-} from ".././model";
+  User
+} from '.././model';
 
-import { customInstance } from "../../../custom-instance";
+import { customInstance } from '../../../custom-instance';
+
+
+
 
 /**
  * Register a new user.
  * @summary User registration
  */
 export const postAuthRegister = (
-  registerRequest: RegisterRequest,
-  signal?: AbortSignal,
+    registerRequest: RegisterRequest,
+ signal?: AbortSignal
 ) => {
-  return customInstance<PostAuthRegister201>({
-    url: `/auth/register`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: registerRequest,
-    signal,
-  });
-};
+      
+      
+      return customInstance<PostAuthRegister201>(
+      {url: `/auth/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerRequest, signal
+    },
+      );
+    }
+  
 
-export const getPostAuthRegisterMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postAuthRegister>>,
-    TError,
-    { data: RegisterRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postAuthRegister>>,
-  TError,
-  { data: RegisterRequest },
-  TContext
-> => {
-  const mutationKey = ["postAuthRegister"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postAuthRegister>>,
-    { data: RegisterRequest }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostAuthRegisterMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: RegisterRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: RegisterRequest}, TContext> => {
 
-    return postAuthRegister(data);
-  };
+const mutationKey = ['postAuthRegister'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostAuthRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postAuthRegister>>
->;
-export type PostAuthRegisterMutationBody = RegisterRequest;
-export type PostAuthRegisterMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthRegister>>, {data: RegisterRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postAuthRegister(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthRegister>>>
+    export type PostAuthRegisterMutationBody = RegisterRequest
+    export type PostAuthRegisterMutationError = void
+
+    /**
  * @summary User registration
  */
-export const usePostAuthRegister = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postAuthRegister>>,
-      TError,
-      { data: RegisterRequest },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postAuthRegister>>,
-  TError,
-  { data: RegisterRequest },
-  TContext
-> => {
-  const mutationOptions = getPostAuthRegisterMutationOptions(options);
+export const usePostAuthRegister = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthRegister>>, TError,{data: RegisterRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAuthRegister>>,
+        TError,
+        {data: RegisterRequest},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostAuthRegisterMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Log in a user and return a JWT token.
  * @summary User login
  */
 export const postAuthLogin = (
-  loginRequest: LoginRequest,
-  signal?: AbortSignal,
+    loginRequest: LoginRequest,
+ signal?: AbortSignal
 ) => {
-  return customInstance<PostAuthLogin200>({
-    url: `/auth/login`,
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    data: loginRequest,
-    signal,
-  });
-};
+      
+      
+      return customInstance<PostAuthLogin200>(
+      {url: `/auth/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginRequest, signal
+    },
+      );
+    }
+  
 
-export const getPostAuthLoginMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postAuthLogin>>,
-    TError,
-    { data: LoginRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postAuthLogin>>,
-  TError,
-  { data: LoginRequest },
-  TContext
-> => {
-  const mutationKey = ["postAuthLogin"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postAuthLogin>>,
-    { data: LoginRequest }
-  > = (props) => {
-    const { data } = props ?? {};
+export const getPostAuthLoginMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequest}, TContext> => {
 
-    return postAuthLogin(data);
-  };
+const mutationKey = ['postAuthLogin'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-  return { mutationFn, ...mutationOptions };
-};
+      
 
-export type PostAuthLoginMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postAuthLogin>>
->;
-export type PostAuthLoginMutationBody = LoginRequest;
-export type PostAuthLoginMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAuthLogin>>, {data: LoginRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postAuthLogin(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof postAuthLogin>>>
+    export type PostAuthLoginMutationBody = LoginRequest
+    export type PostAuthLoginMutationError = void
+
+    /**
  * @summary User login
  */
-export const usePostAuthLogin = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postAuthLogin>>,
-      TError,
-      { data: LoginRequest },
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postAuthLogin>>,
-  TError,
-  { data: LoginRequest },
-  TContext
-> => {
-  const mutationOptions = getPostAuthLoginMutationOptions(options);
+export const usePostAuthLogin = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAuthLogin>>, TError,{data: LoginRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAuthLogin>>,
+        TError,
+        {data: LoginRequest},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostAuthLoginMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Get the URL to redirect to for Google OAuth authentication.
  * @summary Get Google OAuth URL
  */
-export const getAuthGoogle = (signal?: AbortSignal) => {
-  return customInstance<GetAuthGoogle200>({
-    url: `/auth/google`,
-    method: "GET",
-    signal,
-  });
-};
+export const getAuthGoogle = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetAuthGoogle200>(
+      {url: `/auth/google`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 export const getGetAuthGoogleQueryKey = () => {
-  return [`/auth/google`] as const;
-};
+    return [`/auth/google`] as const;
+    }
 
-export const getGetAuthGoogleQueryOptions = <
-  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
-  TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getGetAuthGoogleQueryOptions = <TData = Awaited<ReturnType<typeof getAuthGoogle>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>>, }
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetAuthGoogleQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthGoogle>>> = ({
-    signal,
-  }) => getAuthGoogle(signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetAuthGoogleQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAuthGoogle>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetAuthGoogleQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getAuthGoogle>>
->;
-export type GetAuthGoogleQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthGoogle>>> = ({ signal }) => getAuthGoogle(signal);
 
-export function useGetAuthGoogle<
-  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
-  TError = unknown,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAuthGoogleQueryResult = NonNullable<Awaited<ReturnType<typeof getAuthGoogle>>>
+export type GetAuthGoogleQueryError = unknown
+
+
+export function useGetAuthGoogle<TData = Awaited<ReturnType<typeof getAuthGoogle>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAuthGoogle>>,
           TError,
           Awaited<ReturnType<typeof getAuthGoogle>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetAuthGoogle<
-  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAuthGoogle<TData = Awaited<ReturnType<typeof getAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAuthGoogle>>,
           TError,
           Awaited<ReturnType<typeof getAuthGoogle>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetAuthGoogle<
-  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAuthGoogle<TData = Awaited<ReturnType<typeof getAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Google OAuth URL
  */
 
-export function useGetAuthGoogle<
-  TData = Awaited<ReturnType<typeof getAuthGoogle>>,
-  TError = unknown,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetAuthGoogleQueryOptions(options);
+export function useGetAuthGoogle<TData = Awaited<ReturnType<typeof getAuthGoogle>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAuthGoogle>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetAuthGoogleQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Refresh the JWT access token using the refresh token.
  * @summary Refresh JWT token
  */
-export const postRefresh = (signal?: AbortSignal) => {
-  return customInstance<PostRefresh200>({
-    url: `/refresh`,
-    method: "POST",
-    signal,
-  });
-};
+export const postRefresh = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostRefresh200>(
+      {url: `/refresh`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getPostRefreshMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postRefresh>>,
-    TError,
-    void,
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postRefresh>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postRefresh"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postRefresh>>,
-    void
-  > = () => {
-    return postRefresh();
-  };
+export const getPostRefreshMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRefresh>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postRefresh>>, TError,void, TContext> => {
 
-  return { mutationFn, ...mutationOptions };
-};
+const mutationKey = ['postRefresh'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-export type PostRefreshMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postRefresh>>
->;
+      
 
-export type PostRefreshMutationError = void;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postRefresh>>, void> = () => {
+          
+
+          return  postRefresh()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof postRefresh>>>
+    
+    export type PostRefreshMutationError = void
+
+    /**
  * @summary Refresh JWT token
  */
-export const usePostRefresh = <TError = void, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postRefresh>>,
-      TError,
-      void,
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postRefresh>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPostRefreshMutationOptions(options);
+export const usePostRefresh = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postRefresh>>, TError,void, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postRefresh>>,
+        TError,
+        void,
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostRefreshMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Log out a user by clearing JWT cookies.
  * @summary User logout
  */
-export const postLogout = (signal?: AbortSignal) => {
-  return customInstance<PostLogout200>({
-    url: `/logout`,
-    method: "POST",
-    signal,
-  });
-};
+export const postLogout = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<PostLogout200>(
+      {url: `/logout`, method: 'POST', signal
+    },
+      );
+    }
+  
 
-export const getPostLogoutMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postLogout>>,
-    TError,
-    void,
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postLogout>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postLogout"];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postLogout>>,
-    void
-  > = () => {
-    return postLogout();
-  };
+export const getPostLogoutMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postLogout>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postLogout>>, TError,void, TContext> => {
 
-  return { mutationFn, ...mutationOptions };
-};
+const mutationKey = ['postLogout'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
 
-export type PostLogoutMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postLogout>>
->;
+      
 
-export type PostLogoutMutationError = unknown;
 
-/**
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postLogout>>, void> = () => {
+          
+
+          return  postLogout()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postLogout>>>
+    
+    export type PostLogoutMutationError = unknown
+
+    /**
  * @summary User logout
  */
-export const usePostLogout = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postLogout>>,
-      TError,
-      void,
-      TContext
-    >;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postLogout>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationOptions = getPostLogoutMutationOptions(options);
+export const usePostLogout = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postLogout>>, TError,void, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getPostLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Get the currently logged in user's information.
  * @summary Get current user
  */
-export const getMe = (signal?: AbortSignal) => {
-  return customInstance<User>({ url: `/me`, method: "GET", signal });
-};
+export const getMe = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<User>(
+      {url: `/me`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 export const getGetMeQueryKey = () => {
-  return [`/me`] as const;
-};
+    return [`/me`] as const;
+    }
 
-export const getGetMeQueryOptions = <
-  TData = Awaited<ReturnType<typeof getMe>>,
-  TError = void,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
-  >;
-}) => {
-  const { query: queryOptions } = options ?? {};
+    
+export const getGetMeQueryOptions = <TData = Awaited<ReturnType<typeof getMe>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>>, }
+) => {
 
-  const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey();
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({
-    signal,
-  }) => getMe(signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetMeQueryKey();
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMe>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>;
-export type GetMeQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({ signal }) => getMe(signal);
 
-export function useGetMe<
-  TData = Awaited<ReturnType<typeof getMe>>,
-  TError = void,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>
+export type GetMeQueryError = void
+
+
+export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMe>>,
           TError,
           Awaited<ReturnType<typeof getMe>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetMe<
-  TData = Awaited<ReturnType<typeof getMe>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMe>>,
           TError,
           Awaited<ReturnType<typeof getMe>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetMe<
-  TData = Awaited<ReturnType<typeof getMe>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user
  */
 
-export function useGetMe<
-  TData = Awaited<ReturnType<typeof getMe>>,
-  TError = void,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetMeQueryOptions(options);
+export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetMeQueryOptions(options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+

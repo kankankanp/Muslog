@@ -4,7 +4,7 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { AuthResponse } from "./authResponse";
+import type { AuthResponse } from './authResponse';
 
 export type PostAuthLogin200 = {
   message?: string;

@@ -8,6 +8,7 @@ import {
   HelpCircle,
   LogOut,
   X,
+  Megaphone,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -89,6 +90,16 @@ const Sidebar = () => {
             >
               <Users className="mr-3 h-5 w-5" />
               <span>コミュニティ</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/band-recruitments"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Megaphone className="mr-3 h-5 w-5" />
+              <span>バンド募集</span>
             </Link>
           </li>
           <li className="mb-2">

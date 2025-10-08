@@ -4,7 +4,9 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import { useQuery } from "@tanstack/react-query";
+import {
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -14,169 +16,105 @@ import type {
   QueryKey,
   UndefinedInitialDataOptions,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
-import type { GetSpotifySearch200, GetSpotifySearchParams } from ".././model";
+import type {
+  GetSpotifySearch200,
+  GetSpotifySearchParams
+} from '.././model';
 
-import { customInstance } from "../../../custom-instance";
+import { customInstance } from '../../../custom-instance';
+
+
+
 
 /**
  * Search for tracks on Spotify by a query string.
  * @summary Search Spotify tracks
  */
 export const getSpotifySearch = (
-  params: GetSpotifySearchParams,
-  signal?: AbortSignal,
+    params: GetSpotifySearchParams,
+ signal?: AbortSignal
 ) => {
-  return customInstance<GetSpotifySearch200>({
-    url: `/spotify/search`,
-    method: "GET",
-    params,
-    signal,
-  });
-};
+      
+      
+      return customInstance<GetSpotifySearch200>(
+      {url: `/spotify/search`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
-export const getGetSpotifySearchQueryKey = (params: GetSpotifySearchParams) => {
-  return [`/spotify/search`, ...(params ? [params] : [])] as const;
-};
+export const getGetSpotifySearchQueryKey = (params: GetSpotifySearchParams,) => {
+    return [`/spotify/search`, ...(params ? [params]: [])] as const;
+    }
 
-export const getGetSpotifySearchQueryOptions = <
-  TData = Awaited<ReturnType<typeof getSpotifySearch>>,
-  TError = void,
->(
-  params: GetSpotifySearchParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getSpotifySearch>>,
-        TError,
-        TData
-      >
-    >;
-  },
+    
+export const getGetSpotifySearchQueryOptions = <TData = Awaited<ReturnType<typeof getSpotifySearch>>, TError = void>(params: GetSpotifySearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData>>, }
 ) => {
-  const { query: queryOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetSpotifySearchQueryKey(params);
+const {query: queryOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getSpotifySearch>>
-  > = ({ signal }) => getSpotifySearch(params, signal);
+  const queryKey =  queryOptions?.queryKey ?? getGetSpotifySearchQueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getSpotifySearch>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetSpotifySearchQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getSpotifySearch>>
->;
-export type GetSpotifySearchQueryError = void;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSpotifySearch>>> = ({ signal }) => getSpotifySearch(params, signal);
 
-export function useGetSpotifySearch<
-  TData = Awaited<ReturnType<typeof getSpotifySearch>>,
-  TError = void,
->(
-  params: GetSpotifySearchParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getSpotifySearch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSpotifySearchQueryResult = NonNullable<Awaited<ReturnType<typeof getSpotifySearch>>>
+export type GetSpotifySearchQueryError = void
+
+
+export function useGetSpotifySearch<TData = Awaited<ReturnType<typeof getSpotifySearch>>, TError = void>(
+ params: GetSpotifySearchParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSpotifySearch>>,
           TError,
           Awaited<ReturnType<typeof getSpotifySearch>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetSpotifySearch<
-  TData = Awaited<ReturnType<typeof getSpotifySearch>>,
-  TError = void,
->(
-  params: GetSpotifySearchParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getSpotifySearch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSpotifySearch<TData = Awaited<ReturnType<typeof getSpotifySearch>>, TError = void>(
+ params: GetSpotifySearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSpotifySearch>>,
           TError,
           Awaited<ReturnType<typeof getSpotifySearch>>
-        >,
-        "initialData"
-      >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetSpotifySearch<
-  TData = Awaited<ReturnType<typeof getSpotifySearch>>,
-  TError = void,
->(
-  params: GetSpotifySearchParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getSpotifySearch>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSpotifySearch<TData = Awaited<ReturnType<typeof getSpotifySearch>>, TError = void>(
+ params: GetSpotifySearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Search Spotify tracks
  */
 
-export function useGetSpotifySearch<
-  TData = Awaited<ReturnType<typeof getSpotifySearch>>,
-  TError = void,
->(
-  params: GetSpotifySearchParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getSpotifySearch>>,
-        TError,
-        TData
-      >
-    >;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetSpotifySearchQueryOptions(params, options);
+export function useGetSpotifySearch<TData = Awaited<ReturnType<typeof getSpotifySearch>>, TError = void>(
+ params: GetSpotifySearchParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpotifySearch>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetSpotifySearchQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
+

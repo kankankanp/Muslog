@@ -6,8 +6,8 @@
  */
 
 export type GetSpotifySearchParams = {
-  /**
-   * The search query string for tracks.
-   */
-  q: string;
+/**
+ * The search query string for tracks.
+ */
+q: string;
 };

@@ -4,7 +4,6 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import CommunityCard from "@/components/community/CommunityCard";
-import CreateCommunityModal from "@/components/elements/modals/CreateCommunityModal";
 import Spinner from "@/components/layouts/Spinner";
 import { useGetCommunitiesSearch } from "@/libs/api/generated/orval/communities/communities";
 
@@ -34,14 +33,11 @@ const CommunityPage: React.FC = () => {
     isLoading,
     isError,
     error,
-    refetch,
   } = useGetCommunitiesSearch({
     q: searchQuery,
     page: currentPage,
     perPage: 10,
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) {
     return <Spinner />;
@@ -83,10 +79,7 @@ const CommunityPage: React.FC = () => {
       <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between max-md:flex-col max-md:py-2 max-md:gap-2">
         <h1 className="text-3xl font-bold">コミュニティ</h1>
         <button
-          onClick={() => {
-            console.log(isModalOpen);
-            setIsModalOpen(true);
-          }}
+          onClick={() => router.push("/dashboard/community/create")}
           className="py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-center"
         >
           コミュニティを作成する
@@ -149,11 +142,6 @@ const CommunityPage: React.FC = () => {
           ))}
         </div>
       )}
-      <CreateCommunityModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCommunityCreated={refetch}
-      />
     </>
   );
 };

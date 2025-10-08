@@ -6,20 +6,20 @@
  */
 
 export type GetPostsSearchParams = {
-  /**
-   * Search query string for post title or description
-   */
-  q?: string;
-  /**
-   * Comma-separated list of tags to filter by
-   */
-  tags?: string;
-  /**
-   * Page number for pagination
-   */
-  page?: number;
-  /**
-   * Number of items per page for pagination
-   */
-  perPage?: number;
+/**
+ * Search query string for post title or description
+ */
+q?: string;
+/**
+ * Comma-separated list of tags to filter by
+ */
+tags?: string;
+/**
+ * Page number for pagination
+ */
+page?: number;
+/**
+ * Number of items per page for pagination
+ */
+perPage?: number;
 };

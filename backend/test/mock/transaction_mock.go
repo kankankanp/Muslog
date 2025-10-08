@@ -7,12 +7,14 @@ import (
 )
 
 type MockRepositoryProvider struct {
-	PostRepo      domainRepo.PostRepository
-	TagRepo       domainRepo.TagRepository
-	UserRepo      domainRepo.UserRepository
-	MessageRepo   domainRepo.MessageRepository
-	CommunityRepo domainRepo.CommunityRepository
-	LikeRepo      domainRepo.LikeRepository
+	PostRepo        domainRepo.PostRepository
+	TagRepo         domainRepo.TagRepository
+	UserRepo        domainRepo.UserRepository
+	MessageRepo     domainRepo.MessageRepository
+	CommunityRepo   domainRepo.CommunityRepository
+	LikeRepo        domainRepo.LikeRepository
+	BandRecruitRepo domainRepo.BandRecruitmentRepository
+	BandAppRepo     domainRepo.BandApplicationRepository
 }
 
 func (m *MockRepositoryProvider) PostRepository() domainRepo.PostRepository {
@@ -37,6 +39,14 @@ func (m *MockRepositoryProvider) CommunityRepository() domainRepo.CommunityRepos
 
 func (m *MockRepositoryProvider) LikeRepository() domainRepo.LikeRepository {
 	return m.LikeRepo
+}
+
+func (m *MockRepositoryProvider) BandRecruitmentRepository() domainRepo.BandRecruitmentRepository {
+	return m.BandRecruitRepo
+}
+
+func (m *MockRepositoryProvider) BandApplicationRepository() domainRepo.BandApplicationRepository {
+	return m.BandAppRepo
 }
 
 type MockTransactionManager struct {
