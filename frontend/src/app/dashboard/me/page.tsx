@@ -4,10 +4,13 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useMemo, useState, useRef } from "react";
 import BandRecruitmentCard from "@/components/bandRecruitment/BandRecruitmentCard";
 import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { useGetBandRecruitmentsAppliedMe } from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
+import {
+  useGetBandRecruitments,
+  useGetBandRecruitmentsAppliedMe,
+} from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
 import { useGetUsersMeLikedPosts } from "@/libs/api/generated/orval/likes/likes";
 import {
   GetPosts200,
@@ -17,6 +20,7 @@ import {
   useGetUsersIdPosts,
   usePostUsersUserIdProfileImage,
 } from "@/libs/api/generated/orval/users/users";
+import { useGetCommunities } from "@/libs/api/generated/orval/communities/communities";
 
 export default function ProfilePage() {
   const {
@@ -39,8 +43,34 @@ export default function ProfilePage() {
     isPending: appliedLoading,
     error: appliedError,
   } = useGetBandRecruitmentsAppliedMe();
+  const {
+    data: communitiesData,
+    isPending: communitiesLoading,
+    error: communitiesError,
+  } = useGetCommunities({
+    query: {
+      enabled: Boolean(currentUser?.id),
+    },
+  });
+  const {
+    data: bandRecruitmentsData,
+    isPending: createdBandsLoading,
+    error: createdBandsError,
+  } = useGetBandRecruitments(
+    { page: 1, perPage: 50 },
+    {
+      query: {
+        enabled: Boolean(currentUser?.id),
+      },
+    },
+  );
   const [tab, setTab] = useState<
-    "created" | "liked" | "applied" | "community-history"
+    | "created"
+    | "liked"
+    | "created-communities"
+    | "created-bands"
+    | "applied"
+    | "community-history"
   >("created");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -76,6 +106,32 @@ export default function ProfilePage() {
     );
   };
 
+  const posts = postsData?.posts ?? [];
+  const likedPosts = likedPostsData?.posts ?? [];
+  const createdCommunities = useMemo(() => {
+    if (!currentUser?.id) return [];
+    return (
+      communitiesData?.communities?.filter(
+        (community) => community.creatorId === currentUser.id,
+      ) ?? []
+    );
+  }, [communitiesData?.communities, currentUser?.id]);
+  const createdRecruitments = useMemo(() => {
+    if (!currentUser?.id) return [];
+    return (
+      bandRecruitmentsData?.recruitments?.filter(
+        (recruitment) => recruitment.userId === currentUser.id,
+      ) ?? []
+    );
+  }, [bandRecruitmentsData?.recruitments, currentUser?.id]);
+
+  const formatDate = (value?: string) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString();
+  };
+
   if (userLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -107,9 +163,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const posts = postsData?.posts ?? [];
-  const likedPosts = likedPostsData?.posts ?? [];
 
   return (
     <>
@@ -156,6 +209,8 @@ export default function ProfilePage() {
             {[
               { k: "created", label: "作成した記事" },
               { k: "liked", label: "いいねした記事" },
+              { k: "created-communities", label: "作成したコミュニティ" },
+              { k: "created-bands", label: "作成したバンド" },
               { k: "applied", label: "応募済みのバンド" },
               // TODO: コミュニティのアクセス履歴を今後実装する
               // { k: "community-history", label: "アクセスしたコミュニティ" },
@@ -298,6 +353,76 @@ export default function ProfilePage() {
                           </div>
                         </div>
                       </article>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "created-communities" && (
+              <>
+                {communitiesLoading ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    読み込み中...
+                  </div>
+                ) : communitiesError ? (
+                  <div className="py-16 text-center text-red-600 dark:text-red-400">
+                    作成したコミュニティの取得に失敗しました
+                  </div>
+                ) : createdCommunities.length === 0 ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    作成したコミュニティはありません。
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
+                    {createdCommunities.map((community) => (
+                      <article
+                        key={community.id}
+                        className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md dark:bg-gray-800"
+                      >
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
+                          {community.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
+                          {community.description}
+                        </p>
+                        <div className="mt-auto flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                          <span>作成日: {formatDate(community.createdAt)}</span>
+                          <a
+                            href={`/dashboard/community/${community.id}`}
+                            className="text-indigo-600 hover:underline"
+                          >
+                            詳細
+                          </a>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "created-bands" && (
+              <>
+                {createdBandsLoading ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    読み込み中...
+                  </div>
+                ) : createdBandsError ? (
+                  <div className="py-16 text-center text-red-600 dark:text-red-400">
+                    作成したバンドの取得に失敗しました
+                  </div>
+                ) : createdRecruitments.length === 0 ? (
+                  <div className="py-16 text-center text-gray-600 dark:text-gray-300">
+                    作成したバンドはありません。
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
+                    {createdRecruitments.map((recruitment) => (
+                      <BandRecruitmentCard
+                        key={recruitment.id}
+                        recruitment={recruitment}
+                      />
                     ))}
                   </div>
                 )}
