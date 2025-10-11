@@ -1,11 +1,15 @@
 "use client";
 
+import "easymde/dist/easymde.min.css";
+import type { Options as SimpleMdeOptions } from "easymde";
 import { Tag, Music } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import { z } from "zod";
+import FullscreenWysiwygEditor from "@/components/elements/editors/FullscreenWysiwygEditor";
 import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
 import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
 import TagModal from "@/components/elements/modals/TagModal";
@@ -18,6 +22,10 @@ import {
   usePostPostsPostIdHeaderImage,
 } from "@/libs/api/generated/orval/posts/posts";
 
+const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
+
 export default function AddPostPage() {
   const [title, setTitle] = useState("");
   const [markdown, setMarkdown] = useState("");
@@ -27,12 +35,15 @@ export default function AddPostPage() {
     description: z.string().min(1, "本文は必須です。"),
   });
   const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
-    "split",
+    "split"
   );
   const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
   const [editorZoom, setEditorZoom] = useState(1.0);
   const [editorWidth, setEditorWidth] = useState(50); // Initial width for editor in split view
   const [previewWidth, setPreviewWidth] = useState(50); // Initial width for preview in split view
+  const [editorMode, setEditorMode] = useState<"markdown" | "wysiwyg">(
+    "markdown"
+  );
 
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
@@ -41,7 +52,7 @@ export default function AddPostPage() {
 
   const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
   const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
-    undefined,
+    undefined
   ); // New
   const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
   const [currentUploadType, setCurrentUploadType] = useState<
@@ -50,6 +61,29 @@ export default function AddPostPage() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const headerPreviewUrlRef = useRef<string | null>(null);
+
+  const simpleMdeOptions = useMemo<SimpleMdeOptions>(
+    () => ({
+      spellChecker: false,
+      status: false,
+      hideIcons: ["side-by-side", "fullscreen"],
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+      ],
+    }),
+    []
+  );
 
   useEffect(() => {
     // Modal.setAppElement is now handled by the individual modal components or a higher-level component.
@@ -79,7 +113,7 @@ export default function AddPostPage() {
 
   const handleZoom = (
     area: "editor" | "preview",
-    type: "in" | "out" | "reset",
+    type: "in" | "out" | "reset"
   ) => {
     const step = 0.1;
     const minZoom = 0.5;
@@ -127,7 +161,7 @@ export default function AddPostPage() {
           // Insert the image URL into the markdown content
           setMarkdown(
             (prevMarkdown) =>
-              `${prevMarkdown}\n![image](${response.imageUrl})\n`,
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`
           );
           alert("画像を投稿内に挿入しました！");
         },
@@ -135,7 +169,7 @@ export default function AddPostPage() {
           console.error("投稿内画像のアップロードに失敗しました:", error);
           alert("投稿内画像のアップロードに失敗しました。");
         },
-      },
+      }
     );
   };
 
@@ -188,7 +222,7 @@ export default function AddPostPage() {
             if (newPostId === undefined) {
               console.error("投稿IDの取得に失敗しました。");
               alert(
-                "記事は投稿されましたが、ヘッダー画像の登録に失敗しました。",
+                "記事は投稿されましたが、ヘッダー画像の登録に失敗しました。"
               );
               router.push("/dashboard");
               return;
@@ -204,14 +238,14 @@ export default function AddPostPage() {
                 onError: (error) => {
                   console.error(
                     "ヘッダー画像のアップロードに失敗しました:",
-                    error,
+                    error
                   );
                   alert(
-                    "記事は投稿されましたが、ヘッダー画像のアップロードに失敗しました。",
+                    "記事は投稿されましたが、ヘッダー画像のアップロードに失敗しました。"
                   );
                   router.push("/dashboard");
                 },
-              },
+              }
             );
             return;
           }
@@ -223,7 +257,7 @@ export default function AddPostPage() {
           console.error("Failed to post article:", err);
           alert("記事の投稿に失敗しました。");
         },
-      },
+      }
     );
   };
 
@@ -235,7 +269,7 @@ export default function AddPostPage() {
 
   const handleRemoveFinalTrack = (trackToRemove: Track) => {
     setFinalSelectedTracks((prevTracks) =>
-      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId),
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
     );
   };
 
@@ -246,239 +280,395 @@ export default function AddPostPage() {
 
   const handleRemoveFinalTag = (tagToRemove: string) => {
     setFinalSelectedTags((prevTags) =>
-      prevTags.filter((tag) => tag !== tagToRemove),
+      prevTags.filter((tag) => tag !== tagToRemove)
     );
   };
 
   return (
     <>
-      <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:p-4">
-        <h1 className="text-3xl font-bold">記事を作成する</h1>
-        <button
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
-          onClick={handleSubmit}
-        >
-          記事を投稿する
-        </button>
-      </div>
-      <div ref={containerRef}>
-        <div className="flex justify-center gap-4 mb-4 mt-4">
-          <button
-            className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-            onClick={() => setViewMode("editor")}
-          >
-            エディタ
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${viewMode === "preview" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-            onClick={() => setViewMode("preview")}
-          >
-            プレビュー
-          </button>
-          <button
-            className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-            onClick={() => setViewMode("split")}
-          >
-            分割
-          </button>
-        </div>
-        <div className="flex h-screen bg-white">
-          {/* 右側：プレビュー */}
-          <div
-            className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
-          >
-            <div className="flex gap-2 mb-2 justify-end">
+      {editorMode === "wysiwyg" ? (
+        // フルスクリーンWYSIWYGエディタ
+        <div className="relative h-screen">
+          {/* ヘッダーナビゲーション */}
+          <div className="absolute top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("preview", "out")}
+                className="px-4 py-2 rounded bg-gray-200 text-gray-700"
+                onClick={() => setEditorMode("markdown")}
+                type="button"
               >
-                -
+                Markdownエディタ
               </button>
               <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("preview", "in")}
+                className="px-4 py-2 rounded bg-indigo-600 text-white"
+                onClick={() => setEditorMode("wysiwyg")}
+                type="button"
               >
-                +
-              </button>
-              <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("preview", "reset")}
-              >
-                リセット
+                WYSIWYGエディタ
               </button>
             </div>
-            <div className="mb-6">
-              {headerImageUrl && (
-                <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
-                  <Image
-                    src={headerImageUrl}
-                    alt="Header Image"
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-              )}
-              <h2 className="text-3xl font-bold text-gray-400 mt-6">
-                {title || "記事タイトル"}
-              </h2>
-            </div>
-            <div
-              className="prose prose-lg max-w-none w-full"
-              style={{ fontSize: `${previewZoom * 16}px` }}
-            >
-              <ReactMarkdown>
-                {markdown || "プレビューがここに表示されます。"}
-              </ReactMarkdown>
-            </div>
-          </div>
-          <div
-            className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
-          >
-            {validationError && (
-              <div className="mb-2 p-3 rounded bg-red-50 text-red-700 border border-red-200">
-                {validationError}
-              </div>
-            )}
-            <div className="flex gap-2 mb-2 justify-end">
+            <div className="flex items-center gap-4">
+              {/* アクションボタン */}
               <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("editor", "out")}
-              >
-                -
-              </button>
-              <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("editor", "in")}
-              >
-                +
-              </button>
-              <button
-                className="px-2 py-1 bg-gray-200 rounded"
-                onClick={() => handleZoom("editor", "reset")}
-              >
-                リセット
-              </button>
-            </div>
-            <input
-              type="text"
-              placeholder="記事タイトル"
-              className="text-3xl font-bold mb-4 bg-transparent outline-none"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => {
                   setCurrentUploadType("header");
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> ヘッダー画像
+                <span>＋</span> ヘッダー画像
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => {
                   setCurrentUploadType("in-post");
                   setIsHeaderImageModalOpen(true);
                 }}
               >
-                <span className="text-xl">＋</span> 投稿内画像
+                <span>＋</span> 投稿内画像
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => setIsTagModalOpen(true)}
               >
-                <Tag className="h-5 w-5" /> タグ
+                <Tag className="h-4 w-4" /> タグ
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => setIsSpotifyModalOpen(true)}
               >
-                <Music className="h-5 w-5" /> 曲
+                <Music className="h-4 w-4" /> 曲
+              </button>
+              <button
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                onClick={handleSubmit}
+              >
+                記事を投稿する
               </button>
             </div>
+          </div>
 
-            {finalSelectedTracks.length > 0 && (
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                {" "}
-                {finalSelectedTracks.map((track) => (
-                  <div
-                    key={track.spotifyId}
-                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
-                  >
-                    <Image
-                      src={track.albumImageUrl || "/default-image.jpg"}
-                      width={20}
-                      height={20}
-                      alt={track.name || ""}
-                      className="rounded-full mr-2"
-                    />
-                    {track.name} - {track.artistName}
-                    <button
-                      onClick={() => handleRemoveFinalTrack(track)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
+          {/* 選択されたトラック・タグ表示 */}
+          {(finalSelectedTracks.length > 0 || finalSelectedTags.length > 0) && (
+            <div className="absolute top-16 left-0 right-0 z-40 bg-gray-50 border-b border-gray-200 px-6 py-3">
+              {validationError && (
+                <div className="mb-3 p-3 rounded bg-red-50 text-red-700 border border-red-200 text-sm">
+                  {validationError}
+                </div>
+              )}
+              {finalSelectedTracks.length > 0 && (
+                <div className="flex gap-2 mb-2 overflow-x-auto pb-2">
+                  {finalSelectedTracks.map((track) => (
+                    <div
+                      key={track.spotifyId}
+                      className="flex items-center bg-white rounded-full px-3 py-1 text-sm flex-shrink-0 shadow-sm"
                     >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {finalSelectedTags.length > 0 && (
-              <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                {" "}
-                {finalSelectedTags.map((tag) => (
-                  <div
-                    key={tag}
-                    className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
-                  >
-                    {tag}
-                    <button
-                      onClick={() => handleRemoveFinalTag(tag)}
-                      className="ml-2 text-gray-500 hover:text-gray-700"
+                      <Image
+                        src={track.albumImageUrl || "/default-image.jpg"}
+                        width={16}
+                        height={16}
+                        alt={track.name || ""}
+                        className="rounded-full mr-2"
+                      />
+                      {track.name} - {track.artistName}
+                      <button
+                        onClick={() => handleRemoveFinalTrack(track)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {finalSelectedTags.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {finalSelectedTags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="flex items-center bg-white rounded-full px-3 py-1 text-sm flex-shrink-0 shadow-sm"
                     >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      {tag}
+                      <button
+                        onClick={() => handleRemoveFinalTag(tag)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-            <textarea
-              className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
-              placeholder="本文をマークダウンで入力してください"
+          {/* フルスクリーンエディタ */}
+          <div
+            className="pt-16"
+            style={{
+              paddingTop:
+                finalSelectedTracks.length > 0 || finalSelectedTags.length > 0
+                  ? "120px"
+                  : "64px",
+            }}
+          >
+            <FullscreenWysiwygEditor
               value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              style={{ fontSize: `${editorZoom * 16}px` }}
+              onChange={setMarkdown}
+              title={title}
+              onTitleChange={setTitle}
+              headerImageUrl={headerImageUrl}
             />
           </div>
         </div>
+      ) : (
+        // 従来のMarkdownエディタ
+        <>
+          <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:p-4">
+            <h1 className="text-3xl font-bold">記事を作成する</h1>
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
+              onClick={handleSubmit}
+            >
+              記事を投稿する
+            </button>
+          </div>
+          <div ref={containerRef}>
+            <div className="flex justify-center gap-4 mb-4 mt-4">
+              <button
+                className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                onClick={() => setViewMode("editor")}
+              >
+                エディタ
+              </button>
+              <button
+                className={`px-4 py-2 rounded ${viewMode === "preview" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                onClick={() => setViewMode("preview")}
+              >
+                プレビュー
+              </button>
+              <button
+                className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                onClick={() => setViewMode("split")}
+              >
+                分割
+              </button>
+            </div>
+            <div className="flex justify-center gap-2 mb-4">
+              <button
+                className="px-4 py-2 rounded bg-indigo-600 text-white"
+                onClick={() => setEditorMode("markdown")}
+                type="button"
+              >
+                Markdownエディタ
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-gray-200 text-gray-700"
+                onClick={() => setEditorMode("wysiwyg")}
+                type="button"
+              >
+                WYSIWYGエディタ
+              </button>
+            </div>
+            <div className="flex h-screen bg-white">
+              {/* 右側：プレビュー */}
+              <div
+                className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
+              >
+                <div className="flex gap-2 mb-2 justify-end">
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("preview", "out")}
+                  >
+                    -
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("preview", "in")}
+                  >
+                    +
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("preview", "reset")}
+                  >
+                    リセット
+                  </button>
+                </div>
+                <div className="mb-6">
+                  {headerImageUrl && (
+                    <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                      <Image
+                        src={headerImageUrl}
+                        alt="Header Image"
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </div>
+                  )}
+                  <h2 className="text-3xl font-bold text-gray-400 mt-6">
+                    {title || "記事タイトル"}
+                  </h2>
+                </div>
+                <div
+                  className="prose prose-lg max-w-none w-full"
+                  style={{ fontSize: `${previewZoom * 16}px` }}
+                >
+                  <ReactMarkdown>
+                    {markdown || "プレビューがここに表示されます。"}
+                  </ReactMarkdown>
+                </div>
+              </div>
+              <div
+                className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
+              >
+                {validationError && (
+                  <div className="mb-2 p-3 rounded bg-red-50 text-red-700 border border-red-200">
+                    {validationError}
+                  </div>
+                )}
+                <div className="flex gap-2 mb-2 justify-end">
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("editor", "out")}
+                  >
+                    -
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("editor", "in")}
+                  >
+                    +
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-gray-200 rounded"
+                    onClick={() => handleZoom("editor", "reset")}
+                  >
+                    リセット
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="記事タイトル"
+                  className="text-3xl font-bold mb-4 bg-transparent outline-none"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                    onClick={() => {
+                      setCurrentUploadType("header");
+                      setIsHeaderImageModalOpen(true);
+                    }}
+                  >
+                    <span className="text-xl">＋</span> ヘッダー画像
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                    onClick={() => {
+                      setCurrentUploadType("in-post");
+                      setIsHeaderImageModalOpen(true);
+                    }}
+                  >
+                    <span className="text-xl">＋</span> 投稿内画像
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                    onClick={() => setIsTagModalOpen(true)}
+                  >
+                    <Tag className="h-5 w-5" /> タグ
+                  </button>
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
+                    onClick={() => setIsSpotifyModalOpen(true)}
+                  >
+                    <Music className="h-5 w-5" /> 曲
+                  </button>
+                </div>
 
-        <TagModal
-          isOpen={isTagModalOpen}
-          onClose={() => setIsTagModalOpen(false)}
-          onSelectTags={handleTagSelect} // Assuming handleTagSelect will be created
-          initialSelectedTags={finalSelectedTags} // Assuming finalSelectedTags will be created
-        />
+                {finalSelectedTracks.length > 0 && (
+                  <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                    {" "}
+                    {finalSelectedTracks.map((track) => (
+                      <div
+                        key={track.spotifyId}
+                        className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                      >
+                        <Image
+                          src={track.albumImageUrl || "/default-image.jpg"}
+                          width={20}
+                          height={20}
+                          alt={track.name || ""}
+                          className="rounded-full mr-2"
+                        />
+                        {track.name} - {track.artistName}
+                        <button
+                          onClick={() => handleRemoveFinalTrack(track)}
+                          className="ml-2 text-gray-500 hover:text-gray-700"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-        <SpotifySearchModal
-          isOpen={isSpotifyModalOpen}
-          onClose={() => setIsSpotifyModalOpen(false)}
-          onSelectTracks={handleTrackSelect}
-          initialSelectedTracks={finalSelectedTracks}
-        />
+                {finalSelectedTags.length > 0 && (
+                  <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+                    {" "}
+                    {finalSelectedTags.map((tag) => (
+                      <div
+                        key={tag}
+                        className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
+                      >
+                        {tag}
+                        <button
+                          onClick={() => handleRemoveFinalTag(tag)}
+                          className="ml-2 text-gray-500 hover:text-gray-700"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-        <ImageUploadModal
-          isOpen={isHeaderImageModalOpen}
-          onClose={() => setIsHeaderImageModalOpen(false)}
-          onImageUpload={handleImageUpload}
-          currentImageUrl={
-            currentUploadType === "header" ? headerImageUrl : undefined
-          }
-        />
-      </div>
+                <textarea
+                  className="flex-1 w-full border rounded p-4 resize-none bg-gray-50"
+                  placeholder="本文をマークダウンで入力してください"
+                  value={markdown}
+                  onChange={(e) => setMarkdown(e.target.value)}
+                  style={{ fontSize: `${editorZoom * 16}px` }}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <TagModal
+        isOpen={isTagModalOpen}
+        onClose={() => setIsTagModalOpen(false)}
+        onSelectTags={handleTagSelect} // Assuming handleTagSelect will be created
+        initialSelectedTags={finalSelectedTags} // Assuming finalSelectedTags will be created
+      />
+
+      <SpotifySearchModal
+        isOpen={isSpotifyModalOpen}
+        onClose={() => setIsSpotifyModalOpen(false)}
+        onSelectTracks={handleTrackSelect}
+        initialSelectedTracks={finalSelectedTracks}
+      />
+
+      <ImageUploadModal
+        isOpen={isHeaderImageModalOpen}
+        onClose={() => setIsHeaderImageModalOpen(false)}
+        onImageUpload={handleImageUpload}
+        currentImageUrl={
+          currentUploadType === "header" ? headerImageUrl : undefined
+        }
+      />
     </>
   );
 }
