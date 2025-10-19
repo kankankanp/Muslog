@@ -1,6 +1,6 @@
-import { X, UploadCloud } from "lucide-react";
-import Image from "next/image";
-import React, { useState, useCallback, useRef } from "react";
+import { X, UploadCloud } from 'lucide-react';
+import Image from 'next/image';
+import React, { useState, useCallback, useRef } from 'react';
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -22,9 +22,9 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const handleDrag = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   }, []);
@@ -51,7 +51,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       setSelectedFile(null); // Clear selected file after upload
       onClose();
     } else {
-      alert("ファイルを選択してください。");
+      alert('ファイルを選択してください。');
     }
   };
 
@@ -75,7 +75,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
         </h2>
 
         <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900" : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"}`}
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}

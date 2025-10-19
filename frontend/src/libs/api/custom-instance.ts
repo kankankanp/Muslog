@@ -1,8 +1,8 @@
-import Axios, { AxiosRequestConfig } from "axios";
-import { handleApiError } from "./interceptor";
+import Axios, { AxiosRequestConfig } from 'axios';
+import { handleApiError } from './interceptor';
 
 const instance = Axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
   withCredentials: true,
 });
 
@@ -17,7 +17,7 @@ export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
 
   // @ts-ignore
   promise.cancel = () => {
-    source.cancel("Query was cancelled");
+    source.cancel('Query was cancelled');
   };
 
   return promise;

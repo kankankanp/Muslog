@@ -3,8 +3,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/login-or-signup",
+        source: '/',
+        destination: '/login-or-signup',
         permanent: true,
       },
     ];
@@ -15,14 +15,14 @@ const nextConfig = {
   webpack: (config) => {
     config.module.rules.push({
       test: /\.html$/,
-      use: "raw-loader",
+      use: 'raw-loader',
     });
 
     return config;
   },
   images: {
     unoptimized: true,
-    domains: ["i.scdn.co", "picsum.photos"],
+    domains: ['i.scdn.co', 'picsum.photos'],
   },
 };
 

@@ -1,6 +1,6 @@
-import "@/scss/blog-card.scss";
-import "@/scss/profile.scss";
-import Image from "next/image";
+import '@/scss/blog-card.scss';
+import '@/scss/profile.scss';
+import Image from 'next/image';
 
 type ProfileCardProps = {
   name: string;
@@ -17,7 +17,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ name, email }) => {
             src=""
             alt=""
             className="w-full h-full object-cover"
-            style={{ width: "auto", height: "auto" }}
+            style={{ width: 'auto', height: 'auto' }}
           />
         </div>
         <h2 className="text-xl font-bold mt-4 text-gray-800 dark:text-white">

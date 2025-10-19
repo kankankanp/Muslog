@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState, ReactNode } from "react";
-import Header from "@/components/layouts/Header";
-import Sidebar from "@/components/layouts/Sidebar";
-import { SidebarProvider } from "@/contexts/SidebarContext";
+import React, { useState, ReactNode } from 'react';
+import Header from '@/components/layouts/Header';
+import Sidebar from '@/components/layouts/Sidebar';
+import { SidebarProvider } from '@/contexts/SidebarContext';
 
 export default function DashboardContainer({
   children,

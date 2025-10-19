@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useQueryClient } from "@tanstack/react-query";
-import { Search } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import BlogCard from "@/components/elements/cards/BlogCard";
-import Spinner from "@/components/layouts/Spinner";
+import { useQueryClient } from '@tanstack/react-query';
+import { Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import BlogCard from '@/components/elements/cards/BlogCard';
+import Spinner from '@/components/layouts/Spinner';
 import {
   usePostPostsPostIDLike,
   useDeletePostsPostIDUnlike,
-} from "@/libs/api/generated/orval/likes/likes";
-import { useGetPostsSearch } from "@/libs/api/generated/orval/posts/posts";
-import { RootState } from "@/libs/store/store";
+} from '@/libs/api/generated/orval/likes/likes';
+import { useGetPostsSearch } from '@/libs/api/generated/orval/posts/posts';
+import { RootState } from '@/libs/store/store';
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialSearchQuery = searchParams.get("q") || "";
-  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  const initialSearchQuery = searchParams.get('q') || '';
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [currentInput, setCurrentInput] = useState(initialSearchQuery);
@@ -27,11 +27,11 @@ export default function Page() {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     if (searchQuery) {
-      params.set("q", searchQuery);
+      params.set('q', searchQuery);
     } else {
-      params.delete("q");
+      params.delete('q');
     }
-    params.set("page", currentPage.toString());
+    params.set('page', currentPage.toString());
     router.push(`?${params.toString()}`);
   }, [searchQuery, currentPage, router, searchParams]);
 
@@ -55,11 +55,11 @@ export default function Page() {
   const { mutate: likePost } = usePostPostsPostIDLike({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/posts"] });
+        queryClient.invalidateQueries({ queryKey: ['/posts'] });
       },
       onError: (error) => {
-        console.error("Failed to like post:", error);
-        alert("いいねに失敗しました");
+        console.error('Failed to like post:', error);
+        alert('いいねに失敗しました');
       },
     },
   });
@@ -67,18 +67,18 @@ export default function Page() {
   const { mutate: unlikePost } = useDeletePostsPostIDUnlike({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/posts"] });
+        queryClient.invalidateQueries({ queryKey: ['/posts'] });
       },
       onError: (error) => {
-        console.error("Failed to unlike post:", error);
-        alert("いいね解除に失敗しました");
+        console.error('Failed to unlike post:', error);
+        alert('いいね解除に失敗しました');
       },
     },
   });
 
   const handleLikeToggle = (postId: number, isCurrentlyLiked: boolean) => {
     if (!user) {
-      alert("ログインしてください");
+      alert('ログインしてください');
       return;
     }
 
@@ -96,7 +96,7 @@ export default function Page() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -145,8 +145,8 @@ export default function Page() {
               onClick={() => handlePageChange(page)}
               className={`mx-1 px-3 py-1 rounded ${
                 currentPage === page
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-700'
               }`}
             >
               {page}

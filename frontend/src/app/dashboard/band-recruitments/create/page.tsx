@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import BandRecruitmentForm, {
   type BandRecruitmentFormValues,
-} from "@/components/bandRecruitment/BandRecruitmentForm";
-import { usePostBandRecruitments } from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
+} from '@/components/bandRecruitment/BandRecruitmentForm';
+import { usePostBandRecruitments } from '@/libs/api/generated/orval/band-recruitments/band-recruitments';
 
 const BandRecruitmentCreatePage = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const BandRecruitmentCreatePage = () => {
 
   const handleSubmit = async (values: BandRecruitmentFormValues) => {
     const recruitingParts = values.recruitingParts
-      .split(",")
+      .split(',')
       .map((part) => part.trim())
       .filter(Boolean);
 
@@ -27,21 +27,23 @@ const BandRecruitmentCreatePage = () => {
           recruitingParts,
           skillLevel: values.skillLevel || undefined,
           contact: values.contact,
-          deadline: values.deadline ? `${values.deadline}T00:00:00Z` : undefined,
+          deadline: values.deadline
+            ? `${values.deadline}T00:00:00Z`
+            : undefined,
           status: values.status,
         },
       });
 
       const newId = response.recruitment?.id;
-      toast.success("募集を作成しました");
+      toast.success('募集を作成しました');
       if (newId) {
         router.push(`/dashboard/band-recruitments/${newId}`);
       } else {
-        router.push("/dashboard/band-recruitments");
+        router.push('/dashboard/band-recruitments');
       }
     } catch (err) {
       console.error(err);
-      toast.error("募集の作成に失敗しました");
+      toast.error('募集の作成に失敗しました');
     }
   };
 
@@ -57,7 +59,7 @@ const BandRecruitmentCreatePage = () => {
         submitLabel="募集を作成"
         onSubmit={handleSubmit}
         isSubmitting={isPending}
-        onCancel={() => router.push("/dashboard/band-recruitments")}
+        onCancel={() => router.push('/dashboard/band-recruitments')}
       />
     </div>
   );

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useFormStatus } from "react-dom";
+import { useFormStatus } from 'react-dom';
 
 type LoadingButtonProps = {
   label: string;
-  color?: "blue" | "green";
+  color?: 'blue' | 'green';
   isPending?: boolean;
 };
 
 export default function LoadingButton({
   label,
-  color = "blue",
+  color = 'blue',
 }: LoadingButtonProps) {
   const { pending } = useFormStatus();
   const buttonColor = `bg-${color}-500 hover:bg-${color}-600 dark:hover:bg-${color}-400`;

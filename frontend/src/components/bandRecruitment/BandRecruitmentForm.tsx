@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export type BandRecruitmentFormValues = {
   title: string;
@@ -23,15 +23,15 @@ type BandRecruitmentFormProps = {
 };
 
 const defaultValues: BandRecruitmentFormValues = {
-  title: "",
-  description: "",
-  genre: "",
-  location: "",
-  recruitingParts: "",
-  skillLevel: "",
-  contact: "",
-  deadline: "",
-  status: "open",
+  title: '',
+  description: '',
+  genre: '',
+  location: '',
+  recruitingParts: '',
+  skillLevel: '',
+  contact: '',
+  deadline: '',
+  status: 'open',
 };
 
 const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
@@ -53,7 +53,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
 
   const handleChange = (
     field: keyof BandRecruitmentFormValues,
-    value: string,
+    value: string
   ) => {
     setValues((prev) => ({ ...prev, [field]: value }));
   };
@@ -61,15 +61,15 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!values.title.trim()) {
-      setError("タイトルを入力してください。");
+      setError('タイトルを入力してください。');
       return;
     }
     if (!values.description.trim()) {
-      setError("募集内容を入力してください。");
+      setError('募集内容を入力してください。');
       return;
     }
     if (!values.contact.trim()) {
-      setError("連絡方法を入力してください。");
+      setError('連絡方法を入力してください。');
       return;
     }
 
@@ -87,7 +87,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
         <input
           type="text"
           value={values.title}
-          onChange={(e) => handleChange("title", e.target.value)}
+          onChange={(e) => handleChange('title', e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           placeholder="例: ロックバンドのギタリスト募集"
         />
@@ -98,7 +98,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
         </label>
         <textarea
           value={values.description}
-          onChange={(e) => handleChange("description", e.target.value)}
+          onChange={(e) => handleChange('description', e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           rows={6}
           placeholder="募集の背景や求める人物像、活動頻度などを記入してください。"
@@ -112,7 +112,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="text"
             value={values.genre}
-            onChange={(e) => handleChange("genre", e.target.value)}
+            onChange={(e) => handleChange('genre', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             placeholder="例: ロック、J-POP"
           />
@@ -124,7 +124,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="text"
             value={values.location}
-            onChange={(e) => handleChange("location", e.target.value)}
+            onChange={(e) => handleChange('location', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             placeholder="例: 東京 / オンライン"
           />
@@ -138,7 +138,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="text"
             value={values.recruitingParts}
-            onChange={(e) => handleChange("recruitingParts", e.target.value)}
+            onChange={(e) => handleChange('recruitingParts', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             placeholder="例: Vo, Gt, Dr"
           />
@@ -150,7 +150,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="text"
             value={values.skillLevel}
-            onChange={(e) => handleChange("skillLevel", e.target.value)}
+            onChange={(e) => handleChange('skillLevel', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             placeholder="例: 初心者歓迎 / 中級以上"
           />
@@ -164,7 +164,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="text"
             value={values.contact}
-            onChange={(e) => handleChange("contact", e.target.value)}
+            onChange={(e) => handleChange('contact', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             placeholder="例: sample@example.com / Discord ID"
           />
@@ -176,7 +176,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           <input
             type="date"
             value={values.deadline}
-            onChange={(e) => handleChange("deadline", e.target.value)}
+            onChange={(e) => handleChange('deadline', e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
@@ -187,7 +187,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
         </label>
         <select
           value={values.status}
-          onChange={(e) => handleChange("status", e.target.value)}
+          onChange={(e) => handleChange('status', e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="open">募集中</option>
@@ -209,7 +209,7 @@ const BandRecruitmentForm: React.FC<BandRecruitmentFormProps> = ({
           disabled={isSubmitting}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
         >
-          {isSubmitting ? "送信中..." : submitLabel}
+          {isSubmitting ? '送信中...' : submitLabel}
         </button>
       </div>
     </form>

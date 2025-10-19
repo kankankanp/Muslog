@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Filter, RefreshCw } from "lucide-react";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import BandRecruitmentCard from "@/components/bandRecruitment/BandRecruitmentCard";
-import Spinner from "@/components/layouts/Spinner";
-import { useGetBandRecruitments } from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
-import type { GetBandRecruitmentsParams } from "@/libs/api/generated/orval/model/getBandRecruitmentsParams";
+import { Filter, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import BandRecruitmentCard from '@/components/bandRecruitment/BandRecruitmentCard';
+import Spinner from '@/components/layouts/Spinner';
+import { useGetBandRecruitments } from '@/libs/api/generated/orval/band-recruitments/band-recruitments';
+import type { GetBandRecruitmentsParams } from '@/libs/api/generated/orval/model/getBandRecruitmentsParams';
 
 const PER_PAGE = 9;
 
 const DEFAULT_FILTERS = {
-  keyword: "",
-  genre: "",
-  location: "",
-  status: "all",
+  keyword: '',
+  genre: '',
+  location: '',
+  status: 'all',
 };
 
 const BandRecruitmentsPage = () => {
@@ -22,38 +22,42 @@ const BandRecruitmentsPage = () => {
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
 
-  const queryParams = useMemo(
-    () => {
-      const params: GetBandRecruitmentsParams = {
-        page,
-        perPage: PER_PAGE,
-      };
+  const queryParams = useMemo(() => {
+    const params: GetBandRecruitmentsParams = {
+      page,
+      perPage: PER_PAGE,
+    };
 
-      const trimmedKeyword = appliedFilters.keyword.trim();
-      if (trimmedKeyword) {
-        params.keyword = trimmedKeyword;
-      }
+    const trimmedKeyword = appliedFilters.keyword.trim();
+    if (trimmedKeyword) {
+      params.keyword = trimmedKeyword;
+    }
 
-      const trimmedGenre = appliedFilters.genre.trim();
-      if (trimmedGenre) {
-        params.genre = trimmedGenre;
-      }
+    const trimmedGenre = appliedFilters.genre.trim();
+    if (trimmedGenre) {
+      params.genre = trimmedGenre;
+    }
 
-      const trimmedLocation = appliedFilters.location.trim();
-      if (trimmedLocation) {
-        params.location = trimmedLocation;
-      }
+    const trimmedLocation = appliedFilters.location.trim();
+    if (trimmedLocation) {
+      params.location = trimmedLocation;
+    }
 
-      if (appliedFilters.status !== "all") {
-        params.status = appliedFilters.status;
-      }
+    if (appliedFilters.status !== 'all') {
+      params.status = appliedFilters.status;
+    }
 
-      return params;
-    },
-    [appliedFilters.keyword, appliedFilters.genre, appliedFilters.location, appliedFilters.status, page],
-  );
+    return params;
+  }, [
+    appliedFilters.keyword,
+    appliedFilters.genre,
+    appliedFilters.location,
+    appliedFilters.status,
+    page,
+  ]);
 
-  const { data, isLoading, isError, error } = useGetBandRecruitments(queryParams);
+  const { data, isLoading, isError, error } =
+    useGetBandRecruitments(queryParams);
 
   const recruitments = data?.recruitments ?? [];
   const totalCount = data?.totalCount ?? 0;
@@ -79,7 +83,7 @@ const BandRecruitmentsPage = () => {
       <div className="p-8 text-center text-red-600">
         データの取得に失敗しました。
         <div className="mt-2 text-sm text-gray-500">
-          {error instanceof Error ? error.message : "Unknown error"}
+          {error instanceof Error ? error.message : 'Unknown error'}
         </div>
       </div>
     );
@@ -104,7 +108,9 @@ const BandRecruitmentsPage = () => {
         </h2>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="block text-sm font-medium text-slate-600">キーワード</label>
+            <label className="block text-sm font-medium text-slate-600">
+              キーワード
+            </label>
             <input
               type="text"
               value={draftFilters.keyword}
@@ -119,7 +125,9 @@ const BandRecruitmentsPage = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-600">ジャンル</label>
+            <label className="block text-sm font-medium text-slate-600">
+              ジャンル
+            </label>
             <input
               type="text"
               value={draftFilters.genre}
@@ -134,7 +142,9 @@ const BandRecruitmentsPage = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-600">活動地域</label>
+            <label className="block text-sm font-medium text-slate-600">
+              活動地域
+            </label>
             <input
               type="text"
               value={draftFilters.location}
@@ -149,7 +159,9 @@ const BandRecruitmentsPage = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-600">ステータス</label>
+            <label className="block text-sm font-medium text-slate-600">
+              ステータス
+            </label>
             <select
               value={draftFilters.status}
               onChange={(e) =>
@@ -214,13 +226,13 @@ const BandRecruitmentsPage = () => {
                 onClick={() => setPage(pageNumber)}
                 className={`rounded-md px-3 py-1 text-sm font-medium ${
                   pageNumber === page
-                    ? "bg-indigo-600 text-white"
-                    : "border border-gray-300 text-slate-700 hover:bg-gray-100"
+                    ? 'bg-indigo-600 text-white'
+                    : 'border border-gray-300 text-slate-700 hover:bg-gray-100'
                 }`}
               >
                 {pageNumber}
               </button>
-            ),
+            )
           )}
         </div>
       )}

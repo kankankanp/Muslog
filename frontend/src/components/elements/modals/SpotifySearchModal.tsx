@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import Modal from "react-modal";
-import SelectMusicArea from "@/components/elements/others/SelectMusicArea";
-import { Track } from "@/libs/api/generated/orval/model/track";
+import React from 'react';
+import Modal from 'react-modal';
+import SelectMusicArea from '@/components/elements/others/SelectMusicArea';
+import { Track } from '@/libs/api/generated/orval/model/track';
 
 type SpotifySearchModalProps = {
   isOpen: boolean;

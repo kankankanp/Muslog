@@ -1,5 +1,5 @@
-@use "_variables" as v;
-@use "sass:map";
+@use '_variables' as v;
+@use 'sass:map';
 
 @mixin mq($mq: max, $bp1: md, $bp2: lg) {
   $start: map.get(v.$breakpoints, $bp1) or $bp1;

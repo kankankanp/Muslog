@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Search } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
-import CommunityCard from "@/components/community/CommunityCard";
-import Spinner from "@/components/layouts/Spinner";
-import { useGetCommunitiesSearch } from "@/libs/api/generated/orval/communities/communities";
+import { Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import CommunityCard from '@/components/community/CommunityCard';
+import Spinner from '@/components/layouts/Spinner';
+import { useGetCommunitiesSearch } from '@/libs/api/generated/orval/communities/communities';
 
 const CommunityPage: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialSearchQuery = searchParams.get("q") || "";
-  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  const initialSearchQuery = searchParams.get('q') || '';
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [currentInput, setCurrentInput] = useState(initialSearchQuery);
@@ -20,11 +20,11 @@ const CommunityPage: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     if (searchQuery) {
-      params.set("q", searchQuery);
+      params.set('q', searchQuery);
     } else {
-      params.delete("q");
+      params.delete('q');
     }
-    params.set("page", currentPage.toString());
+    params.set('page', currentPage.toString());
     router.push(`?${params.toString()}`);
   }, [searchQuery, currentPage, router, searchParams]);
 
@@ -46,10 +46,10 @@ const CommunityPage: React.FC = () => {
   if (isError) {
     return (
       <div className="text-center text-red-600">
-        Error:{" "}
-        {typeof error !== "undefined" && error
+        Error:{' '}
+        {typeof error !== 'undefined' && error
           ? String(error)
-          : "Failed to load communities"}
+          : 'Failed to load communities'}
       </div>
     );
   }
@@ -65,7 +65,7 @@ const CommunityPage: React.FC = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -79,7 +79,7 @@ const CommunityPage: React.FC = () => {
       <div className="border-gray-100 border-b-2 bg-white px-8 py-6 flex justify-between max-md:flex-col max-md:py-2 max-md:gap-2">
         <h1 className="text-3xl font-bold">コミュニティ</h1>
         <button
-          onClick={() => router.push("/dashboard/community/create")}
+          onClick={() => router.push('/dashboard/community/create')}
           className="py-1 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-center"
         >
           コミュニティを作成する
@@ -133,8 +133,8 @@ const CommunityPage: React.FC = () => {
               onClick={() => handlePageChange(page)}
               className={`mx-1 px-3 py-1 rounded ${
                 currentPage === page
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-700'
               }`}
             >
               {page}

@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useMemo, useState, useRef } from "react";
-import BandRecruitmentCard from "@/components/bandRecruitment/BandRecruitmentCard";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
+import { useMemo, useState, useRef } from 'react';
+import BandRecruitmentCard from '@/components/bandRecruitment/BandRecruitmentCard';
+import { useGetMe } from '@/libs/api/generated/orval/auth/auth';
 import {
   useGetBandRecruitments,
   useGetBandRecruitmentsAppliedMe,
-} from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
-import { useGetUsersMeLikedPosts } from "@/libs/api/generated/orval/likes/likes";
+} from '@/libs/api/generated/orval/band-recruitments/band-recruitments';
+import { useGetCommunities } from '@/libs/api/generated/orval/communities/communities';
+import { useGetUsersMeLikedPosts } from '@/libs/api/generated/orval/likes/likes';
 import {
   GetPosts200,
   GetUsersMeLikedPosts200,
-} from "@/libs/api/generated/orval/model";
+} from '@/libs/api/generated/orval/model';
 import {
   useGetUsersIdPosts,
   usePostUsersUserIdProfileImage,
-} from "@/libs/api/generated/orval/users/users";
-import { useGetCommunities } from "@/libs/api/generated/orval/communities/communities";
+} from '@/libs/api/generated/orval/users/users';
 
 export default function ProfilePage() {
   const {
@@ -32,7 +32,7 @@ export default function ProfilePage() {
     data: postsData,
     isPending: postsLoading,
     error: postsError,
-  } = useGetUsersIdPosts<GetPosts200>(currentUser?.id || "");
+  } = useGetUsersIdPosts<GetPosts200>(currentUser?.id || '');
   const {
     data: likedPostsData,
     isPending: likedPostsLoading,
@@ -62,47 +62,47 @@ export default function ProfilePage() {
       query: {
         enabled: Boolean(currentUser?.id),
       },
-    },
+    }
   );
   const [tab, setTab] = useState<
-    | "created"
-    | "liked"
-    | "created-communities"
-    | "created-bands"
-    | "applied"
-    | "community-history"
-  >("created");
+    | 'created'
+    | 'liked'
+    | 'created-communities'
+    | 'created-bands'
+    | 'applied'
+    | 'community-history'
+  >('created');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { mutate: uploadProfileImage } = usePostUsersUserIdProfileImage();
 
   const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     if (!currentUser?.id) {
-      alert("ユーザーIDが見つかりません。");
+      alert('ユーザーIDが見つかりません。');
       return;
     }
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append('image', file);
 
     uploadProfileImage(
       { userId: currentUser.id, data: { image: file } },
       {
         onSuccess: () => {
-          alert("プロフィール画像を更新しました！");
-          queryClient.invalidateQueries({ queryKey: ["getUserMe"] });
+          alert('プロフィール画像を更新しました！');
+          queryClient.invalidateQueries({ queryKey: ['getUserMe'] });
         },
         onError: (error) => {
-          console.error("プロフィール画像の更新に失敗しました:", error);
-          alert("プロフィール画像の更新に失敗しました。");
+          console.error('プロフィール画像の更新に失敗しました:', error);
+          alert('プロフィール画像の更新に失敗しました。');
         },
-      },
+      }
     );
   };
 
@@ -112,7 +112,7 @@ export default function ProfilePage() {
     if (!currentUser?.id) return [];
     return (
       communitiesData?.communities?.filter(
-        (community) => community.creatorId === currentUser.id,
+        (community) => community.creatorId === currentUser.id
       ) ?? []
     );
   }, [communitiesData?.communities, currentUser?.id]);
@@ -120,13 +120,13 @@ export default function ProfilePage() {
     if (!currentUser?.id) return [];
     return (
       bandRecruitmentsData?.recruitments?.filter(
-        (recruitment) => recruitment.userId === currentUser.id,
+        (recruitment) => recruitment.userId === currentUser.id
       ) ?? []
     );
   }, [bandRecruitmentsData?.recruitments, currentUser?.id]);
 
   const formatDate = (value?: string) => {
-    if (!value) return "";
+    if (!value) return '';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
     return date.toLocaleDateString();
@@ -149,7 +149,7 @@ export default function ProfilePage() {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
         <p className="text-red-600 dark:text-red-400">
           ユーザーの取得に失敗しました：
-          {(userError as any)?.message || "Unknown error"}
+          {(userError as any)?.message || 'Unknown error'}
         </p>
       </div>
     );
@@ -207,11 +207,11 @@ export default function ProfilePage() {
           </div>
           <nav className="flex gap-10 pt-8 mx-auto">
             {[
-              { k: "created", label: "作成した記事" },
-              { k: "liked", label: "いいねした記事" },
-              { k: "created-communities", label: "作成したコミュニティ" },
-              { k: "created-bands", label: "作成したバンド" },
-              { k: "applied", label: "応募済みのバンド" },
+              { k: 'created', label: '作成した記事' },
+              { k: 'liked', label: 'いいねした記事' },
+              { k: 'created-communities', label: '作成したコミュニティ' },
+              { k: 'created-bands', label: '作成したバンド' },
+              { k: 'applied', label: '応募済みのバンド' },
               // TODO: コミュニティのアクセス履歴を今後実装する
               // { k: "community-history", label: "アクセスしたコミュニティ" },
             ].map(({ k, label }) => {
@@ -225,10 +225,10 @@ export default function ProfilePage() {
                   {label}
                   <span
                     className={
-                      "absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full " +
+                      'absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full ' +
                       (active
-                        ? "bg-gray-900 dark:bg-gray-100"
-                        : "bg-transparent")
+                        ? 'bg-gray-900 dark:bg-gray-100'
+                        : 'bg-transparent')
                     }
                   />
                 </button>
@@ -241,7 +241,7 @@ export default function ProfilePage() {
       <section className="bg-indigo-50/60 dark:bg-gray-800/40 border-t border-gray-200 dark:border-gray-700 h-full">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 h-full">
           <div className="pb-16">
-            {tab === "created" && (
+            {tab === 'created' && (
               <>
                 {postsLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -265,9 +265,9 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 py-6">
                     {posts.map((post) => {
                       const headerImageSrc =
-                        post.headerImageUrl && post.headerImageUrl.trim() !== ""
+                        post.headerImageUrl && post.headerImageUrl.trim() !== ''
                           ? post.headerImageUrl
-                          : "/default-image.jpg";
+                          : '/default-image.jpg';
                       return (
                         <article
                           key={post.id}
@@ -314,7 +314,7 @@ export default function ProfilePage() {
               </>
             )}
 
-            {tab === "liked" && (
+            {tab === 'liked' && (
               <>
                 {likedPostsLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -359,7 +359,7 @@ export default function ProfilePage() {
               </>
             )}
 
-            {tab === "created-communities" && (
+            {tab === 'created-communities' && (
               <>
                 {communitiesLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -402,7 +402,7 @@ export default function ProfilePage() {
               </>
             )}
 
-            {tab === "created-bands" && (
+            {tab === 'created-bands' && (
               <>
                 {createdBandsLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -429,7 +429,7 @@ export default function ProfilePage() {
               </>
             )}
 
-            {tab === "applied" && (
+            {tab === 'applied' && (
               <>
                 {appliedLoading ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
@@ -439,18 +439,21 @@ export default function ProfilePage() {
                   <div className="py-16 text-center text-red-600 dark:text-red-400">
                     応募済みバンドの取得に失敗しました
                   </div>
-                ) : (appliedRecruitmentsData?.recruitments?.length || 0) === 0 ? (
+                ) : (appliedRecruitmentsData?.recruitments?.length || 0) ===
+                  0 ? (
                   <div className="py-16 text-center text-gray-600 dark:text-gray-300">
                     応募済みのバンドはありません。
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
-                    {appliedRecruitmentsData?.recruitments?.map((recruitment) => (
-                      <BandRecruitmentCard
-                        key={recruitment.id}
-                        recruitment={recruitment}
-                      />
-                    ))}
+                    {appliedRecruitmentsData?.recruitments?.map(
+                      (recruitment) => (
+                        <BandRecruitmentCard
+                          key={recruitment.id}
+                          recruitment={recruitment}
+                        />
+                      )
+                    )}
                   </div>
                 )}
               </>

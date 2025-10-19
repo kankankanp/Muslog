@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   User,
@@ -9,14 +9,14 @@ import {
   LogOut,
   X,
   Megaphone,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { useSidebar } from "@/contexts/SidebarContext";
-import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
-import { logout } from "@/libs/store/authSlice";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { useSidebar } from '@/contexts/SidebarContext';
+import { usePostLogout } from '@/libs/api/generated/orval/auth/auth';
+import { logout } from '@/libs/store/authSlice';
 
 const Sidebar = () => {
   const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
@@ -28,19 +28,19 @@ const Sidebar = () => {
     logoutMutation(undefined, {
       onSuccess: () => {
         dispatch(logout());
-        toast.success("ログアウトしました");
-        router.push("/login-or-signup");
+        toast.success('ログアウトしました');
+        router.push('/login-or-signup');
       },
       onError: (error) => {
-        console.error("Logout error:", error);
-        toast.error("ログアウトに失敗しました。");
+        console.error('Logout error:', error);
+        toast.error('ログアウトに失敗しました。');
       },
     });
   };
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 p-4 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 p-4 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <div className="flex justify-end md:hidden">
         <button

@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
+import { useParams } from 'next/navigation';
 import React, {
   useEffect,
   useState,
   useRef,
   useMemo,
   useCallback,
-} from "react";
-import toast from "react-hot-toast";
-import ChatInput from "@/components/community/ChatInput";
-import ChatMessage from "@/components/community/ChatMessage";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { useGetCommunitiesCommunityIdMessages } from "@/libs/api/generated/orval/communities/communities";
-import { useWebSocket } from "@/libs/websocket/client";
+} from 'react';
+import toast from 'react-hot-toast';
+import ChatInput from '@/components/community/ChatInput';
+import ChatMessage from '@/components/community/ChatMessage';
+import { useGetMe } from '@/libs/api/generated/orval/auth/auth';
+import { useGetCommunitiesCommunityIdMessages } from '@/libs/api/generated/orval/communities/communities';
+import { useWebSocket } from '@/libs/websocket/client';
 
 interface CommunityChatPageProps {
   params: { communityId: string };
@@ -22,11 +22,11 @@ interface CommunityChatPageProps {
 const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
   const params = useParams();
   const communityId =
-    typeof params.communityId === "string"
+    typeof params.communityId === 'string'
       ? params.communityId
       : Array.isArray(params.communityId)
         ? params.communityId[0]
-        : "";
+        : '';
   interface Message {
     id: string;
     communityId: string;
@@ -68,7 +68,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
     if (!trimmed) return [];
 
     const results: Message[] = [];
-    let buffer = "";
+    let buffer = '';
     let depth = 0;
     let inString = false;
     let escape = false;
@@ -80,19 +80,19 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
       if (inString) {
         if (escape) {
           escape = false;
-        } else if (char === "\\") {
+        } else if (char === '\\') {
           escape = true;
-        } else if (char === "\"") {
+        } else if (char === '"') {
           inString = false;
         }
         continue;
       }
 
-      if (char === "\"") {
+      if (char === '"') {
         inString = true;
-      } else if (char === "{") {
+      } else if (char === '{') {
         depth++;
-      } else if (char === "}") {
+      } else if (char === '}') {
         depth--;
       }
 
@@ -102,13 +102,13 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           try {
             results.push(JSON.parse(candidate));
           } catch (parseError) {
-            console.error("Failed to parse WebSocket message chunk:", {
+            console.error('Failed to parse WebSocket message chunk:', {
               candidate,
               parseError,
             });
           }
         }
-        buffer = "";
+        buffer = '';
       }
     }
 
@@ -118,9 +118,9 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
   // WebSocket connection
   const wsUrl =
     process.env.NEXT_PUBLIC_WEBSOCKET_URL ||
-    (typeof window !== "undefined"
-      ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.hostname}:8080/ws/community/`
-      : "wss://localhost:8080/ws/community/");
+    (typeof window !== 'undefined'
+      ? `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:8080/ws/community/`
+      : 'wss://localhost:8080/ws/community/');
   const websocketHandlers = useMemo(
     () => ({
       onMessage: (event: MessageEvent) => {
@@ -129,7 +129,8 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           if (parsed.length > 0) {
             const deduped: Message[] = [];
             parsed.forEach((msg) => {
-              const key = msg.id || `${msg.senderId ?? "unknown"}-${msg.createdAt ?? ""}`;
+              const key =
+                msg.id || `${msg.senderId ?? 'unknown'}-${msg.createdAt ?? ''}`;
               if (!key || messageIdsRef.current.has(key)) {
                 return;
               }
@@ -142,37 +143,37 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           }
         };
 
-        if (typeof event.data === "string") {
+        if (typeof event.data === 'string') {
           handlePayload(event.data);
         } else if (event.data instanceof Blob) {
           event.data
             .text()
             .then(handlePayload)
             .catch((blobError) =>
-              console.error("Failed to read Blob WebSocket message:", blobError),
+              console.error('Failed to read Blob WebSocket message:', blobError)
             );
         } else {
-          console.warn("Unsupported WebSocket payload type", event.data);
+          console.warn('Unsupported WebSocket payload type', event.data);
         }
       },
       onError: (event: Event) => {
-        console.error("WebSocket error. Please check console.", event);
+        console.error('WebSocket error. Please check console.', event);
       },
       onClose: (event: CloseEvent) => {
-        console.log("Disconnected from chat. Please refresh.", event);
+        console.log('Disconnected from chat. Please refresh.', event);
       },
     }),
-    [parseWebSocketPayload],
+    [parseWebSocketPayload]
   );
 
   const { isConnected, lastMessage, sendMessage } = useWebSocket(
     `${wsUrl}${communityId}`,
-    websocketHandlers,
+    websocketHandlers
   );
 
   // Scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleSendMessage = (content: string) => {
@@ -191,11 +192,11 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
 
   if (isError) {
     toast.error(
-      `Error loading chat history: ${error?.message || "Unknown error"}`,
+      `Error loading chat history: ${error?.message || 'Unknown error'}`
     );
     return (
       <div className="text-center text-red-600">
-        Error: {error?.message || "Failed to load chat history"}
+        Error: {error?.message || 'Failed to load chat history'}
       </div>
     );
   }
@@ -207,7 +208,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
           Community: {communityId}
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          {isConnected ? "Connected" : "Disconnected"}
+          {isConnected ? 'Connected' : 'Disconnected'}
         </p>
       </div>
       <div className="flex-grow overflow-y-auto p-4 space-y-4">
@@ -220,7 +221,7 @@ const CommunityChatPage: React.FC<CommunityChatPageProps> = () => {
             // TODO: Replace with actual user ID from context for isOwnMessage check
             <ChatMessage
               key={
-                msg.id ?? `${msg.senderId ?? "unknown"}-${msg.createdAt ?? idx}`
+                msg.id ?? `${msg.senderId ?? 'unknown'}-${msg.createdAt ?? idx}`
               }
               message={msg}
               isOwnMessage={Boolean(me?.id) && msg.senderId === me!.id}

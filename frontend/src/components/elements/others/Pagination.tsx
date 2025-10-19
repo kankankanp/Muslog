@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import "@/scss/pagination.scss";
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import '@/scss/pagination.scss';
 
 type PaginationProps = {
   totalCount: number;
@@ -22,19 +22,19 @@ const Pagination = ({ totalCount }: PaginationProps) => {
         (number, index) => (
           <li
             className={`pagination__item ${
-              currentPage === number ? "is-active" : ""
+              currentPage === number ? 'is-active' : ''
             } dark:bg-gray-800 dark:text-white`}
             key={index}
           >
             <Link
               className="pagination__item-link"
               href={`/dashboard/blog/page/${number}`}
-              aria-current={currentPage === number ? "page" : undefined}
+              aria-current={currentPage === number ? 'page' : undefined}
             >
               {number}
             </Link>
           </li>
-        ),
+        )
       )}
     </ul>
   );

@@ -1,45 +1,45 @@
-"use client";
+'use client';
 
-import { Tag, Music } from "lucide-react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import { z } from "zod";
-import ImageUploadModal from "@/components/elements/modals/ImageUploadModal"; // New
-import SpotifySearchModal from "@/components/elements/modals/SpotifySearchModal";
-import TagModal from "@/components/elements/modals/TagModal";
-import FullscreenWysiwygEditor from "@/components/elements/editors/FullscreenWysiwygEditor";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
-import { usePostImagesUpload } from "@/libs/api/generated/orval/images/images";
-import { PostPostsBody } from "@/libs/api/generated/orval/model";
-import { Track } from "@/libs/api/generated/orval/model/track";
+import { Tag, Music } from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { z } from 'zod';
+import FullscreenWysiwygEditor from '@/components/elements/editors/FullscreenWysiwygEditor';
+import ImageUploadModal from '@/components/elements/modals/ImageUploadModal'; // New
+import SpotifySearchModal from '@/components/elements/modals/SpotifySearchModal';
+import TagModal from '@/components/elements/modals/TagModal';
+import { useGetMe } from '@/libs/api/generated/orval/auth/auth';
+import { usePostImagesUpload } from '@/libs/api/generated/orval/images/images';
+import { PostPostsBody } from '@/libs/api/generated/orval/model';
+import { Track } from '@/libs/api/generated/orval/model/track';
 import {
   useGetPostsId,
   usePutPostsId,
   useDeletePostsId,
   usePostPostsPostIdHeaderImage, // New
-} from "@/libs/api/generated/orval/posts/posts";
+} from '@/libs/api/generated/orval/posts/posts';
 
 export default function EditPostPage() {
   const params = useParams();
   const { id } = params as { id: string };
 
-  const [title, setTitle] = useState("");
-  const [markdown, setMarkdown] = useState("");
+  const [title, setTitle] = useState('');
+  const [markdown, setMarkdown] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const postSchema = z.object({
-    title: z.string().min(1, "タイトルは必須です。"),
-    description: z.string().min(1, "本文は必須です。"),
+    title: z.string().min(1, 'タイトルは必須です。'),
+    description: z.string().min(1, '本文は必須です。'),
   });
-  const [viewMode, setViewMode] = useState<"editor" | "preview" | "split">(
-    "split",
+  const [viewMode, setViewMode] = useState<'editor' | 'preview' | 'split'>(
+    'split'
   );
   const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
   const [editorZoom, setEditorZoom] = useState(1.0);
   const [editorWidth, setEditorWidth] = useState(50); // Initial width for editor in split view
-  const [editorMode, setEditorMode] = useState<"markdown" | "wysiwyg">(
-    "markdown",
+  const [editorMode, setEditorMode] = useState<'markdown' | 'wysiwyg'>(
+    'markdown'
   );
 
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
@@ -49,10 +49,10 @@ export default function EditPostPage() {
 
   const [isHeaderImageModalOpen, setIsHeaderImageModalOpen] = useState(false); // New
   const [headerImageUrl, setHeaderImageUrl] = useState<string | undefined>(
-    undefined,
+    undefined
   ); // New
   const [currentUploadType, setCurrentUploadType] = useState<
-    "header" | "in-post" | null
+    'header' | 'in-post' | null
   >(null); // New
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -82,7 +82,7 @@ export default function EditPostPage() {
       setFinalSelectedTags(
         postData?.post?.tags
           ?.map((tag) => tag.name)
-          .filter((name): name is string => typeof name === "string") || [],
+          .filter((name): name is string => typeof name === 'string') || []
       );
       setHeaderImageUrl(postData?.post?.headerImageUrl ?? undefined); // Initialize header image URL
     }
@@ -96,39 +96,39 @@ export default function EditPostPage() {
   useEffect(() => {
     const handleResize = () => {
       if (
-        typeof window !== "undefined" &&
+        typeof window !== 'undefined' &&
         window.innerWidth < 768 &&
-        viewMode === "split"
+        viewMode === 'split'
       ) {
-        setViewMode("editor");
+        setViewMode('editor');
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     // 初回マウント時にも判定して反映
     handleResize();
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [viewMode]);
 
   const handleZoom = (
-    area: "editor" | "preview",
-    type: "in" | "out" | "reset",
+    area: 'editor' | 'preview',
+    type: 'in' | 'out' | 'reset'
   ) => {
     const step = 0.1;
     const minZoom = 0.5;
     const maxZoom = 2.0;
 
-    if (area === "preview") {
+    if (area === 'preview') {
       setPreviewZoom((prev) => {
-        if (type === "reset") return 1.0;
-        const newZoom = type === "in" ? prev + step : prev - step;
+        if (type === 'reset') return 1.0;
+        const newZoom = type === 'in' ? prev + step : prev - step;
         return Math.max(minZoom, Math.min(maxZoom, newZoom));
       });
     } else {
       // editor
       setEditorZoom((prev) => {
-        if (type === "reset") return 1.0;
-        const newZoom = type === "in" ? prev + step : prev - step;
+        if (type === 'reset') return 1.0;
+        const newZoom = type === 'in' ? prev + step : prev - step;
         return Math.max(minZoom, Math.min(maxZoom, newZoom));
       });
     }
@@ -140,19 +140,19 @@ export default function EditPostPage() {
       {
         onSuccess: (response) => {
           setHeaderImageUrl(response.imageUrl);
-          alert("ヘッダー画像を更新しました！");
+          alert('ヘッダー画像を更新しました！');
         },
         onError: (error) => {
-          console.error("ヘッダー画像の更新に失敗しました:", error);
-          alert("ヘッダー画像の更新に失敗しました。");
+          console.error('ヘッダー画像の更新に失敗しました:', error);
+          alert('ヘッダー画像の更新に失敗しました。');
         },
-      },
+      }
     );
   };
 
   const handleInPostImageUpload = (file: File) => {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append('image', file);
 
     uploadGenericImage(
       { data: { image: file } },
@@ -161,22 +161,22 @@ export default function EditPostPage() {
           // Insert the image URL into the markdown content
           setMarkdown(
             (prevMarkdown) =>
-              `${prevMarkdown}\n![image](${response.imageUrl})\n`,
+              `${prevMarkdown}\n![image](${response.imageUrl})\n`
           );
-          alert("画像を投稿内に挿入しました！");
+          alert('画像を投稿内に挿入しました！');
         },
         onError: (error) => {
-          console.error("投稿内画像のアップロードに失敗しました:", error);
-          alert("投稿内画像のアップロードに失敗しました。");
+          console.error('投稿内画像のアップロードに失敗しました:', error);
+          alert('投稿内画像のアップロードに失敗しました。');
         },
-      },
+      }
     );
   };
 
   const handleImageUpload = (file: File) => {
-    if (currentUploadType === "header") {
+    if (currentUploadType === 'header') {
       handleHeaderImageUpload(file);
-    } else if (currentUploadType === "in-post") {
+    } else if (currentUploadType === 'in-post') {
       handleInPostImageUpload(file);
     }
     setIsHeaderImageModalOpen(false); // Close modal after upload
@@ -189,14 +189,14 @@ export default function EditPostPage() {
     });
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
-      const msg = Array.from(new Set(messages)).join("\n");
+      const msg = Array.from(new Set(messages)).join('\n');
       setValidationError(msg);
-      containerRef.current?.scrollIntoView({ behavior: "smooth" });
+      containerRef.current?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     setValidationError(null);
     if (!userData?.id) {
-      alert("ユーザー情報が取得できませんでした。ログインしてください。");
+      alert('ユーザー情報が取得できませんでした。ログインしてください。');
       return;
     }
 
@@ -215,32 +215,32 @@ export default function EditPostPage() {
       { id: Number(id), data: postDataToUpdate },
       {
         onSuccess: () => {
-          alert("記事を更新しました！");
+          alert('記事を更新しました！');
           router.push(`/dashboard/post/${id}`);
         },
         onError: (err) => {
-          console.error("Failed to update article:", err);
-          alert("記事の更新に失敗しました。");
+          console.error('Failed to update article:', err);
+          alert('記事の更新に失敗しました。');
         },
-      },
+      }
     );
   };
 
   const handleDelete = async () => {
-    if (!confirm("本当にこの投稿を削除しますか？")) return;
+    if (!confirm('本当にこの投稿を削除しますか？')) return;
 
     deletePost(
       { id: Number(id) },
       {
         onSuccess: () => {
-          alert("投稿を削除しました。");
-          router.push("/dashboard");
+          alert('投稿を削除しました。');
+          router.push('/dashboard');
         },
         onError: (error: any) => {
-          console.error("Delete error:", error);
-          alert("削除に失敗しました。");
+          console.error('Delete error:', error);
+          alert('削除に失敗しました。');
         },
-      },
+      }
     );
   };
 
@@ -251,7 +251,7 @@ export default function EditPostPage() {
 
   const handleRemoveFinalTrack = (trackToRemove: Track) => {
     setFinalSelectedTracks((prevTracks) =>
-      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId),
+      prevTracks.filter((track) => track.spotifyId !== trackToRemove.spotifyId)
     );
   };
 
@@ -262,7 +262,7 @@ export default function EditPostPage() {
 
   const handleRemoveFinalTag = (tagToRemove: string) => {
     setFinalSelectedTags((prevTags) =>
-      prevTags.filter((tag) => tag !== tagToRemove),
+      prevTags.filter((tag) => tag !== tagToRemove)
     );
   };
 
@@ -291,7 +291,7 @@ export default function EditPostPage() {
 
   return (
     <>
-      {editorMode === "wysiwyg" ? (
+      {editorMode === 'wysiwyg' ? (
         // フルスクリーンWYSIWYGエディタ
         <div className="relative h-screen">
           {/* ヘッダーナビゲーション */}
@@ -299,14 +299,14 @@ export default function EditPostPage() {
             <div className="flex items-center gap-4">
               <button
                 className="px-4 py-2 rounded bg-gray-200 text-gray-700"
-                onClick={() => setEditorMode("markdown")}
+                onClick={() => setEditorMode('markdown')}
                 type="button"
               >
                 Markdownエディタ
               </button>
               <button
                 className="px-4 py-2 rounded bg-indigo-600 text-white"
-                onClick={() => setEditorMode("wysiwyg")}
+                onClick={() => setEditorMode('wysiwyg')}
                 type="button"
               >
                 WYSIWYGエディタ
@@ -317,7 +317,7 @@ export default function EditPostPage() {
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => {
-                  setCurrentUploadType("header");
+                  setCurrentUploadType('header');
                   setIsHeaderImageModalOpen(true);
                 }}
               >
@@ -326,7 +326,7 @@ export default function EditPostPage() {
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded text-sm"
                 onClick={() => {
-                  setCurrentUploadType("in-post");
+                  setCurrentUploadType('in-post');
                   setIsHeaderImageModalOpen(true);
                 }}
               >
@@ -375,10 +375,10 @@ export default function EditPostPage() {
                       className="flex items-center bg-white rounded-full px-3 py-1 text-sm flex-shrink-0 shadow-sm"
                     >
                       <Image
-                        src={track.albumImageUrl || "/default-image.jpg"}
+                        src={track.albumImageUrl || '/default-image.jpg'}
                         width={16}
                         height={16}
-                        alt={track.name || ""}
+                        alt={track.name || ''}
                         className="rounded-full mr-2"
                       />
                       {track.name} - {track.artistName}
@@ -414,10 +414,13 @@ export default function EditPostPage() {
           )}
 
           {/* フルスクリーンエディタ */}
-          <div 
-            className="pt-16" 
-            style={{ 
-              paddingTop: (finalSelectedTracks.length > 0 || finalSelectedTags.length > 0) ? '120px' : '64px' 
+          <div
+            className="pt-16"
+            style={{
+              paddingTop:
+                finalSelectedTracks.length > 0 || finalSelectedTags.length > 0
+                  ? '120px'
+                  : '64px',
             }}
           >
             <FullscreenWysiwygEditor
@@ -438,20 +441,20 @@ export default function EditPostPage() {
           <div ref={containerRef}>
             <div className="flex justify-center gap-4 mb-4 mt-4">
               <button
-                className={`px-4 py-2 rounded ${viewMode === "editor" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                onClick={() => setViewMode("editor")}
+                className={`px-4 py-2 rounded ${viewMode === 'editor' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setViewMode('editor')}
               >
                 エディタ
               </button>
               <button
-                className={`px-4 py-2 rounded ${viewMode === "preview" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                onClick={() => setViewMode("preview")}
+                className={`px-4 py-2 rounded ${viewMode === 'preview' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setViewMode('preview')}
               >
                 プレビュー
               </button>
               <button
-                className={`px-4 py-2 rounded max-md:hidden ${viewMode === "split" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-                onClick={() => setViewMode("split")}
+                className={`px-4 py-2 rounded max-md:hidden ${viewMode === 'split' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => setViewMode('split')}
               >
                 分割
               </button>
@@ -459,14 +462,14 @@ export default function EditPostPage() {
             <div className="flex justify-center gap-2 mb-4">
               <button
                 className="px-4 py-2 rounded bg-indigo-600 text-white"
-                onClick={() => setEditorMode("markdown")}
+                onClick={() => setEditorMode('markdown')}
                 type="button"
               >
                 Markdownエディタ
               </button>
               <button
                 className="px-4 py-2 rounded bg-gray-200 text-gray-700"
-                onClick={() => setEditorMode("wysiwyg")}
+                onClick={() => setEditorMode('wysiwyg')}
                 type="button"
               >
                 WYSIWYGエディタ
@@ -475,24 +478,24 @@ export default function EditPostPage() {
             <div className="flex h-screen bg-white">
               {/* 右側：プレビュー */}
               <div
-                className={`p-8 overflow-y-auto ${viewMode === "editor" ? "hidden" : "flex-1"} ${viewMode === "split" ? "w-1/2" : ""}`}
+                className={`p-8 overflow-y-auto ${viewMode === 'editor' ? 'hidden' : 'flex-1'} ${viewMode === 'split' ? 'w-1/2' : ''}`}
               >
                 <div className="flex gap-2 mb-2 justify-end">
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("preview", "out")}
+                    onClick={() => handleZoom('preview', 'out')}
                   >
                     -
                   </button>
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("preview", "in")}
+                    onClick={() => handleZoom('preview', 'in')}
                   >
                     +
                   </button>
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("preview", "reset")}
+                    onClick={() => handleZoom('preview', 'reset')}
                   >
                     リセット
                   </button>
@@ -509,7 +512,7 @@ export default function EditPostPage() {
                     </div>
                   )}
                   <h2 className="text-3xl font-bold text-gray-400 mt-6">
-                    {title || "記事タイトル"}
+                    {title || '記事タイトル'}
                   </h2>
                 </div>
                 <div
@@ -517,12 +520,12 @@ export default function EditPostPage() {
                   style={{ fontSize: `${previewZoom * 16}px` }}
                 >
                   <ReactMarkdown>
-                    {markdown || "プレビューがここに表示されます。"}
+                    {markdown || 'プレビューがここに表示されます。'}
                   </ReactMarkdown>
                 </div>
               </div>
               <div
-                className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === "preview" ? "hidden" : "flex-1"} ${viewMode === "split" ? "md:w-1/2" : ""}`}
+                className={`p-8 flex flex-col gap-4 border-r border-gray-200 ${viewMode === 'preview' ? 'hidden' : 'flex-1'} ${viewMode === 'split' ? 'md:w-1/2' : ''}`}
               >
                 {validationError && (
                   <div className="mb-2 p-3 rounded bg-red-50 text-red-700 border border-red-200">
@@ -532,19 +535,19 @@ export default function EditPostPage() {
                 <div className="flex gap-2 mb-2 justify-end">
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("editor", "out")}
+                    onClick={() => handleZoom('editor', 'out')}
                   >
                     -
                   </button>
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("editor", "in")}
+                    onClick={() => handleZoom('editor', 'in')}
                   >
                     +
                   </button>
                   <button
                     className="px-2 py-1 bg-gray-200 rounded"
-                    onClick={() => handleZoom("editor", "reset")}
+                    onClick={() => handleZoom('editor', 'reset')}
                   >
                     リセット
                   </button>
@@ -560,7 +563,7 @@ export default function EditPostPage() {
                   <button
                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
                     onClick={() => {
-                      setCurrentUploadType("header");
+                      setCurrentUploadType('header');
                       setIsHeaderImageModalOpen(true);
                     }}
                   >
@@ -569,7 +572,7 @@ export default function EditPostPage() {
                   <button
                     className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded w-fit mb-4"
                     onClick={() => {
-                      setCurrentUploadType("in-post");
+                      setCurrentUploadType('in-post');
                       setIsHeaderImageModalOpen(true);
                     }}
                   >
@@ -591,17 +594,17 @@ export default function EditPostPage() {
 
                 {finalSelectedTracks.length > 0 && (
                   <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                    {" "}
+                    {' '}
                     {finalSelectedTracks.map((track) => (
                       <div
                         key={track.spotifyId}
                         className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm flex-shrink-0" // Added flex-shrink-0
                       >
                         <Image
-                          src={track.albumImageUrl || "/default-image.jpg"}
+                          src={track.albumImageUrl || '/default-image.jpg'}
                           width={20}
                           height={20}
-                          alt={track.name || ""}
+                          alt={track.name || ''}
                           className="rounded-full mr-2"
                         />
                         {track.name} - {track.artistName}
@@ -618,7 +621,7 @@ export default function EditPostPage() {
 
                 {finalSelectedTags.length > 0 && (
                   <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                    {" "}
+                    {' '}
                     {finalSelectedTags.map((tag) => (
                       <div
                         key={tag}
@@ -678,7 +681,7 @@ export default function EditPostPage() {
                 onClose={() => setIsHeaderImageModalOpen(false)}
                 onImageUpload={handleImageUpload}
                 currentImageUrl={
-                  currentUploadType === "header" ? headerImageUrl : undefined
+                  currentUploadType === 'header' ? headerImageUrl : undefined
                 }
               />
             </div>
@@ -705,7 +708,7 @@ export default function EditPostPage() {
         onClose={() => setIsHeaderImageModalOpen(false)}
         onImageUpload={handleImageUpload}
         currentImageUrl={
-          currentUploadType === "header" ? headerImageUrl : undefined
+          currentUploadType === 'header' ? headerImageUrl : undefined
         }
       />
     </>

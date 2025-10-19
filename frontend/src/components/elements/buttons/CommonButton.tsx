@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { ReactNode } from "react";
+import Link from 'next/link';
+import { ReactNode } from 'react';
 
-import "@/scss/button.scss";
+import '@/scss/button.scss';
 
 type CommonButtonProps = {
   href: string;

@@ -10,7 +10,7 @@ export type ValidationError = ErrorBase & {
 };
 
 export type AuthError = ErrorBase & {
-  reason: "expired" | "invalid" | "forbidden";
+  reason: 'expired' | 'invalid' | 'forbidden';
 };
 
 export type NetworkError = ErrorBase & {
@@ -20,7 +20,7 @@ export type NetworkError = ErrorBase & {
 };
 
 export type PermissionError = ErrorBase & {
-  permission: "denied" | "restricted";
+  permission: 'denied' | 'restricted';
 };
 
 export type AppError =
@@ -30,6 +30,6 @@ export type AppError =
   | NetworkError
   | PermissionError;
 
-export type ErrorMessageProps = Partial<Omit<ErrorBase, "cause">> & {
+export type ErrorMessageProps = Partial<Omit<ErrorBase, 'cause'>> & {
   className?: string;
 };

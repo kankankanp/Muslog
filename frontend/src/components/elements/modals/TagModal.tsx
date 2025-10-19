@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useEffect, useMemo, useState } from "react";
-import Modal from "react-modal";
-import type { Tag } from "@/libs/api/generated/orval/model/tag";
-import { useGetTags, usePostTags } from "@/libs/api/generated/orval/tags/tags";
+import React, { useEffect, useMemo, useState } from 'react';
+import Modal from 'react-modal';
+import type { Tag } from '@/libs/api/generated/orval/model/tag';
+import { useGetTags, usePostTags } from '@/libs/api/generated/orval/tags/tags';
 
 type TagModalProps = {
   isOpen: boolean;
@@ -18,9 +18,9 @@ const TagModal = ({
   onSelectTags,
   initialSelectedTags,
 }: TagModalProps): JSX.Element => {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>('');
   const [selectedTagsInModal, setSelectedTagsInModal] = useState<string[]>(
-    initialSelectedTags || [],
+    initialSelectedTags || []
   );
 
   // Fetch all tags
@@ -29,7 +29,7 @@ const TagModal = ({
     const list = (tagsData?.tags as Tag[] | undefined) || [];
     return list
       .map((t) => t.name)
-      .filter((n): n is string => typeof n === "string");
+      .filter((n): n is string => typeof n === 'string');
   }, [tagsData]);
 
   // Create tag mutation
@@ -59,7 +59,7 @@ const TagModal = ({
       if (!selectedTagsInModal.includes(name)) {
         setSelectedTagsInModal((prev) => [...prev, name]);
       }
-      setQuery("");
+      setQuery('');
       return;
     }
 
@@ -71,15 +71,15 @@ const TagModal = ({
           // 再取得してリストに反映
           await refetch();
           setSelectedTagsInModal((prev) =>
-            prev.includes(name) ? prev : [...prev, name],
+            prev.includes(name) ? prev : [...prev, name]
           );
-          console.log("bbbb");
-          setQuery("");
+          console.log('bbbb');
+          setQuery('');
         },
         onError: () => {
-          alert("タグの作成に失敗しました");
+          alert('タグの作成に失敗しました');
         },
-      },
+      }
     );
   };
 
@@ -108,7 +108,7 @@ const TagModal = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === 'Enter') {
                 e.preventDefault();
                 e.stopPropagation();
                 handleAddCustomTag();
@@ -136,7 +136,7 @@ const TagModal = ({
                 .filter((t) =>
                   query.trim()
                     ? t.toLowerCase().includes(query.trim().toLowerCase())
-                    : true,
+                    : true
                 )
                 .map((tag) => (
                   <span
@@ -144,8 +144,8 @@ const TagModal = ({
                     onClick={() => handleTagToggle(tag)}
                     className={`px-3 py-1 rounded-full text-sm cursor-pointer ${
                       selectedTagsInModal.includes(tag)
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200"
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200'
                     }`}
                   >
                     {tag}
@@ -180,7 +180,7 @@ const TagModal = ({
                 className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-60"
                 disabled={isCreating}
               >
-                {isCreating ? "保存中..." : "完了"}
+                {isCreating ? '保存中...' : '完了'}
               </button>
             </div>
           </div>

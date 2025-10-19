@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { Calendar, Edit, MapPin, Users } from "lucide-react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import Spinner from "@/components/layouts/Spinner";
-import { useGetMe } from "@/libs/api/generated/orval/auth/auth";
+import { Calendar, Edit, MapPin, Users } from 'lucide-react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import Spinner from '@/components/layouts/Spinner';
+import { useGetMe } from '@/libs/api/generated/orval/auth/auth';
 import {
   useGetBandRecruitmentsId,
   usePostBandRecruitmentsIdApply,
-} from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
+} from '@/libs/api/generated/orval/band-recruitments/band-recruitments';
 
 const formatDateTime = (value?: string | null) => {
   if (!value) return undefined;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return value.split("T")[0];
+    return value.split('T')[0];
   }
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
 
 const BandRecruitmentDetailPage = () => {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const id = params?.id;
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const { data: me } = useGetMe();
   const { data, isLoading, isError } = useGetBandRecruitmentsId(id, {
@@ -51,14 +51,12 @@ const BandRecruitmentDetailPage = () => {
   const recruitment = data.recruitment;
   const isOwner = me?.id && recruitment.userId === me.id;
   const canApply =
-    !isOwner &&
-    recruitment.status !== "closed" &&
-    !recruitment.hasApplied;
+    !isOwner && recruitment.status !== 'closed' && !recruitment.hasApplied;
 
   const handleApply = async () => {
     if (!id) return;
     if (!message.trim()) {
-      toast.error("応募メッセージを入力してください");
+      toast.error('応募メッセージを入力してください');
       return;
     }
 
@@ -69,11 +67,11 @@ const BandRecruitmentDetailPage = () => {
           message,
         },
       });
-      toast.success("応募が完了しました");
+      toast.success('応募が完了しました');
       router.push(`/dashboard/band-recruitments/${id}/apply/complete`);
     } catch (err) {
       console.error(err);
-      toast.error("応募に失敗しました");
+      toast.error('応募に失敗しました');
     }
   };
 
@@ -84,12 +82,12 @@ const BandRecruitmentDetailPage = () => {
           <div>
             <span
               className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                recruitment.status === "open"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-200 text-gray-600"
+                recruitment.status === 'open'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-200 text-gray-600'
               }`}
             >
-              {recruitment.status === "open" ? "募集中" : "募集終了"}
+              {recruitment.status === 'open' ? '募集中' : '募集終了'}
             </span>
             <h1 className="mt-2 text-3xl font-bold text-slate-900">
               {recruitment.title}
@@ -121,21 +119,21 @@ const BandRecruitmentDetailPage = () => {
         <div className="grid grid-cols-1 gap-4 border-t border-gray-100 pt-4 md:grid-cols-2">
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <Users size={18} className="text-slate-400" />
-            募集パート: {recruitment.recruitingParts?.join(", ") || "未設定"}
+            募集パート: {recruitment.recruitingParts?.join(', ') || '未設定'}
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <MapPin size={18} className="text-slate-400" />
-            活動地域: {recruitment.location || "未設定"}
+            活動地域: {recruitment.location || '未設定'}
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <Calendar size={18} className="text-slate-400" />
-            募集締切: {formatDateTime(recruitment.deadline) ?? "未設定"}
+            募集締切: {formatDateTime(recruitment.deadline) ?? '未設定'}
           </div>
           <div className="text-sm text-slate-600">
-            希望スキル / 経験: {recruitment.skillLevel || "特になし"}
+            希望スキル / 経験: {recruitment.skillLevel || '特になし'}
           </div>
           <div className="text-sm text-slate-600">
-            連絡方法: {recruitment.contact || "未設定"}
+            連絡方法: {recruitment.contact || '未設定'}
           </div>
           <div className="text-sm text-slate-600">
             応募数: {recruitment.applicationsCount ?? 0} 件
@@ -150,8 +148,10 @@ const BandRecruitmentDetailPage = () => {
             自分が作成した募集には応募できません。
           </p>
         )}
-        {recruitment.status === "closed" && (
-          <p className="mt-2 text-sm text-red-500">この募集は締め切られています。</p>
+        {recruitment.status === 'closed' && (
+          <p className="mt-2 text-sm text-red-500">
+            この募集は締め切られています。
+          </p>
         )}
         {recruitment.hasApplied && !isOwner && (
           <p className="mt-2 text-sm text-slate-500">すでに応募済みです。</p>
@@ -171,7 +171,7 @@ const BandRecruitmentDetailPage = () => {
               disabled={isApplying}
               className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
             >
-              {isApplying ? "送信中..." : "応募を送信"}
+              {isApplying ? '送信中...' : '応募を送信'}
             </button>
           </div>
         )}

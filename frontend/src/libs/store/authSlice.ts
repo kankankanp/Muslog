@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthResponse } from "../api/generated/orval/model/authResponse";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AuthResponse } from '../api/generated/orval/model/authResponse';
 
 interface AuthState {
   accessToken: any;
@@ -19,30 +19,30 @@ const initialState: AuthState = {
 
 // localStorage操作のヘルパー関数
 const saveAuthToStorage = (state: AuthState) => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     const authData = {
       user: state.user,
       isAuthenticated: state.isAuthenticated,
       tokenExpiry: state.tokenExpiry,
       timestamp: Date.now(), // 保存時刻を記録
     };
-    localStorage.setItem("auth", JSON.stringify(authData));
+    localStorage.setItem('auth', JSON.stringify(authData));
   }
 };
 
 const clearAuthFromStorage = () => {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("auth");
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth');
   }
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     login(
       state,
-      action: PayloadAction<AuthResponse & { tokenExpiry?: number }>,
+      action: PayloadAction<AuthResponse & { tokenExpiry?: number }>
     ) {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -63,7 +63,7 @@ const authSlice = createSlice({
       action: PayloadAction<{
         user: AuthResponse | null;
         tokenExpiry?: number;
-      }>,
+      }>
     ) {
       state.user = action.payload.user;
       state.isAuthenticated = !!action.payload.user;

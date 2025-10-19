@@ -1,8 +1,8 @@
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
-import { CommonButton } from "../buttons/CommonButton";
-import { Post } from "@/libs/api/generated/orval/model/post";
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+import { CommonButton } from '../buttons/CommonButton';
+import { Post } from '@/libs/api/generated/orval/model/post';
 
 type BlogCardProps = {
   isDetailPage?: boolean;
@@ -25,15 +25,15 @@ const BlogCard = ({
     <div
       className={`py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid ${
         !isDetailPage
-          ? "grid-cols-1 sm:grid-cols-2 gap-6 w-full"
-          : "grid-cols-1 w-3/5"
+          ? 'grid-cols-1 sm:grid-cols-2 gap-6 w-full'
+          : 'grid-cols-1 w-3/5'
       }`}
     >
       {safePosts.map((post: Post) => {
         const headerImageSrc =
-          post.headerImageUrl && post.headerImageUrl.trim() !== ""
+          post.headerImageUrl && post.headerImageUrl.trim() !== ''
             ? post.headerImageUrl
-            : "/default-image.jpg";
+            : '/default-image.jpg';
         return (
           <div
             key={post.id}
@@ -70,11 +70,11 @@ const BlogCard = ({
                   className={`cursor-pointer mr-1 ${
                     isDetailPage
                       ? isLiked
-                        ? "text-red-500"
-                        : "text-gray-400"
+                        ? 'text-red-500'
+                        : 'text-gray-400'
                       : post.isLiked
-                        ? "text-red-500"
-                        : "text-gray-400"
+                        ? 'text-red-500'
+                        : 'text-gray-400'
                   }`}
                   onClick={
                     isDetailPage

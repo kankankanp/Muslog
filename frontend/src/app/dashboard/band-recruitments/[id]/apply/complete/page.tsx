@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { CheckCircle } from "lucide-react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { CheckCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 const BandRecruitmentApplyCompletePage = () => {
   const params = useParams<{ id: string }>();
@@ -12,7 +12,9 @@ const BandRecruitmentApplyCompletePage = () => {
     <div className="mx-auto flex max-w-xl flex-col items-center gap-6 p-10 text-center">
       <CheckCircle className="h-16 w-16 text-emerald-500" />
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">応募が完了しました！</h1>
+        <h1 className="text-3xl font-bold text-slate-900">
+          応募が完了しました！
+        </h1>
         <p className="mt-3 text-sm text-slate-600">
           応募内容は募集主に送信されました。返信をお待ちください。
         </p>

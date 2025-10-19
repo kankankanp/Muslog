@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useMemo } from "react";
-import toast from "react-hot-toast";
+import { useParams, useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+import toast from 'react-hot-toast';
 import BandRecruitmentForm, {
   type BandRecruitmentFormValues,
-} from "@/components/bandRecruitment/BandRecruitmentForm";
-import Spinner from "@/components/layouts/Spinner";
+} from '@/components/bandRecruitment/BandRecruitmentForm';
+import Spinner from '@/components/layouts/Spinner';
 import {
   useGetBandRecruitmentsId,
   usePutBandRecruitmentsId,
-} from "@/libs/api/generated/orval/band-recruitments/band-recruitments";
+} from '@/libs/api/generated/orval/band-recruitments/band-recruitments';
 
 const toDateInputValue = (value?: string | null) => {
-  if (!value) return "";
+  if (!value) return '';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     // value might already be yyyy-mm-dd
-    return value.split("T")[0];
+    return value.split('T')[0];
   }
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
 
@@ -42,22 +42,22 @@ const BandRecruitmentEditPage = () => {
     const recruitment = data?.recruitment;
     if (!recruitment) return undefined;
     return {
-      title: recruitment.title ?? "",
-      description: recruitment.description ?? "",
-      genre: recruitment.genre ?? "",
-      location: recruitment.location ?? "",
-      recruitingParts: recruitment.recruitingParts?.join(", ") ?? "",
-      skillLevel: recruitment.skillLevel ?? "",
-      contact: recruitment.contact ?? "",
+      title: recruitment.title ?? '',
+      description: recruitment.description ?? '',
+      genre: recruitment.genre ?? '',
+      location: recruitment.location ?? '',
+      recruitingParts: recruitment.recruitingParts?.join(', ') ?? '',
+      skillLevel: recruitment.skillLevel ?? '',
+      contact: recruitment.contact ?? '',
       deadline: toDateInputValue(recruitment.deadline),
-      status: recruitment.status ?? "open",
+      status: recruitment.status ?? 'open',
     };
   }, [data]);
 
   const handleSubmit = async (values: BandRecruitmentFormValues) => {
     if (!id) return;
     const recruitingParts = values.recruitingParts
-      .split(",")
+      .split(',')
       .map((part) => part.trim())
       .filter(Boolean);
 
@@ -72,16 +72,20 @@ const BandRecruitmentEditPage = () => {
           recruitingParts,
           skillLevel: values.skillLevel || undefined,
           contact: values.contact,
-          deadline: values.deadline ? `${values.deadline}T00:00:00Z` : undefined,
+          deadline: values.deadline
+            ? `${values.deadline}T00:00:00Z`
+            : undefined,
           status: values.status,
         },
       });
 
-      toast.success("募集内容を更新しました");
-      router.push(`/dashboard/band-recruitments/${response.recruitment?.id ?? id}`);
+      toast.success('募集内容を更新しました');
+      router.push(
+        `/dashboard/band-recruitments/${response.recruitment?.id ?? id}`
+      );
     } catch (err) {
       console.error(err);
-      toast.error("募集内容の更新に失敗しました");
+      toast.error('募集内容の更新に失敗しました');
     }
   };
 
