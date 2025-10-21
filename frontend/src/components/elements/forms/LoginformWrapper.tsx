@@ -1,9 +1,9 @@
 // src/components/elements/forms/LoginForm.tsx
-"use client";
+'use client';
 
-import { Suspense } from "react";
-import LoginForm from "./LoginForm";
-import Spinner from "@/components/layouts/Spinner";
+import { Suspense } from 'react';
+import LoginForm from './LoginForm';
+import Spinner from '@/components/layouts/Spinner';
 
 export default function LoginFormWrapper() {
   return (

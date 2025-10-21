@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { z } from "zod";
-import LoadingButton from "../buttons/LoadingButton";
-import Spinner from "@/components/layouts/Spinner";
-import { GUEST_EMAIL, GUEST_PASSWORD } from "@/constants/guestUser";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { z } from 'zod';
+import LoadingButton from '../buttons/LoadingButton';
+import Spinner from '@/components/layouts/Spinner';
+import { GUEST_EMAIL, GUEST_PASSWORD } from '@/constants/guestUser';
 import {
   useGetAuthGoogle,
   usePostAuthLogin,
-} from "@/libs/api/generated/orval/auth/auth";
-import { login } from "@/libs/store/authSlice";
+} from '@/libs/api/generated/orval/auth/auth';
+import { login } from '@/libs/store/authSlice';
 
 const loginSchema = z.object({
   email: z
     .string()
-    .email({ message: "有効なメールアドレスを入力してください。" }),
+    .email({ message: '有効なメールアドレスを入力してください。' }),
   password: z
     .string()
-    .min(6, { message: "パスワードは6文字以上で入力してください。" }),
+    .min(6, { message: 'パスワードは6文字以上で入力してください。' }),
 });
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
@@ -30,7 +30,7 @@ export default function LoginForm() {
   const dispatch = useDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
+  const returnUrl = searchParams.get('returnUrl');
 
   const {
     register,
@@ -53,24 +53,24 @@ export default function LoginForm() {
       {
         onSuccess: (user: any) => {
           if (user?.user) dispatch(login(user.user));
-          toast.success("ログインに成功しました");
+          toast.success('ログインに成功しました');
           // returnUrlがある場合はそこに、なければ/dashboardに遷移
           const redirectTo = returnUrl
             ? decodeURIComponent(returnUrl)
-            : "/dashboard";
+            : '/dashboard';
           router.push(redirectTo);
         },
         onError: (error: any) => {
-          console.error("login error:", error);
-          toast.error("ログインに失敗しました");
+          console.error('login error:', error);
+          toast.error('ログインに失敗しました');
         },
-      },
+      }
     );
   };
 
   const handleGuestLogin = () => {
-    setValue("email", GUEST_EMAIL, { shouldValidate: true });
-    setValue("password", GUEST_PASSWORD, { shouldValidate: true });
+    setValue('email', GUEST_EMAIL, { shouldValidate: true });
+    setValue('password', GUEST_PASSWORD, { shouldValidate: true });
     handleSubmit(onSubmit)();
   };
 
@@ -81,8 +81,8 @@ export default function LoginForm() {
         window.location.href = data.authURL;
       }
     } catch (error) {
-      console.error("Google login error:", error);
-      toast.error("Googleログインに失敗しました。");
+      console.error('Google login error:', error);
+      toast.error('Googleログインに失敗しました。');
     }
   };
 
@@ -116,7 +116,7 @@ export default function LoginForm() {
             <input
               className="w-full mt-1 p-2 max-md:px-[52px] border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
               type="email"
-              {...register("email")}
+              {...register('email')}
             />
           </div>
 
@@ -127,14 +127,14 @@ export default function LoginForm() {
             <input
               className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
               type="password"
-              {...register("password")}
+              {...register('password')}
             />
           </div>
 
           <div className="flex flex-col gap-4 w-[60%] mx-auto font-bold max-md:text-sm">
             <LoadingButton
-              label={"ログイン"}
-              color={"blue"}
+              label={'ログイン'}
+              color={'blue'}
               isPending={isPending}
             />
             <button

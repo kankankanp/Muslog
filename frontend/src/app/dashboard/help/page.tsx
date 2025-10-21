@@ -1,9 +1,9 @@
 // app/help/page.tsx または pages/help.tsx
-"use client";
+'use client';
 
-import { ChevronDown, ChevronUp } from "lucide-react";
-import React, { useState } from "react";
-import ReactMarkdown from "react-markdown";
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 const HelpPage = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -14,23 +14,23 @@ const HelpPage = () => {
   };
   const faqs = [
     {
-      question: "利用料金はかかりますか？",
-      answer: "全ての機能が無料で利用できます。",
+      question: '利用料金はかかりますか？',
+      answer: '全ての機能が無料で利用できます。',
     },
     {
-      question: "ゲストログインとは何ですか？",
+      question: 'ゲストログインとは何ですか？',
       answer:
-        "ゲストログインは、登録やログインをせずに一時的にサービスを利用できる機能です。ユーザー登録しなくても簡単に利用を開始できます。",
+        'ゲストログインは、登録やログインをせずに一時的にサービスを利用できる機能です。ユーザー登録しなくても簡単に利用を開始できます。',
     },
     {
-      question: "タグの使い方を教えてください。",
+      question: 'タグの使い方を教えてください。',
       answer:
-        "投稿やコミュニティに関連するキーワードをタグとして設定できます。タグを付けることで、他のユーザーが同じテーマの投稿を検索・発見しやすくなります。投稿作成や編集画面でタグを入力してください。",
+        '投稿やコミュニティに関連するキーワードをタグとして設定できます。タグを付けることで、他のユーザーが同じテーマの投稿を検索・発見しやすくなります。投稿作成や編集画面でタグを入力してください。',
     },
     {
-      question: "サポートへ問い合わせるには？",
+      question: 'サポートへ問い合わせるには？',
       answer:
-        "こちらのGoogleフォーム(https://forms.gle/xxxxxxxxxxxxxxxx)からお問合わせください。",
+        'こちらのGoogleフォーム(https://forms.gle/xxxxxxxxxxxxxxxx)からお問合わせください。',
     },
   ];
 
@@ -61,8 +61,8 @@ const HelpPage = () => {
           <div
             className={`transition-all duration-200 ease-in-out ${
               isGuideOpen
-                ? "py-4 max-h-[80vh] overflow-auto"
-                : "max-h-0 overflow-hidden"
+                ? 'py-4 max-h-[80vh] overflow-auto'
+                : 'max-h-0 overflow-hidden'
             } text-gray-600`}
           >
             <div className="prose max-w-none">
@@ -140,7 +140,7 @@ Muslogへようこそ！このガイドでは、Muslogの主な機能と使い�
                 </button>
                 <div
                   className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                    openIndex === index ? "max-h-screen py-4" : "max-h-0"
+                    openIndex === index ? 'max-h-screen py-4' : 'max-h-0'
                   } text-gray-600 bg-gray-50 px-4`}
                 >
                   <p>{faq.answer}</p>

@@ -4,7 +4,7 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { Community } from "./community";
+import type { Community } from './community';
 
 export type GetCommunities200 = {
   message?: string;

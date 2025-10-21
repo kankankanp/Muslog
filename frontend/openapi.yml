@@ -16,7 +16,7 @@ paths:
       tags:
         - posts
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -28,7 +28,7 @@ paths:
                   posts:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Post"
+                      $ref: '#/components/schemas/Post'
     post:
       summary: Create a new post
       description: Create a new post
@@ -50,7 +50,7 @@ paths:
                 tracks:
                   type: array
                   items:
-                    $ref: "#/components/schemas/Track"
+                    $ref: '#/components/schemas/Track'
                 tags:
                   type: array
                   items:
@@ -59,7 +59,7 @@ paths:
                   type: string
                   nullable: true
       responses:
-        "201":
+        '201':
           description: Post created successfully
           content:
             application/json:
@@ -69,7 +69,7 @@ paths:
                   message:
                     type: string
                   post:
-                    $ref: "#/components/schemas/Post"
+                    $ref: '#/components/schemas/Post'
   /posts/{id}:
     get:
       summary: Get a post by ID
@@ -84,7 +84,7 @@ paths:
             type: integer
           description: Post ID
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -94,8 +94,8 @@ paths:
                   message:
                     type: string
                   post:
-                    $ref: "#/components/schemas/Post"
-        "404":
+                    $ref: '#/components/schemas/Post'
+        '404':
           description: Not Found
     put:
       summary: Update a post
@@ -121,7 +121,7 @@ paths:
                 description:
                   type: string
       responses:
-        "200":
+        '200':
           description: Post updated successfully
           content:
             application/json:
@@ -131,8 +131,8 @@ paths:
                   message:
                     type: string
                   post:
-                    $ref: "#/components/schemas/Post"
-        "404":
+                    $ref: '#/components/schemas/Post'
+        '404':
           description: Not Found
     delete:
       summary: Delete a post
@@ -147,7 +147,7 @@ paths:
           required: true
           description: Post ID
       responses:
-        "200":
+        '200':
           description: Post deleted successfully
           content:
             application/json:
@@ -170,7 +170,7 @@ paths:
           required: true
           description: Page number
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -182,7 +182,7 @@ paths:
                   posts:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Post"
+                      $ref: '#/components/schemas/Post'
                   totalCount:
                     type: integer
   /posts/search:
@@ -215,7 +215,7 @@ paths:
             default: 10
           description: Number of items per page for pagination
       responses:
-        "200":
+        '200':
           description: Successful response with a list of posts
           content:
             application/json:
@@ -227,14 +227,14 @@ paths:
                   posts:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Post"
+                      $ref: '#/components/schemas/Post'
                   totalCount:
                     type: integer
                   page:
                     type: integer
                   perPage:
                     type: integer
-        "500":
+        '500':
           description: Internal server error
   /posts/{postID}/like:
     post:
@@ -250,7 +250,7 @@ paths:
             type: integer
           description: Post ID
       responses:
-        "200":
+        '200':
           description: Post liked successfully
           content:
             application/json:
@@ -259,11 +259,11 @@ paths:
                 properties:
                   message:
                     type: string
-        "400":
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
+        '500':
           description: Internal server error
   /posts/{postID}/unlike:
     delete:
@@ -279,7 +279,7 @@ paths:
             type: integer
           description: Post ID
       responses:
-        "200":
+        '200':
           description: Post unliked successfully
           content:
             application/json:
@@ -288,11 +288,11 @@ paths:
                 properties:
                   message:
                     type: string
-        "400":
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
+        '500':
           description: Internal server error
 
   /spotify/search:
@@ -309,7 +309,7 @@ paths:
           required: true
           description: The search query string for tracks.
       responses:
-        "200":
+        '200':
           description: Successful response with a list of tracks.
           content:
             application/json:
@@ -321,10 +321,10 @@ paths:
                   tracks:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Track"
-        "400":
+                      $ref: '#/components/schemas/Track'
+        '400':
           description: Bad request, missing search term.
-        "500":
+        '500':
           description: Internal server error.
   /auth/register:
     post:
@@ -337,9 +337,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterRequest"
+              $ref: '#/components/schemas/RegisterRequest'
       responses:
-        "201":
+        '201':
           description: User registered successfully
           content:
             application/json:
@@ -349,8 +349,8 @@ paths:
                   message:
                     type: string
                   user:
-                    $ref: "#/components/schemas/AuthResponse"
-        "400":
+                    $ref: '#/components/schemas/AuthResponse'
+        '400':
           description: Invalid input
   /auth/login:
     post:
@@ -363,9 +363,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequest"
+              $ref: '#/components/schemas/LoginRequest'
       responses:
-        "200":
+        '200':
           description: Login successful
           content:
             application/json:
@@ -375,8 +375,8 @@ paths:
                   message:
                     type: string
                   user:
-                    $ref: "#/components/schemas/AuthResponse"
-        "401":
+                    $ref: '#/components/schemas/AuthResponse'
+        '401':
           description: Unauthorized
   /auth/google:
     get:
@@ -385,7 +385,7 @@ paths:
       tags:
         - auth
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -401,7 +401,7 @@ paths:
       tags:
         - auth
       responses:
-        "200":
+        '200':
           description: Token refreshed
           content:
             application/json:
@@ -412,7 +412,7 @@ paths:
                     type: string
                   accessToken:
                     type: string
-        "401":
+        '401':
           description: Unauthorized
   /logout:
     post:
@@ -421,7 +421,7 @@ paths:
       tags:
         - auth
       responses:
-        "200":
+        '200':
           description: Logout successful
           content:
             application/json:
@@ -437,13 +437,13 @@ paths:
       tags:
         - auth
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "404":
+                $ref: '#/components/schemas/User'
+        '404':
           description: User not found
   /users:
     get:
@@ -452,7 +452,7 @@ paths:
       tags:
         - users
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -464,7 +464,7 @@ paths:
                   users:
                     type: array
                     items:
-                      $ref: "#/components/schemas/User"
+                      $ref: '#/components/schemas/User'
   /users/me/liked-posts:
     get:
       summary: Get liked posts by current user
@@ -474,7 +474,7 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -486,10 +486,10 @@ paths:
                   posts:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Post"
-        "401":
+                      $ref: '#/components/schemas/Post'
+        '401':
           description: Unauthorized
-        "500":
+        '500':
           description: Internal server error
   /users/{id}:
     get:
@@ -505,7 +505,7 @@ paths:
           required: true
           description: User ID
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -515,8 +515,8 @@ paths:
                   message:
                     type: string
                   user:
-                    $ref: "#/components/schemas/User"
-        "404":
+                    $ref: '#/components/schemas/User'
+        '404':
           description: Not Found
   /users/{id}/posts:
     get:
@@ -532,7 +532,7 @@ paths:
           required: true
           description: User ID
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -544,7 +544,7 @@ paths:
                   posts:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Post"
+                      $ref: '#/components/schemas/Post'
   /users/{userId}/profile-image:
     post:
       summary: Upload or update a user's profile image
@@ -569,7 +569,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        "200":
+        '200':
           description: Profile image uploaded successfully
           content:
             application/json:
@@ -580,13 +580,13 @@ paths:
                     type: string
                   imageUrl:
                     type: string
-        "400":
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "404":
+        '404':
           description: User not found
-        "500":
+        '500':
           description: Internal server error
   /posts/{postId}/header-image:
     post:
@@ -612,7 +612,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        "200":
+        '200':
           description: Post header image uploaded successfully
           content:
             application/json:
@@ -623,13 +623,13 @@ paths:
                     type: string
                   imageUrl:
                     type: string
-        "400":
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "404":
+        '404':
           description: Post not found
-        "500":
+        '500':
           description: Internal server error
   /images/upload:
     post:
@@ -648,7 +648,7 @@ paths:
                   type: string
                   format: binary
       responses:
-        "200":
+        '200':
           description: Image uploaded successfully
           content:
             application/json:
@@ -659,11 +659,11 @@ paths:
                     type: string
                   imageUrl:
                     type: string
-        "400":
+        '400':
           description: Bad request
-        "401":
+        '401':
           description: Unauthorized
-        "500":
+        '500':
           description: Internal server error
   /tags:
     post:
@@ -681,7 +681,7 @@ paths:
                 name:
                   type: string
       responses:
-        "201":
+        '201':
           description: Tag created successfully
           content:
             application/json:
@@ -691,14 +691,14 @@ paths:
                   message:
                     type: string
                   tag:
-                    $ref: "#/components/schemas/Tag"
+                    $ref: '#/components/schemas/Tag'
     get:
       summary: Get all tags
       description: Get all tags
       tags:
         - tags
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -710,7 +710,7 @@ paths:
                   tags:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Tag"
+                      $ref: '#/components/schemas/Tag'
   /tags/{id}:
     get:
       summary: Get a tag by ID
@@ -725,7 +725,7 @@ paths:
             type: integer
           description: Tag ID
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -735,8 +735,8 @@ paths:
                   message:
                     type: string
                   tag:
-                    $ref: "#/components/schemas/Tag"
-        "404":
+                    $ref: '#/components/schemas/Tag'
+        '404':
           description: Not Found
     put:
       summary: Update a tag
@@ -760,7 +760,7 @@ paths:
                 name:
                   type: string
       responses:
-        "200":
+        '200':
           description: Tag updated successfully
           content:
             application/json:
@@ -770,8 +770,8 @@ paths:
                   message:
                     type: string
                   tag:
-                    $ref: "#/components/schemas/Tag"
-        "404":
+                    $ref: '#/components/schemas/Tag'
+        '404':
           description: Not Found
     delete:
       summary: Delete a tag
@@ -786,7 +786,7 @@ paths:
           required: true
           description: Tag ID
       responses:
-        "200":
+        '200':
           description: Tag deleted successfully
           content:
             application/json:
@@ -820,7 +820,7 @@ paths:
                   items:
                     type: string
       responses:
-        "204":
+        '204':
           description: Tags added successfully
     delete:
       summary: Remove tags from a post
@@ -846,7 +846,7 @@ paths:
                   items:
                     type: string
       responses:
-        "204":
+        '204':
           description: Tags removed successfully
     get:
       summary: Get tags by post ID
@@ -861,7 +861,7 @@ paths:
             type: integer
           description: Post ID
       responses:
-        "200":
+        '200':
           description: Successful response
           content:
             application/json:
@@ -873,7 +873,7 @@ paths:
                   tags:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Tag"
+                      $ref: '#/components/schemas/Tag'
   /communities:
     get:
       summary: Get all communities
@@ -881,7 +881,7 @@ paths:
       tags:
         - communities
       responses:
-        "200":
+        '200':
           description: Successful response with a list of communities.
           content:
             application/json:
@@ -893,7 +893,7 @@ paths:
                   communities:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Community"
+                      $ref: '#/components/schemas/Community'
     post:
       summary: Create a new community
       description: Create a new chat community.
@@ -904,9 +904,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateCommunityRequest"
+              $ref: '#/components/schemas/CreateCommunityRequest'
       responses:
-        "201":
+        '201':
           description: Community created successfully.
           content:
             application/json:
@@ -916,8 +916,8 @@ paths:
                   message:
                     type: string
                   community:
-                    $ref: "#/components/schemas/Community"
-        "400":
+                    $ref: '#/components/schemas/Community'
+        '400':
           description: Invalid input.
   /communities/search:
     get:
@@ -944,7 +944,7 @@ paths:
             default: 10
           description: Number of items per page for pagination
       responses:
-        "200":
+        '200':
           description: Successful response with a list of communities
           content:
             application/json:
@@ -956,14 +956,14 @@ paths:
                   communities:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Community"
+                      $ref: '#/components/schemas/Community'
                   totalCount:
                     type: integer
                   page:
                     type: integer
                   perPage:
                     type: integer
-        "500":
+        '500':
           description: Internal server error
   /communities/{communityId}/messages:
     get:
@@ -979,7 +979,7 @@ paths:
             type: string
           description: The ID of the community.
       responses:
-        "200":
+        '200':
           description: Successful response with a list of messages.
           content:
             application/json:
@@ -991,9 +991,169 @@ paths:
                   messages:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Message"
-        "404":
+                      $ref: '#/components/schemas/Message'
+        '404':
           description: Community not found.
+  /band-recruitments:
+    get:
+      summary: Get band recruitments
+      description: Retrieve a paginated list of band recruitments with optional filters.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          description: Search keyword for title or description.
+        - in: query
+          name: genre
+          schema:
+            type: string
+        - in: query
+          name: location
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentListResponse'
+    post:
+      summary: Create a band recruitment
+      description: Create a new band recruitment post.
+      tags:
+        - bandRecruitments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBandRecruitmentRequest'
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+  /band-recruitments/applied/me:
+    get:
+      summary: Get applied band recruitments
+      description: Retrieve band recruitments the authenticated user has applied to.
+      tags:
+        - bandRecruitments
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentListResponse'
+  /band-recruitments/{id}:
+    get:
+      summary: Get band recruitment detail
+      description: Retrieve a band recruitment by ID.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+        '404':
+          description: Not found
+    put:
+      summary: Update a band recruitment
+      description: Update an existing band recruitment.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBandRecruitmentRequest'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BandRecruitmentDetailResponse'
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+  /band-recruitments/{id}/apply:
+    post:
+      summary: Apply to a band recruitment
+      description: Submit an application to a band recruitment.
+      tags:
+        - bandRecruitments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Band recruitment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyBandRecruitmentRequest'
+      responses:
+        '200':
+          description: Applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid request
+        '404':
+          description: Not found
+        '409':
+          description: Conflict
 components:
   schemas:
     Post:
@@ -1027,11 +1187,11 @@ components:
         tracks:
           type: array
           items:
-            $ref: "#/components/schemas/Track"
+            $ref: '#/components/schemas/Track'
         tags:
           type: array
           items:
-            $ref: "#/components/schemas/Tag"
+            $ref: '#/components/schemas/Tag'
         likesCount:
           type: integer
           format: int32
@@ -1177,6 +1337,136 @@ components:
         createdAt:
           type: string
           format: date-time
+    BandRecruitment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        applicationsCount:
+          type: integer
+          format: int64
+        hasApplied:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateBandRecruitmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+      required:
+        - title
+        - description
+        - contact
+    UpdateBandRecruitmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        genre:
+          type: string
+        location:
+          type: string
+        recruitingParts:
+          type: array
+          items:
+            type: string
+        skillLevel:
+          type: string
+        contact:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+      required:
+        - title
+        - description
+        - contact
+    ApplyBandRecruitmentRequest:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    BandRecruitmentListResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        recruitments:
+          type: array
+          items:
+            $ref: '#/components/schemas/BandRecruitment'
+        totalCount:
+          type: integer
+          format: int64
+        page:
+          type: integer
+        perPage:
+          type: integer
+    BandRecruitmentDetailResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        recruitment:
+          $ref: '#/components/schemas/BandRecruitment'
   securitySchemes:
     cookieAuth:
       type: apiKey

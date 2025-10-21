@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "react-hot-toast";
-import AuthInitializer from "../components/auth/AuthInitializer";
-import { ReduxProvider } from "../libs/store/ReduxProvider";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'react-hot-toast';
+import AuthInitializer from '../components/auth/AuthInitializer';
+import { ReduxProvider } from '../libs/store/ReduxProvider';
 
 const queryClient = new QueryClient();
 

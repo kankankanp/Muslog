@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-const SimpleMDEEditor = dynamic(() => import("react-simplemde-editor"), {
+import { zodResolver } from '@hookform/resolvers/zod';
+import 'easymde/dist/easymde.min.css';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+const SimpleMDEEditor = dynamic(() => import('react-simplemde-editor'), {
   ssr: false,
 });
-import Select from "react-select";
-import { z } from "zod";
-import { CommonButton } from "../buttons/CommonButton";
-import { Track } from "@/libs/api/generated/orval/model/track";
-import { usePostPosts } from "@/libs/api/generated/orval/posts/posts";
+import Select from 'react-select';
+import { z } from 'zod';
+import { CommonButton } from '../buttons/CommonButton';
+import { Track } from '@/libs/api/generated/orval/model/track';
+import { usePostPosts } from '@/libs/api/generated/orval/posts/posts';
 import {
   usePostTagsPostsPostID,
   useGetTags,
-} from "@/libs/api/generated/orval/tags/tags";
+} from '@/libs/api/generated/orval/tags/tags';
 
 const schema = z.object({
-  title: z.string().min(1, "タイトルを入力してください"),
-  description: z.string().min(1, "内容を入力してください"),
+  title: z.string().min(1, 'タイトルを入力してください'),
+  description: z.string().min(1, '内容を入力してください'),
   tags: z.array(z.string()).optional(), // tagsを文字列の配列に変更
   track: z
     .object({
@@ -58,15 +58,15 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: '',
+      description: '',
       track: null,
       tags: [], // デフォルト値を空の配列に
     },
   });
 
   useEffect(() => {
-    setValue("track", selectedTrack);
+    setValue('track', selectedTrack);
   }, [selectedTrack, setValue]);
 
   const createPostMutation = usePostPosts();
@@ -75,8 +75,8 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
 
   const tagOptions =
     allTagsData?.tags?.map((tag) => ({
-      value: tag.name || "",
-      label: tag.name || "",
+      value: tag.name || '',
+      label: tag.name || '',
     })) || [];
 
   const onSubmit = async (data: FormData) => {
@@ -84,9 +84,9 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
       { data: { ...data, tags: undefined } }, // tagsは別途処理するためundefinedにする
       {
         onSuccess: (response) => {
-          toast.success("ブログが作成されました");
+          toast.success('ブログが作成されました');
           reset();
-          router.push("/dashboard");
+          router.push('/dashboard');
 
           if (data.tags && data.tags.length > 0 && response.post?.id) {
             addTagsToPostMutation.mutate({
@@ -96,9 +96,9 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           }
         },
         onError: (error: any) => {
-          toast.error(error.message || "ブログの作成に失敗しました");
+          toast.error(error.message || 'ブログの作成に失敗しました');
         },
-      },
+      }
     );
   };
 
@@ -116,7 +116,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
         </label>
         <input
           type="text"
-          {...register("title")}
+          {...register('title')}
           className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         {errors.title && (
@@ -137,7 +137,7 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           render={({ field }) => {
             const memoizedOptions = () => ({
               spellChecker: false,
-              hideIcons: ["side-by-side", "fullscreen"] as const,
+              hideIcons: ['side-by-side', 'fullscreen'] as const,
             });
 
             return (
@@ -179,11 +179,11 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
                 field.onChange(
                   selectedOptions
                     ? selectedOptions.map((option) => option.value)
-                    : [],
+                    : []
                 )
               }
               value={tagOptions.filter((option) =>
-                (field.value || []).includes(option.value),
+                (field.value || []).includes(option.value)
               )}
             />
           )}
@@ -198,8 +198,8 @@ const NewBlogForm = ({ selectedTrack }: NewBlogFormProps) => {
           <Image
             width={50}
             height={50}
-            src={selectedTrack.albumImageUrl || "/default-image.jpg"}
-            alt={selectedTrack.name || ""}
+            src={selectedTrack.albumImageUrl || '/default-image.jpg'}
+            alt={selectedTrack.name || ''}
             className="w-16 h-16 object-cover rounded"
           />
           <div>

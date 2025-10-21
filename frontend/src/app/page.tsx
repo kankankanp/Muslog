@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Music,
@@ -11,9 +11,9 @@ import {
   UserPlus,
   Music2,
   PenTool,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -165,20 +165,20 @@ export default function Page() {
             {[
               {
                 icon: Music,
-                title: "音楽との出会い",
+                title: '音楽との出会い',
                 description:
-                  "あなたの好きな曲を共有し、新しい音楽との出会いを創出します。",
+                  'あなたの好きな曲を共有し、新しい音楽との出会いを創出します。',
               },
               {
                 icon: BookOpen,
-                title: "ブログ機能",
+                title: 'ブログ機能',
                 description:
-                  "音楽にまつわる思い出や想いを、ブログとして残すことができます。",
+                  '音楽にまつわる思い出や想いを、ブログとして残すことができます。',
               },
               {
                 icon: Users,
-                title: "コミュニティ",
-                description: "同じ音楽を愛する仲間と、想いを共有できます。",
+                title: 'コミュニティ',
+                description: '同じ音楽を愛する仲間と、想いを共有できます。',
               },
             ].map((feature, index) => (
               <motion.div
@@ -189,7 +189,7 @@ export default function Page() {
                 <motion.div
                   className="w-16 h-16 bg-emerald-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6"
                   whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                 >
                   <feature.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-300" />
                 </motion.div>
@@ -227,21 +227,21 @@ export default function Page() {
           <div className="grid md:grid-cols-3 gap-12">
             {[
               {
-                number: "01",
-                title: "アカウント作成",
-                description: "簡単な登録で、すぐに始められます。",
+                number: '01',
+                title: 'アカウント作成',
+                description: '簡単な登録で、すぐに始められます。',
                 icon: UserPlus,
               },
               {
-                number: "02",
-                title: "音楽を選択",
-                description: "あなたの好きな曲を選んでください。",
+                number: '02',
+                title: '音楽を選択',
+                description: 'あなたの好きな曲を選んでください。',
                 icon: Music2,
               },
               {
-                number: "03",
-                title: "ブログを投稿",
-                description: "音楽にまつわる想いを綴りましょう。",
+                number: '03',
+                title: 'ブログを投稿',
+                description: '音楽にまつわる想いを綴りましょう。',
                 icon: PenTool,
               },
             ].map((step, index) => (
@@ -250,7 +250,7 @@ export default function Page() {
                 className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm"
                 variants={fadeInUp}
                 whileHover={{ y: -10 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: 'spring', stiffness: 300 }}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-300">
@@ -259,7 +259,7 @@ export default function Page() {
                   <motion.div
                     className="w-12 h-12 bg-emerald-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
                     whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                   >
                     <step.icon className="w-6 h-6 text-emerald-600 dark:text-emerald-300" />
                   </motion.div>
@@ -299,15 +299,15 @@ export default function Page() {
             {[
               {
                 icon: Star,
-                title: "音楽が好きな方",
+                title: '音楽が好きな方',
                 description:
-                  "好きな曲を共有し、新しい音楽との出会いを楽しめます。",
+                  '好きな曲を共有し、新しい音楽との出会いを楽しめます。',
               },
               {
                 icon: Heart,
-                title: "思い出を残したい方",
+                title: '思い出を残したい方',
                 description:
-                  "音楽にまつわる大切な思い出を、ブログとして残せます。",
+                  '音楽にまつわる大切な思い出を、ブログとして残せます。',
               },
             ].map((benefit, index) => (
               <motion.div
@@ -315,7 +315,7 @@ export default function Page() {
                 className="flex items-start space-x-4"
                 variants={fadeInUp}
                 whileHover={{ x: 10 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: 'spring', stiffness: 300 }}
               >
                 <benefit.icon className="w-6 h-6 text-emerald-600 dark:text-emerald-300 mt-1" />
                 <div>

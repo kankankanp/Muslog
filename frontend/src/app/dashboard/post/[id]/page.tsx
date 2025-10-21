@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import { useSelector } from "react-redux";
+import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import { useSelector } from 'react-redux';
 import {
   usePostPostsPostIDLike,
   useDeletePostsPostIDUnlike,
-} from "@/libs/api/generated/orval/likes/likes";
-import { useGetPostsId } from "@/libs/api/generated/orval/posts/posts";
-import { RootState } from "@/libs/store/store";
+} from '@/libs/api/generated/orval/likes/likes';
+import { useGetPostsId } from '@/libs/api/generated/orval/posts/posts';
+import { RootState } from '@/libs/store/store';
 
 export default function Page() {
   const params = useParams();
@@ -32,8 +32,8 @@ export default function Page() {
         queryClient.invalidateQueries({ queryKey: [`/posts/${id}`] });
       },
       onError: (error) => {
-        console.error("Failed to like post:", error);
-        alert("いいねに失敗しました");
+        console.error('Failed to like post:', error);
+        alert('いいねに失敗しました');
       },
     },
   });
@@ -44,8 +44,8 @@ export default function Page() {
         queryClient.invalidateQueries({ queryKey: [`/posts/${id}`] });
       },
       onError: (error) => {
-        console.error("Failed to unlike post:", error);
-        alert("いいね解除に失敗しました");
+        console.error('Failed to unlike post:', error);
+        alert('いいね解除に失敗しました');
       },
     },
   });
@@ -77,7 +77,7 @@ export default function Page() {
 
   const handleLikeToggle = () => {
     if (!user) {
-      alert("ログインしていいねしてください");
+      alert('ログインしていいねしてください');
       return;
     }
     if (post.isLiked) {
@@ -93,9 +93,9 @@ export default function Page() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <Image
             src={
-              post.headerImageUrl && post.headerImageUrl.trim() !== ""
+              post.headerImageUrl && post.headerImageUrl.trim() !== ''
                 ? post.headerImageUrl
-                : "/default-image.jpg"
+                : '/default-image.jpg'
             }
             alt="Header Image"
             width={800}
@@ -120,7 +120,7 @@ export default function Page() {
                     {track.albumImageUrl && (
                       <Image
                         src={track.albumImageUrl}
-                        alt={track.name || "トラック画像"}
+                        alt={track.name || 'トラック画像'}
                         className="w-16 h-16 rounded-md object-cover"
                       />
                     )}
@@ -160,7 +160,7 @@ export default function Page() {
               <button
                 onClick={handleLikeToggle}
                 className={`flex items-center space-x-1 focus:outline-none ${
-                  post.isLiked ? "text-red-500" : "text-gray-400"
+                  post.isLiked ? 'text-red-500' : 'text-gray-400'
                 }`}
               >
                 <svg

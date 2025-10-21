@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Home, Search, AlertCircle } from "lucide-react";
-import Link from "next/link";
+import { motion } from 'framer-motion';
+import { Home, Search, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -29,7 +29,7 @@ export default function NotFound() {
           className="w-24 h-24 bg-emerald-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-8"
           variants={fadeInUp}
           whileHover={{ scale: 1.1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 10 }}
         >
           <AlertCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-300" />
         </motion.div>

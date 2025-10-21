@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import LoginFormWrapper from "@/components/elements/forms/LoginformWrapper";
-import SignupForm from "@/components/elements/forms/SignupForm";
+import { useState } from 'react';
+import LoginFormWrapper from '@/components/elements/forms/LoginformWrapper';
+import SignupForm from '@/components/elements/forms/SignupForm';
 
 const Page = () => {
   const [isLoginForm, setIsLoginForm] = useState<boolean>(true);
@@ -22,8 +22,8 @@ const Page = () => {
           <button
             className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
               isLoginForm
-                ? "bg-gray-800 text-white font-bold"
-                : "bg-white text-gray-700 hover:bg-gray-100"
+                ? 'bg-gray-800 text-white font-bold'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
             onClick={() => setIsLoginForm(true)}
           >
@@ -32,8 +32,8 @@ const Page = () => {
           <button
             className={`flex-1 py-3 text-center transition-colors rounded-full duration-200 ${
               !isLoginForm
-                ? "bg-gray-800 text-white font-bold"
-                : "bg-white text-gray-700 hover:bg-gray-100"
+                ? 'bg-gray-800 text-white font-bold'
+                : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
             onClick={() => setIsLoginForm(false)}
           >

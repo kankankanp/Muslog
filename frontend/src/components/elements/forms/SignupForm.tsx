@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { z } from "zod";
-import LoadingButton from "../buttons/LoadingButton";
-import { usePostAuthRegister } from "@/libs/api/generated/orval/auth/auth";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
+import LoadingButton from '../buttons/LoadingButton';
+import { usePostAuthRegister } from '@/libs/api/generated/orval/auth/auth';
 
 const signupSchema = z.object({
-  name: z.string().min(1, "名前を入力してください"),
+  name: z.string().min(1, '名前を入力してください'),
   email: z
     .string()
-    .email({ message: "有効なメールアドレスを入力してください。" }),
+    .email({ message: '有効なメールアドレスを入力してください。' }),
   password: z
     .string()
-    .min(6, { message: "パスワードは6文字以上で入力してください。" }),
+    .min(6, { message: 'パスワードは6文字以上で入力してください。' }),
 });
 
 type SignupFormInputs = z.infer<typeof signupSchema>;
@@ -37,14 +37,14 @@ export default function SignupForm() {
       { data },
       {
         onSuccess: () => {
-          toast.success("登録しました。");
-          router.push("/dashboard");
+          toast.success('登録しました。');
+          router.push('/dashboard');
         },
         onError: (error: any) => {
-          toast.error("登録に失敗しました。");
-          console.error("Signup failed:", error);
+          toast.error('登録に失敗しました。');
+          console.error('Signup failed:', error);
         },
-      },
+      }
     );
   };
 
@@ -80,7 +80,7 @@ export default function SignupForm() {
           <input
             className="w-full mt-1 p-2 max-md:px-[52px] border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="text"
-            {...register("name")}
+            {...register('name')}
           />
         </div>
         <div>
@@ -90,7 +90,7 @@ export default function SignupForm() {
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="email"
-            {...register("email")}
+            {...register('email')}
           />
         </div>
         <div>
@@ -100,13 +100,13 @@ export default function SignupForm() {
           <input
             className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
             type="password"
-            {...register("password")}
+            {...register('password')}
           />
         </div>
         <div className="flex flex-col gap-4 w-[60%] mx-auto font-bold max-md:text-sm">
           <LoadingButton
-            label={"登録する"}
-            color={"green"}
+            label={'登録する'}
+            color={'green'}
             isPending={isPending}
           />
         </div>

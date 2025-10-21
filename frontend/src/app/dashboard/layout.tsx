@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import Skeleton from "@/components/layouts/Skeleton";
+import dynamic from 'next/dynamic';
+import Skeleton from '@/components/layouts/Skeleton';
 
 // export const metadata: Metadata = {
 //   title: "Muslog - ダッシュボード",
@@ -9,11 +9,11 @@ import Skeleton from "@/components/layouts/Skeleton";
 // };
 
 const DashboardContainer = dynamic(
-  () => import("@/components/layouts/DashboardContainer"),
+  () => import('@/components/layouts/DashboardContainer'),
   {
     ssr: false,
     loading: () => <Skeleton />,
-  },
+  }
 );
 
 export default function DashboardLayout({

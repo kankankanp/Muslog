@@ -1,8 +1,8 @@
-import Link from "next/link";
-import React from "react";
-import { components } from "@/libs/api/generated/openapi-types";
+import Link from 'next/link';
+import React from 'react';
+import { components } from '@/libs/api/generated/openapi-types';
 
-type Community = components["schemas"]["Community"];
+type Community = components['schemas']['Community'];
 
 interface CommunityCardProps {
   community: Community;
@@ -19,7 +19,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({ community }) => {
           {community.description}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-          Created by {community.creatorId} on{" "}
+          Created by {community.creatorId} on{' '}
           {new Date(community.createdAt).toLocaleDateString()}
         </p>
       </div>

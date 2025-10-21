@@ -1,26 +1,26 @@
-import "@/scss/global.css";
-import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import "destyle.css";
-import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
-import { Providers } from "./providers";
+import '@/scss/global.css';
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import 'destyle.css';
+import type { Metadata } from 'next';
+import { Noto_Sans_JP } from 'next/font/google';
+import { Providers } from './providers';
 
 config.autoAddCss = false;
 
 const notoJp = Noto_Sans_JP({
-  subsets: ["latin"],
-  weight: ["100", "300", "400", "500", "700", "900"],
-  variable: "--font-notojp",
-  display: "swap",
+  subsets: ['latin'],
+  weight: ['100', '300', '400', '500', '700', '900'],
+  variable: '--font-notojp',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "Muslog - あなたの音楽の物語をシェアしよう",
+  title: 'Muslog - あなたの音楽の物語をシェアしよう',
   description:
-    "好きな曲と共に、あなたの想いを綴る。新しい音楽との出会いの場へ。",
+    '好きな曲と共に、あなたの想いを綴る。新しい音楽との出会いの場へ。',
   icons: {
-    icon: "/favicon.ico",
+    icon: '/favicon.ico',
   },
 };
 

@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 import type {
   GetPosts200,
   GetPostsId200,
-} from "@/libs/api/generated/orval/model";
-import { serverInstance } from "@/libs/api/server-instance";
+} from '@/libs/api/generated/orval/model';
+import { serverInstance } from '@/libs/api/server-instance';
 
 const getPostsServer = (signal?: AbortSignal) => {
-  return serverInstance<GetPosts200>({ url: `/posts`, method: "GET", signal });
+  return serverInstance<GetPosts200>({ url: `/posts`, method: 'GET', signal });
 };
 
 export async function generateStaticParams() {
@@ -22,7 +22,7 @@ export async function generateStaticParams() {
       id: post.id.toString(),
     }));
   } catch (error) {
-    console.error("Failed to fetch posts for generateStaticParams:", error);
+    console.error('Failed to fetch posts for generateStaticParams:', error);
     return [];
   }
 }
@@ -30,7 +30,7 @@ export async function generateStaticParams() {
 const getPostsIdServer = (id: number, signal?: AbortSignal) => {
   return serverInstance<GetPostsId200>({
     url: `/posts/${id}`,
-    method: "GET",
+    method: 'GET',
     signal,
   });
 };
@@ -52,12 +52,12 @@ export async function generateMetadata({
       };
     }
   } catch (error) {
-    console.error("Failed to fetch post for metadata:", error);
+    console.error('Failed to fetch post for metadata:', error);
   }
 
   return {
-    title: "Muslog - 記事の詳細ページ",
-    description: "記事の詳細ページ",
+    title: 'Muslog - 記事の詳細ページ',
+    description: '記事の詳細ページ',
   };
 }
 

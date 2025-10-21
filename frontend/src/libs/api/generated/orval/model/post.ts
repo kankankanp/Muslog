@@ -4,8 +4,8 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { Track } from "./track";
-import type { Tag } from "./tag";
+import type { Track } from './track';
+import type { Tag } from './tag';
 
 export interface Post {
   id: number;

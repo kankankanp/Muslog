@@ -1,5 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -20,9 +20,9 @@ const Footer = () => {
 
         <nav className="mt-6 md:mt-0 flex flex-wrap justify-center gap-6 text-sm">
           {[
-            { href: "/", label: "ホーム" },
-            { href: "/dashboard", label: "管理" },
-            { href: "/dashboard/blog/page/1", label: "記事" },
+            { href: '/', label: 'ホーム' },
+            { href: '/dashboard', label: '管理' },
+            { href: '/dashboard/blog/page/1', label: '記事' },
           ].map((item) => (
             <Link
               key={item.href}

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Menu } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { Menu } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 const Header = () => {
   const { setIsSidebarOpen } = useSidebar();

@@ -6,16 +6,16 @@
  */
 
 export type GetCommunitiesSearchParams = {
-  /**
-   * Search query string for community name or description
-   */
-  q?: string;
-  /**
-   * Page number for pagination
-   */
-  page?: number;
-  /**
-   * Number of items per page for pagination
-   */
-  perPage?: number;
+/**
+ * Search query string for community name or description
+ */
+q?: string;
+/**
+ * Page number for pagination
+ */
+page?: number;
+/**
+ * Number of items per page for pagination
+ */
+perPage?: number;
 };

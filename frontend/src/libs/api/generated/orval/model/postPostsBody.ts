@@ -4,7 +4,7 @@
  * Muslog API
  * OpenAPI spec version: 1.0.0
  */
-import type { Track } from "./track";
+import type { Track } from './track';
 
 export type PostPostsBody = {
   title?: string;

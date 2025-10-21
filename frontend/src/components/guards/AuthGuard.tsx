@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   selectIsAuthenticated,
   selectIsAuthInitialized,
-} from "@/libs/store/authSelectors";
+} from '@/libs/store/authSelectors';
 
 interface AuthGuardProps {
   children: React.ReactNode;

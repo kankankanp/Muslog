@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "gen": "npm run gen:types && npm run gen:client",
     "gen:types": "openapi-typescript ./openapi.yml --output ./src/libs/api/generated/openapi-types.ts",
     "gen:client": "orval --config ./orval.config.ts"

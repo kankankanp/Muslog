@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { usePostLogout } from "@/libs/api/generated/orval/auth/auth";
-import { logout } from "@/libs/store/authSlice";
-import { AppDispatch } from "@/libs/store/store";
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { usePostLogout } from '@/libs/api/generated/orval/auth/auth';
+import { logout } from '@/libs/store/authSlice';
+import { AppDispatch } from '@/libs/store/store';
 
 const LogoutButton = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -15,12 +15,12 @@ const LogoutButton = () => {
     mutation: {
       onSuccess: () => {
         dispatch(logout());
-        toast.success("ログアウトしました。");
-        router.push("/login");
+        toast.success('ログアウトしました。');
+        router.push('/login');
       },
       onError: (error) => {
-        toast.error("ログアウトに失敗しました。");
-        console.error("Logout failed:", error);
+        toast.error('ログアウトに失敗しました。');
+        console.error('Logout failed:', error);
       },
     },
   });

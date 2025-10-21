@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useCallback, useMemo } from "react";
-import "@/scss/book.scss";
-import { Post } from "@/libs/api/generated/orval/model/post";
+import Image from 'next/image';
+import { useCallback, useMemo } from 'react';
+import '@/scss/book.scss';
+import { Post } from '@/libs/api/generated/orval/model/post';
 
 type BookProps = {
   posts: Post[];
@@ -13,17 +13,17 @@ export const Book = ({ posts }: BookProps) => {
   const pageCount = 20;
   const pages = useMemo(
     () => Array.from({ length: pageCount }, (_, i) => 99 - i),
-    [pageCount],
+    [pageCount]
   );
 
   const playAudio = useCallback(() => {
-    const audio = new Audio("/flip_sound.mp3");
+    const audio = new Audio('/flip_sound.mp3');
     audio.play();
   }, []);
 
   const postPages = useMemo(
     () => pages.map((_, idx) => posts[idx - 1] || null),
-    [posts, pages],
+    [posts, pages]
   );
 
   return (
@@ -41,7 +41,7 @@ export const Book = ({ posts }: BookProps) => {
             />
             <span
               className={`book-inner__page z-[${zIndex}] ${
-                isCover ? "front-cover" : ""
+                isCover ? 'front-cover' : ''
               } p-4`}
             >
               {isCover ? (
@@ -51,10 +51,10 @@ export const Book = ({ posts }: BookProps) => {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 pr-4 text-left">
                       <div className="text-sm text-gray-600 dark:text-gray-400 pb-1 border-b border-gray-400 dark:border-gray-600">
-                        Date:{" "}
+                        Date:{' '}
                         {post.createdAt
-                          ? new Date(post.createdAt).toLocaleDateString("ja-JP")
-                          : ""}
+                          ? new Date(post.createdAt).toLocaleDateString('ja-JP')
+                          : ''}
                       </div>
                       <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Subject: {post.title}
@@ -72,13 +72,13 @@ export const Book = ({ posts }: BookProps) => {
                             >
                               <Image
                                 src={
-                                  track.albumImageUrl || "/default-image.jpg"
+                                  track.albumImageUrl || '/default-image.jpg'
                                 }
-                                alt={track.name || ""}
+                                alt={track.name || ''}
                                 width={32}
                                 height={32}
                                 className="w-8 h-8 rounded object-cover"
-                                style={{ width: "auto", height: "auto" }}
+                                style={{ width: 'auto', height: 'auto' }}
                               />
                               <div>
                                 <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
@@ -138,7 +138,7 @@ export const Book = ({ posts }: BookProps) => {
             </span>
             <span
               className={`book-inner__dummy dummy ${
-                isCover ? "back-cover" : ""
+                isCover ? 'back-cover' : ''
               } p-4`}
             >
               {isCover ? (
@@ -148,10 +148,10 @@ export const Book = ({ posts }: BookProps) => {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 pr-4 text-left">
                       <div className="text-sm text-gray-600 dark:text-gray-400 pb-1 border-b border-gray-400 dark:border-gray-600">
-                        Date:{" "}
+                        Date:{' '}
                         {post.createdAt
-                          ? new Date(post.createdAt).toLocaleDateString("ja-JP")
-                          : ""}
+                          ? new Date(post.createdAt).toLocaleDateString('ja-JP')
+                          : ''}
                       </div>
                       <div className="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-2 pb-1 border-b border-gray-400 dark:border-gray-600">
                         Subject: {post.title}
@@ -169,9 +169,9 @@ export const Book = ({ posts }: BookProps) => {
                             >
                               <Image
                                 src={
-                                  track.albumImageUrl || "/default-image.jpg"
+                                  track.albumImageUrl || '/default-image.jpg'
                                 }
-                                alt={track.name || ""}
+                                alt={track.name || ''}
                                 width={32}
                                 height={32}
                                 className="w-8 h-8 rounded object-cover"
