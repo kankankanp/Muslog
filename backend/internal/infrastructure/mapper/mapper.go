@@ -11,7 +11,7 @@ func ToUserEntity(m *model.UserModel) *entity.User {
 	if m == nil {
 		return nil
 	}
-	return &entity.User{
+	user := &entity.User{
 		ID:              m.ID,
 		Name:            m.Name,
 		Email:           m.Email,
@@ -21,6 +21,10 @@ func ToUserEntity(m *model.UserModel) *entity.User {
 		CreatedAt:       m.CreatedAt,
 		UpdatedAt:       m.UpdatedAt,
 	}
+	if m.Setting != nil {
+		user.Setting = ToUserSettingEntity(m.Setting)
+	}
+	return user
 }
 
 func FromUserEntity(e *entity.User) *model.UserModel {
@@ -325,5 +329,32 @@ func FromBandApplicationEntity(e *entity.BandApplication) *model.BandApplication
 		ApplicantID:       e.ApplicantID,
 		Message:           e.Message,
 		CreatedAt:         e.CreatedAt,
+	}
+}
+
+// UserSetting
+func ToUserSettingEntity(m *model.UserSettingModel) *entity.UserSetting {
+	if m == nil {
+		return nil
+	}
+	return &entity.UserSetting{
+		ID:         m.ID,
+		UserID:     m.UserID,
+		EditorType: m.EditorType,
+		CreatedAt:  m.CreatedAt,
+		UpdatedAt:  m.UpdatedAt,
+	}
+}
+
+func FromUserSettingEntity(e *entity.UserSetting) *model.UserSettingModel {
+	if e == nil {
+		return nil
+	}
+	return &model.UserSettingModel{
+		ID:         e.ID,
+		UserID:     e.UserID,
+		EditorType: e.EditorType,
+		CreatedAt:  e.CreatedAt,
+		UpdatedAt:  e.UpdatedAt,
 	}
 }

@@ -134,6 +134,7 @@ func main() {
 	}
 	if err := db.AutoMigrate(
 		&model.UserModel{},
+		&model.UserSettingModel{},
 		&model.PostModel{},
 		&model.TrackModel{},
 		&model.TagModel{},
@@ -181,6 +182,10 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepo, postRepo)
 	userHandler := handler.NewUserHandler(userUsecase)
+
+	userSettingRepo := repository.NewUserSettingRepository(db)
+	userSettingUsecase := usecase.NewUserSettingUsecase(userSettingRepo)
+	userSettingHandler := handler.NewUserSettingHandler(userSettingUsecase)
 
 	tagRepo := repository.NewTagRepository(db)
 	tagUsecase := usecase.NewTagUsecase(tagRepo, postRepo)
@@ -275,6 +280,10 @@ func main() {
 	userGroup.GET("/:id/posts", userHandler.GetUserPosts)
 	userGroup.POST("/:userId/profile-image", imageHandler.UploadProfileImage)
 	userGroup.GET("/me/liked-posts", likeHandler.GetLikedPostsByUser)
+
+	// user settings
+	userGroup.GET("/me/settings", userSettingHandler.GetUserSetting)
+	userGroup.PUT("/me/settings", userSettingHandler.UpdateUserSetting)
 
 	// tags
 	tagGroup := protected.Group("/tags")
