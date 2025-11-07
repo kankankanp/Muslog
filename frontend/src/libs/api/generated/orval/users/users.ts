@@ -27,8 +27,11 @@ import type {
   GetUsers200,
   GetUsersId200,
   GetUsersIdPosts200,
+  GetUsersMeSettings200,
   PostUsersUserIdProfileImage200,
-  PostUsersUserIdProfileImageBody
+  PostUsersUserIdProfileImageBody,
+  PutUsersMeSettings200,
+  PutUsersMeSettingsBody
 } from '.././model';
 
 import { customInstance } from '../../../custom-instance';
@@ -367,6 +370,158 @@ export const usePostUsersUserIdProfileImage = <TError = void,
       > => {
 
       const mutationOptions = getPostUsersUserIdProfileImageMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Get the current user's settings
+ * @summary Get current user settings
+ */
+export const getUsersMeSettings = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<GetUsersMeSettings200>(
+      {url: `/users/me/settings`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetUsersMeSettingsQueryKey = () => {
+    return [`/users/me/settings`] as const;
+    }
+
+    
+export const getGetUsersMeSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getUsersMeSettings>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUsersMeSettingsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersMeSettings>>> = ({ signal }) => getUsersMeSettings(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUsersMeSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getUsersMeSettings>>>
+export type GetUsersMeSettingsQueryError = void
+
+
+export function useGetUsersMeSettings<TData = Awaited<ReturnType<typeof getUsersMeSettings>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUsersMeSettings>>,
+          TError,
+          Awaited<ReturnType<typeof getUsersMeSettings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersMeSettings<TData = Awaited<ReturnType<typeof getUsersMeSettings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUsersMeSettings>>,
+          TError,
+          Awaited<ReturnType<typeof getUsersMeSettings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUsersMeSettings<TData = Awaited<ReturnType<typeof getUsersMeSettings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user settings
+ */
+
+export function useGetUsersMeSettings<TData = Awaited<ReturnType<typeof getUsersMeSettings>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersMeSettings>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUsersMeSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Update the current user's settings
+ * @summary Update current user settings
+ */
+export const putUsersMeSettings = (
+    putUsersMeSettingsBody: PutUsersMeSettingsBody,
+ ) => {
+      
+      
+      return customInstance<PutUsersMeSettings200>(
+      {url: `/users/me/settings`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: putUsersMeSettingsBody
+    },
+      );
+    }
+  
+
+
+export const getPutUsersMeSettingsMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putUsersMeSettings>>, TError,{data: PutUsersMeSettingsBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putUsersMeSettings>>, TError,{data: PutUsersMeSettingsBody}, TContext> => {
+
+const mutationKey = ['putUsersMeSettings'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putUsersMeSettings>>, {data: PutUsersMeSettingsBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  putUsersMeSettings(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutUsersMeSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof putUsersMeSettings>>>
+    export type PutUsersMeSettingsMutationBody = PutUsersMeSettingsBody
+    export type PutUsersMeSettingsMutationError = void
+
+    /**
+ * @summary Update current user settings
+ */
+export const usePutUsersMeSettings = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putUsersMeSettings>>, TError,{data: PutUsersMeSettingsBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putUsersMeSettings>>,
+        TError,
+        {data: PutUsersMeSettingsBody},
+        TContext
+      > => {
+
+      const mutationOptions = getPutUsersMeSettingsMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

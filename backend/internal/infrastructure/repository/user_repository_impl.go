@@ -49,6 +49,7 @@ func (r *userRepositoryImpl) FindByID(ctx context.Context, id string) (*entity.U
 		}).
 		Preload("Posts.Tracks").
 		Preload("Posts.Tags").
+		Preload("Setting").
 		First(&m, "id = ?", id).Error
 	if err != nil {
 		return nil, err

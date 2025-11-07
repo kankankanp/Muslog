@@ -6,14 +6,7 @@
  */
 import type { UserSetting } from './userSetting';
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  /** @nullable */
-  profileImageUrl?: string | null;
-  /** @nullable */
+export type PutUsersMeSettings200 = {
+  message?: string;
   setting?: UserSetting;
-  createdAt: string;
-  updatedAt: string;
-}
+};

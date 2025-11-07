@@ -9,6 +9,7 @@ import {
   LogOut,
   X,
   Megaphone,
+  Settings,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -100,6 +101,16 @@ const Sidebar = () => {
             >
               <Megaphone className="mr-3 h-5 w-5" />
               <span>バンド募集</span>
+            </Link>
+          </li>
+          <li className="mb-2">
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <Settings className="mr-3 h-5 w-5" />
+              <span>設定</span>
             </Link>
           </li>
           <li className="mb-2">

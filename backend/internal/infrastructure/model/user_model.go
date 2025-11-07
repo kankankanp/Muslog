@@ -13,6 +13,7 @@ type UserModel struct {
 	ProfileImageUrl string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Posts           []PostModel `gorm:"foreignKey:UserID"`
-	Likes           []LikeModel `gorm:"foreignKey:UserID"`
+	Posts           []PostModel       `gorm:"foreignKey:UserID"`
+	Likes           []LikeModel       `gorm:"foreignKey:UserID"`
+	Setting         *UserSettingModel `gorm:"foreignKey:UserID"`
 }

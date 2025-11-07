@@ -13,6 +13,7 @@ import FullscreenWysiwygEditor from '@/components/elements/editors/FullscreenWys
 import ImageUploadModal from '@/components/elements/modals/ImageUploadModal'; // New
 import SpotifySearchModal from '@/components/elements/modals/SpotifySearchModal';
 import TagModal from '@/components/elements/modals/TagModal';
+import { useUserSettings } from '@/hooks/useUserSettings';
 import { useGetMe } from '@/libs/api/generated/orval/auth/auth';
 import { usePostImagesUpload } from '@/libs/api/generated/orval/images/images'; // New
 import { PostPostsBody } from '@/libs/api/generated/orval/model';
@@ -39,11 +40,9 @@ export default function AddPostPage() {
   );
   const [previewZoom, setPreviewZoom] = useState(1.0); // Default to 1.0 for font-size scaling
   const [editorZoom, setEditorZoom] = useState(1.0);
-  const [editorWidth, setEditorWidth] = useState(50); // Initial width for editor in split view
-  const [previewWidth, setPreviewWidth] = useState(50); // Initial width for preview in split view
-  const [editorMode, setEditorMode] = useState<'markdown' | 'wysiwyg'>(
-    'markdown'
-  );
+
+  // ユーザー設定からエディタタイプを取得
+  const { editorType } = useUserSettings();
 
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
@@ -286,26 +285,13 @@ export default function AddPostPage() {
 
   return (
     <>
-      {editorMode === 'wysiwyg' ? (
+      {editorType === 'wysiwyg' ? (
         // フルスクリーンWYSIWYGエディタ
         <div className="relative h-screen">
           {/* ヘッダーナビゲーション */}
           <div className="absolute top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button
-                className="px-4 py-2 rounded bg-gray-200 text-gray-700"
-                onClick={() => setEditorMode('markdown')}
-                type="button"
-              >
-                Markdownエディタ
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-indigo-600 text-white"
-                onClick={() => setEditorMode('wysiwyg')}
-                type="button"
-              >
-                WYSIWYGエディタ
-              </button>
+              <div className="text-sm text-gray-600">WYSIWYGエディタ</div>
             </div>
             <div className="flex items-center gap-4">
               {/* アクションボタン */}
@@ -452,22 +438,6 @@ export default function AddPostPage() {
                 onClick={() => setViewMode('split')}
               >
                 分割
-              </button>
-            </div>
-            <div className="flex justify-center gap-2 mb-4">
-              <button
-                className="px-4 py-2 rounded bg-indigo-600 text-white"
-                onClick={() => setEditorMode('markdown')}
-                type="button"
-              >
-                Markdownエディタ
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-gray-200 text-gray-700"
-                onClick={() => setEditorMode('wysiwyg')}
-                type="button"
-              >
-                WYSIWYGエディタ
               </button>
             </div>
             <div className="flex h-screen bg-white">
