@@ -30,8 +30,8 @@ func TestUserSettingUsecase_GetUserSetting(t *testing.T) {
 				CreatedAt:  time.Now(),
 				UpdatedAt:  time.Now(),
 			},
-			mockError:      nil,
-			expectedError:  false,
+			mockError:     nil,
+			expectedError: false,
 			expectedResult: &entity.UserSetting{
 				ID:         "setting-1",
 				UserID:     "user-1",
@@ -39,11 +39,11 @@ func TestUserSettingUsecase_GetUserSetting(t *testing.T) {
 			},
 		},
 		{
-			name:           "設定が存在しない場合（デフォルト作成）",
-			userID:         "user-2",
-			mockSetting:    nil,
-			mockError:      assert.AnError,
-			expectedError:  false,
+			name:          "設定が存在しない場合（デフォルト作成）",
+			userID:        "user-2",
+			mockSetting:   nil,
+			mockError:     assert.AnError,
+			expectedError: false,
 			expectedResult: &entity.UserSetting{
 				UserID:     "user-2",
 				EditorType: "markdown",

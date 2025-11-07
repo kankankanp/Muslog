@@ -4,11 +4,11 @@ import "github.com/kankankanp/Muslog/internal/domain/entity"
 
 // ユーザー情報レスポンス
 type UserResponse struct {
-	ID              string                `json:"id"`
-	Name            string                `json:"name"`
-	Email           string                `json:"email"`
-	ProfileImageUrl string                `json:"profileImageUrl"`
-	Setting         *UserSettingResponse  `json:"setting,omitempty"`
+	ID              string               `json:"id"`
+	Name            string               `json:"name"`
+	Email           string               `json:"email"`
+	ProfileImageUrl string               `json:"profileImageUrl"`
+	Setting         *UserSettingResponse `json:"setting,omitempty"`
 }
 
 func ToUserResponse(u *entity.User) UserResponse {
